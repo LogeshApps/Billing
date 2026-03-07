@@ -227,6 +227,66 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
   white-space: nowrap;
   text-align: center;
 }
+/* Preset items quick-add */
+.preset-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(218,165,32,0.2);
+}
+.preset-bar-label {
+  font-size: 0.62rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--gmuted);
+  font-weight: 700;
+  width: 100%;
+  margin-bottom: 2px;
+}
+.preset-btn {
+  background: rgba(218,165,32,0.08);
+  border: 1px solid rgba(218,165,32,0.3);
+  border-radius: 20px;
+  color: var(--g3);
+  font-family: 'Lato', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 5px 14px;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.preset-btn:hover {
+  background: rgba(218,165,32,0.2);
+  border-color: var(--g2);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(218,165,32,0.2);
+}
+  background: rgba(218,165,32,0.07);
+  border-color: rgba(218,165,32,0.3);
+  color: var(--g3);
+  text-align: right;
+}
+.items-table-editor input.rate-input.rate-custom {
+  background: rgba(218,165,32,0.18) !important;
+  border-color: var(--g2) !important;
+  border-style: dashed !important;
+  color: #ffe066 !important;
+  font-weight: 700;
+}
+/* Add/Subtract toggle */
+.type-toggle { display: flex; border-radius: 4px; overflow: hidden; border: 1px solid rgba(218,165,32,0.3); }
+.type-toggle button {
+  flex: 1; padding: 5px 6px; border: none; cursor: pointer;
+  font-size: 0.85rem; font-weight: 700; line-height: 1;
+  background: rgba(255,255,255,0.05); color: var(--gmuted);
+  transition: all 0.15s;
+}
+.type-toggle button.active-add { background: rgba(50,180,80,0.25); color: #6fea8a; }
+.type-toggle button.active-sub { background: rgba(220,60,60,0.25); color: #ff9090; }
 
 /* ===== BUTTONS ===== */
 .btn {
@@ -380,8 +440,7 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
   font-weight: 700; letter-spacing: 1px; text-transform: uppercase; font-size: 0.7rem;
 }
 .bill-table th:last-child, .bill-table td:last-child { text-align: right; }
-.bill-table th:nth-child(3), .bill-table td:nth-child(3),
-.bill-table th:nth-child(4), .bill-table td:nth-child(4),
+.bill-table th:nth-child(3), .bill-table td:nth-child(3) { text-align: center; }
 .bill-table th:nth-child(5), .bill-table td:nth-child(5),
 .bill-table th:nth-child(6), .bill-table td:nth-child(6) { text-align: center; }
 .bill-table td { padding: 7px 10px; border-bottom: 1px solid #edddb0; color: var(--text); }
@@ -517,16 +576,27 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
     <h3>Line Items</h3>
     <span class="rate-badge" id="rate-badge">Gold Rate: Rs.8,000.00 / gram</span>
   </div>
+  <div class="preset-bar">
+    <span class="preset-bar-label">⚡ Quick Add</span>
+    <button class="preset-btn" onclick="addPreset('Gold Coin')">🪙 Gold Coin</button>
+    <button class="preset-btn" onclick="addPreset('Silver Coin')">🪙 Silver Coin</button>
+    <button class="preset-btn" onclick="addPreset('Gold Jewels')">✨ Gold Jewels</button>
+    <button class="preset-btn" onclick="addPreset('Silver Jewels')">✨ Silver Jewels</button>
+    <button class="preset-btn" onclick="addPreset('Necklace')">📿 Necklace</button>
+    <button class="preset-btn" onclick="addPreset('Jimikki')">💎 Jimikki</button>
+    <button class="preset-btn" onclick="addPreset('Old Jewels')">♻️ Old Jewels</button>
+    <button class="preset-btn" onclick="addPreset('Stone Weight')">🪨 Stone Weight</button>
+  </div>
   <div class="items-table-wrap">
     <table class="items-table-editor">
       <thead>
         <tr>
           <th style="width:36px">#</th>
-          <th style="width:180px">Description</th>
-          <th style="width:110px">Gross Wt (g)</th>
-          <th style="width:120px">Deduction Wt (g)<br><span style="font-size:0.55rem;opacity:0.7;font-weight:400">stone/other wt to subtract</span></th>
-          <th style="width:100px">Gold Rate</th>
-          <th style="width:150px">Amount (Rs.) — Editable</th>
+          <th style="width:50px;text-align:center">+/−</th>
+          <th style="width:175px">Description</th>
+          <th style="width:110px">Weight (g)</th>
+          <th style="width:140px">Rate (Rs/g)<br><span style="font-size:0.55rem;opacity:0.7;font-weight:400">editable per item</span></th>
+          <th style="width:150px">Amount (Rs.)<br><span style="font-size:0.55rem;opacity:0.7;font-weight:400">auto / overridable</span></th>
           <th style="width:44px"></th>
         </tr>
       </thead>
@@ -550,89 +620,155 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
 </div>
 
 <script>
-// amtOverride: null = auto-calc | number = manual override
-// deduct: weight to subtract (stone wt etc.) — reduces net gold wt and auto amount
-var items = [{ desc: 'COIN', gross: '500.000', deduct: '', amtOverride: null }];
+/*
+  Each item:
+    desc        - description
+    gross       - weight in grams
+    type        - 'add' (default) | 'sub' (subtract from total)
+    rateOverride - null = use global gold rate | number = per-item rate (e.g. stone price)
+    amtOverride  - null = auto-calc (gross × rate) | number = manual amount
+*/
+var items = [{ desc: 'COIN', gross: '500.000', type: 'add', rateOverride: null, amtOverride: null }];
 
 function getGoldRate() { return parseFloat(document.getElementById('gold-rate').value) || 0; }
 
-function fmtMoney(n) {
-  var num = parseFloat(n) || 0;
-  return num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-function fmtINR(n) { return Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
-
-function netGoldWt(item) {
-  var gross = parseFloat(item.gross) || 0;
-  var deduct = parseFloat(item.deduct) || 0;
-  return Math.max(0, gross - deduct);
+function effectiveRate(item) {
+  return (item.rateOverride !== null && item.rateOverride !== '') ? parseFloat(item.rateOverride) : getGoldRate();
 }
 
 function autoAmt(item) {
-  // Net gold weight (gross minus deductions) x gold rate
-  return netGoldWt(item) * getGoldRate();
+  return (parseFloat(item.gross) || 0) * effectiveRate(item);
 }
+
 function calcAmt(item) {
-  // Uses override if set, otherwise auto
   if (item.amtOverride !== null && item.amtOverride !== '') return parseFloat(item.amtOverride) || 0;
   return autoAmt(item);
 }
 
-// Called when gold rate changes — refresh rate cells + auto-calc amount cells (skip overrides)
+// Signed amount: positive for 'add', negative for 'sub'
+function signedAmt(item) {
+  var a = calcAmt(item);
+  return item.type === 'sub' ? -a : a;
+}
+
+function fmtMoney(n) {
+  return (parseFloat(n)||0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function fmtINR(n) {
+  return Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function esc(s) { return (s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+// Called when global gold rate changes — refresh all rows that use auto rate
 function onGoldRateChange() {
   var rate = getGoldRate();
   document.getElementById('rate-badge').textContent = 'Gold Rate: Rs.' + fmtMoney(rate) + ' / gram';
   var rows = document.querySelectorAll('#items-tbody tr');
   rows.forEach(function(row, i) {
-    var rc = row.querySelector('.rate-cell');
+    if (!items[i]) return;
+    // Update rate input placeholder/display if not overridden
+    var ri = row.querySelector('.rate-input');
+    if (ri && items[i].rateOverride === null) ri.placeholder = fmtMoney(rate);
+    // Update amount if neither rate nor amount is overridden
     var ai = row.querySelector('.amt-input');
-    if (rc) rc.textContent = 'Rs.' + fmtMoney(rate) + '/g';
-    if (ai && items[i] && items[i].amtOverride === null) {
+    if (ai && items[i].amtOverride === null && document.activeElement !== ai) {
       var computed = autoAmt(items[i]);
       ai.value = computed > 0 ? fmtMoney(computed) : '';
-      ai.dataset.raw = computed || '';
     }
   });
   render();
 }
 
-// Called when description / gross / deduct changes
+function setType(i, type) {
+  items[i].type = type;
+  // Re-render just this row's toggle buttons without full table re-render
+  var rows = document.querySelectorAll('#items-tbody tr');
+  if (rows[i]) {
+    var btns = rows[i].querySelectorAll('.type-toggle button');
+    if (btns[0]) { btns[0].className = type === 'add' ? 'active-add' : ''; }
+    if (btns[1]) { btns[1].className = type === 'sub' ? 'active-sub' : ''; }
+  }
+  render();
+}
+
 function updateItem(i, field, val) {
   items[i][field] = val;
-  // If gross or deduct changes and no override, update the amount cell display
-  if ((field === 'gross' || field === 'deduct') && items[i].amtOverride === null) {
+  if ((field === 'gross') && items[i].amtOverride === null) {
     var rows = document.querySelectorAll('#items-tbody tr');
     if (rows[i]) {
       var ai = rows[i].querySelector('.amt-input');
       if (ai && document.activeElement !== ai) {
         var computed = autoAmt(items[i]);
         ai.value = computed > 0 ? fmtMoney(computed) : '';
-        ai.dataset.raw = computed || '';
       }
     }
   }
   render();
 }
 
-// Amount field: on focus show raw number for easy editing; on blur format and save
+// Per-row rate field
+function rateFocus(i) {
+  var rows = document.querySelectorAll('#items-tbody tr');
+  if (!rows[i]) return;
+  var ri = rows[i].querySelector('.rate-input');
+  if (!ri) return;
+  var raw = items[i].rateOverride !== null ? items[i].rateOverride : getGoldRate();
+  ri.value = parseFloat(raw).toFixed(2);
+  ri.select();
+}
+
+function rateInput(i, val) {
+  if (val === '' || val === null) {
+    items[i].rateOverride = null;
+  } else {
+    items[i].rateOverride = val;
+  }
+  // Live-update amount if not manually overridden
+  if (items[i].amtOverride === null) {
+    var rows = document.querySelectorAll('#items-tbody tr');
+    if (rows[i]) {
+      var ai = rows[i].querySelector('.amt-input');
+      if (ai && document.activeElement !== ai) {
+        var computed = autoAmt(items[i]);
+        ai.value = computed > 0 ? fmtMoney(computed) : '';
+      }
+    }
+  }
+  render();
+}
+
+function rateBlur(i, val) {
+  var rows = document.querySelectorAll('#items-tbody tr');
+  if (!rows[i]) return;
+  var ri = rows[i].querySelector('.rate-input');
+  if (val === '' || val === null || isNaN(parseFloat(val))) {
+    items[i].rateOverride = null;
+    if (ri) { ri.value = ''; ri.placeholder = fmtMoney(getGoldRate()); ri.className = 'rate-input'; }
+  } else {
+    items[i].rateOverride = parseFloat(val);
+    if (ri) { ri.value = fmtMoney(parseFloat(val)); ri.className = 'rate-input rate-custom'; }
+  }
+  // Recalc amount display
+  if (items[i].amtOverride === null) {
+    var ai = rows[i].querySelector('.amt-input');
+    if (ai) { var c = autoAmt(items[i]); ai.value = c > 0 ? fmtMoney(c) : ''; }
+  }
+  render();
+}
+
+// Amount field handlers
 function amtFocus(i) {
   var rows = document.querySelectorAll('#items-tbody tr');
   if (!rows[i]) return;
   var ai = rows[i].querySelector('.amt-input');
   if (!ai) return;
-  // Show raw numeric value so user can type freely
   var raw = items[i].amtOverride !== null ? items[i].amtOverride : autoAmt(items[i]);
   ai.value = raw > 0 ? parseFloat(raw).toFixed(2) : '';
   ai.select();
 }
 
 function amtInput(i, val) {
-  // Live update the model while typing
-  if (val === '' || val === null) {
-    items[i].amtOverride = null;
-  } else {
-    items[i].amtOverride = val;
-  }
+  items[i].amtOverride = (val === '' || val === null) ? null : val;
   render();
 }
 
@@ -641,7 +777,6 @@ function amtBlur(i, val) {
   if (!rows[i]) return;
   var ai = rows[i].querySelector('.amt-input');
   if (val === '' || val === null || isNaN(parseFloat(val))) {
-    // Cleared — revert to auto
     items[i].amtOverride = null;
     var computed = autoAmt(items[i]);
     if (ai) ai.value = computed > 0 ? fmtMoney(computed) : '';
@@ -652,38 +787,88 @@ function amtBlur(i, val) {
   render();
 }
 
+// ===== PRESET ITEMS REGISTRY =====
+// These are ready-made item templates — add more here as needed
+var PRESET_ITEMS = {
+  'Gold Coin':     { desc: 'Gold Coin',     type: 'add', rateOverride: null },
+  'Silver Coin':   { desc: 'Silver Coin',   type: 'add', rateOverride: null },
+  'Gold Jewels':   { desc: 'Gold Jewels',   type: 'add', rateOverride: null },
+  'Silver Jewels': { desc: 'Silver Jewels', type: 'add', rateOverride: null },
+  'Necklace':      { desc: 'Necklace',      type: 'add', rateOverride: null },
+  'Jimikki':       { desc: 'Jimikki',       type: 'add', rateOverride: null },
+  'Old Jewels':    { desc: 'Old Jewels',    type: 'sub', rateOverride: null },
+  'Stone Weight':  { desc: 'Stone Weight',  type: 'sub', rateOverride: null }
+};
+
+function addPreset(name) {
+  var preset = PRESET_ITEMS[name];
+  if (!preset) return;
+  items.push({
+    desc: preset.desc,
+    gross: '',
+    type: preset.type,
+    rateOverride: preset.rateOverride,
+    amtOverride: null
+  });
+  renderItemsEditor();
+  render();
+  // Scroll to & focus the gross weight input of the new row
+  setTimeout(function() {
+    var rows = document.querySelectorAll('#items-tbody tr');
+    var lastRow = rows[rows.length - 1];
+    if (lastRow) {
+      var inp = lastRow.querySelectorAll('input')[1]; // gross wt is 2nd input
+      if (inp) { inp.focus(); inp.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    }
+  }, 50);
+}
+
 function renderItemsEditor() {
   var rate = getGoldRate();
   document.getElementById('rate-badge').textContent = 'Gold Rate: Rs.' + fmtMoney(rate) + ' / gram';
   var tbody = document.getElementById('items-tbody');
   tbody.innerHTML = items.map(function(it, i) {
+    var isAdd = it.type !== 'sub';
+    var eRate = effectiveRate(it);
+    var isRateCustom = it.rateOverride !== null && it.rateOverride !== '';
     var computed = autoAmt(it);
-    var dispAmt = it.amtOverride !== null && it.amtOverride !== ''
-      ? fmtMoney(parseFloat(it.amtOverride))
-      : (computed > 0 ? fmtMoney(computed) : '');
-    var isOverride = it.amtOverride !== null && it.amtOverride !== '';
-    var netWt = netGoldWt(it);
+    var isAmtOverride = it.amtOverride !== null && it.amtOverride !== '';
+    var dispAmt = isAmtOverride ? fmtMoney(parseFloat(it.amtOverride)) : (computed > 0 ? fmtMoney(computed) : '');
     return '<tr>'
       + '<td style="color:var(--g3);font-size:0.8rem;padding:4px 8px;text-align:center">' + (i+1) + '</td>'
-      + '<td><input value="' + esc(it.desc) + '" oninput="updateItem(' + i + ',\'desc\',this.value)"></td>'
-      + '<td><input type="number" step="0.001" value="' + (it.gross || '') + '" oninput="updateItem(' + i + ',\'gross\',this.value)" style="text-align:right" placeholder="0.000"></td>'
-      + '<td><input type="number" step="0.001" value="' + (it.deduct || '') + '" oninput="updateItem(' + i + ',\'deduct\',this.value)" style="text-align:right;background:rgba(255,100,100,0.08);border-color:rgba(255,150,100,0.3);color:#ffb89a" placeholder="0.000 (opt)"></td>'
-      + '<td><span class="rate-cell">Rs.' + fmtMoney(rate) + '/g</span></td>'
-      + '<td><input class="amt-input' + (isOverride ? ' amt-overridden' : '') + '" type="text" inputmode="decimal" value="' + dispAmt + '" '
+      // +/- toggle
+      + '<td style="padding:4px 4px">'
+        + '<div class="type-toggle">'
+          + '<button class="' + (isAdd ? 'active-add' : '') + '" onclick="setType(' + i + ',\'add\')" title="Add to total">+</button>'
+          + '<button class="' + (!isAdd ? 'active-sub' : '') + '" onclick="setType(' + i + ',\'sub\')" title="Subtract from total">−</button>'
+        + '</div>'
+      + '</td>'
+      + '<td><input value="' + esc(it.desc) + '" oninput="updateItem(' + i + ',\'desc\',this.value)" placeholder="Description"></td>'
+      + '<td><input type="number" step="0.001" value="' + (it.gross || '') + '" oninput="updateItem(' + i + ',\'gross\',this.value)" style="text-align:left" placeholder="0.000"></td>'
+      // Per-row rate — editable, defaults to global rate
+      + '<td><input class="rate-input' + (isRateCustom ? ' rate-custom' : '') + '" type="text" inputmode="decimal" '
+        + 'value="' + (isRateCustom ? fmtMoney(it.rateOverride) : '') + '" '
+        + 'placeholder="' + fmtMoney(rate) + '" '
+        + 'onfocus="rateFocus(' + i + ')" '
+        + 'oninput="rateInput(' + i + ',this.value)" '
+        + 'onblur="rateBlur(' + i + ',this.value)" '
+        + 'title="' + (isRateCustom ? 'Custom rate — clear to use global gold rate' : 'Using global gold rate') + '">'
+      + '</td>'
+      // Amount
+      + '<td><input class="amt-input' + (isAmtOverride ? ' amt-overridden' : '') + '" type="text" inputmode="decimal" value="' + dispAmt + '" '
         + 'onfocus="amtFocus(' + i + ')" '
         + 'oninput="amtInput(' + i + ',this.value)" '
         + 'onblur="amtBlur(' + i + ',this.value)" '
-        + 'title="' + (isOverride ? 'Manual override — clear to revert to auto' : 'Auto: Net Gold Wt (' + netWt.toFixed(3) + 'g) x Gold Rate') + '" '
+        + 'style="' + (!isAdd ? 'color:#ff9090' : '') + '" '
+        + 'title="' + (isAmtOverride ? 'Manual override — clear to revert to auto' : 'Auto: ' + (parseFloat(it.gross)||0).toFixed(3) + 'g × Rs.' + fmtMoney(eRate)) + '" '
         + 'placeholder="auto"></td>'
       + '<td style="text-align:center"><button class="btn btn-danger" onclick="removeItem(' + i + ')">X</button></td>'
       + '</tr>';
   }).join('');
 }
 
-function esc(s) { return (s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
-
 function addItem() {
-  items.push({ desc: '', gross: '', deduct: '', amtOverride: null });
+  items.push({ desc: '', gross: '', type: 'add', rateOverride: null, amtOverride: null });
   renderItemsEditor(); render();
 }
 function removeItem(i) {
@@ -717,7 +902,7 @@ function numToWords(n) {
   if(n>=100000){result+=h(Math.floor(n/100000))+'Lakh ';n%=100000;}
   if(n>=1000){result+=h(Math.floor(n/1000))+'Thousand ';n%=1000;}
   result+=h(n);
-  if(paisa>0) result+='and '+paisa+' Paise';
+  if(paisa>0) result+=' and '+paisa+' Paise';
   return result.trim()+' Only';
 }
 
@@ -732,115 +917,117 @@ function render() {
   var shopName=g('shop-name'), shopPhone=g('shop-phone'), shopAddr=g('shop-addr');
   var bankName=g('bank-name'), bankAcc=g('bank-acc'), bankIfsc=g('bank-ifsc');
 
-  var subtotal = items.reduce(function(s,it){ return s+calcAmt(it); }, 0);
-  var totalGross = items.reduce(function(s,it){ return s+(parseFloat(it.gross)||0); }, 0);
-  var totalDeduct = items.reduce(function(s,it){ return s+(parseFloat(it.deduct)||0); }, 0);
-  var totalNetGold = totalGross - totalDeduct; // net gold weight after all deductions
-  var cgstAmt = gstOn ? subtotal*cgstPct/100 : 0;
-  var sgstAmt = gstOn ? subtotal*sgstPct/100 : 0;
+  // Net total = sum of signed amounts
+  var subtotal = items.reduce(function(s, it) { return s + signedAmt(it); }, 0);
+  var totalAddWt = items.filter(function(it){ return it.type !== 'sub'; }).reduce(function(s,it){ return s+(parseFloat(it.gross)||0); }, 0);
+  var totalSubWt = items.filter(function(it){ return it.type === 'sub'; }).reduce(function(s,it){ return s+(parseFloat(it.gross)||0); }, 0);
+  var netGoldWt = totalAddWt - totalSubWt;
+
+  var cgstAmt = gstOn ? subtotal * cgstPct / 100 : 0;
+  var sgstAmt = gstOn ? subtotal * sgstPct / 100 : 0;
   var netTotal = subtotal + cgstAmt + sgstAmt;
 
-  var itemRows = items.map(function(it,i){
+  var itemRows = items.map(function(it, i) {
     var amt = calcAmt(it);
-    var nwt = netGoldWt(it);
-    var deductVal = parseFloat(it.deduct)||0;
-    return '<tr>'
-      +'<td>'+( i+1)+'</td>'
-      +'<td>'+(it.desc||'')+'</td>'
-      +'<td style="text-align:center">'+(it.gross ? parseFloat(it.gross).toFixed(3) : '')+'</td>'
-      +'<td style="text-align:center;color:#c0392b;font-size:0.78rem">'+(deductVal>0?'(-) '+deductVal.toFixed(3):'')+'</td>'
-      +'<td style="text-align:center;font-weight:600">'+nwt.toFixed(3)+'</td>'
-      +'<td style="text-align:center">Rs.'+fmtMoney(goldRate)+'</td>'
-      +'<td style="text-align:right">'+(amt>0?'Rs.'+fmtINR(amt):'')+'</td>'
-      +'</tr>';
+    var isSub = it.type === 'sub';
+    var eRate = effectiveRate(it);
+    var isCustomRate = it.rateOverride !== null && it.rateOverride !== '';
+    return '<tr' + (isSub ? ' style="background:rgba(220,60,60,0.04)"' : '') + '>'
+      + '<td>' + (i+1) + '</td>'
+      + '<td style="text-align:center">'
+        + '<span style="display:inline-block;padding:2px 7px;border-radius:3px;font-size:0.72rem;font-weight:700;'
+          + (isSub ? 'background:rgba(220,60,60,0.15);color:#c0392b' : 'background:rgba(50,160,70,0.12);color:#27ae60') + '">'
+          + (isSub ? '−' : '+') + '</span>'
+      + '</td>'
+      + '<td>' + (it.desc||'') + '</td>'
+      + '<td style="text-align:left">' + (it.gross ? parseFloat(it.gross).toFixed(3) : '') + '</td>'
+      + '<td style="text-align:center;font-size:0.78rem">'
+        + (isCustomRate
+          ? '<span style="color:#e67e22;font-weight:700">Rs.' + fmtMoney(eRate) + '</span>'
+          : 'Rs.' + fmtMoney(eRate))
+      + '</td>'
+      + '<td style="text-align:right;' + (isSub ? 'color:#c0392b' : '') + '">'
+        + (amt > 0 ? (isSub ? '(−) ' : '') + 'Rs.' + fmtINR(amt) : '')
+      + '</td>'
+      + '</tr>';
   }).join('');
 
-  var empties='';
-  for(var e=items.length;e<9;e++) empties+='<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>';
+  var empties = '';
+  for (var e = items.length; e < 9; e++) empties += '<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td></tr>';
 
   var gstRows = gstOn
-    ? '<tr class="gst-row"><td colspan="5"></td><td style="text-align:right">CGST '+cgstPct+'%</td><td style="text-align:right">Rs.'+fmtINR(cgstAmt)+'</td></tr>'
-      +'<tr class="gst-row"><td colspan="5"></td><td style="text-align:right">SGST '+sgstPct+'%</td><td style="text-align:right">Rs.'+fmtINR(sgstAmt)+'</td></tr>'
+    ? '<tr class="gst-row"><td colspan="4"></td><td style="text-align:right">CGST ' + cgstPct + '%</td><td style="text-align:right">Rs.' + fmtINR(cgstAmt) + '</td></tr>'
+      + '<tr class="gst-row"><td colspan="4"></td><td style="text-align:right">SGST ' + sgstPct + '%</td><td style="text-align:right">Rs.' + fmtINR(sgstAmt) + '</td></tr>'
     : '';
 
-  // Weight summary line for bottom of table
-  var wtSummary = '<tr style="background:rgba(218,165,32,0.06);font-size:0.75rem;">'
-    +'<td colspan="2" style="padding:5px 10px;color:var(--muted);font-style:italic">Weight Summary</td>'
-    +'<td style="text-align:center;color:var(--muted)">Gross: <strong style="color:var(--text)">'+parseFloat(totalGross).toFixed(3)+'g</strong></td>'
-    +'<td style="text-align:center;color:#c0392b">Deduction: <strong>'+parseFloat(totalDeduct).toFixed(3)+'g</strong></td>'
-    +'<td style="text-align:center;color:var(--g1)">Net Gold: <strong style="color:var(--g1)">'+parseFloat(totalNetGold).toFixed(3)+'g</strong></td>'
-    +'<td colspan="2"></td>'
-    +'</tr>';
+  // Weight summary — only shown if there are subtracted rows
+  var hasSub = items.some(function(it){ return it.type === 'sub'; });
+  var wtSummary = hasSub
+    ? '<tr style="background:rgba(218,165,32,0.05);font-size:0.74rem;">'
+        + '<td colspan="2" style="padding:5px 10px;color:var(--muted);font-style:italic">Weight Summary</td>'
+        + '<td style="text-align:center;color:var(--muted)">Gold: <strong style="color:var(--text)">' + parseFloat(totalAddWt).toFixed(3) + 'g</strong></td>'
+        + '<td style="text-align:center;color:#c0392b">Less: <strong>' + parseFloat(totalSubWt).toFixed(3) + 'g</strong></td>'
+        + '<td style="text-align:center;color:var(--g1)" colspan="2">Net Gold Wt: <strong>' + parseFloat(netGoldWt).toFixed(3) + 'g</strong></td>'
+      + '</tr>'
+    : '';
 
-  document.getElementById('bill').innerHTML=
+  document.getElementById('bill').innerHTML =
     '<div class="bill-header">'
-      +'<div style="font-size:0.7rem;color:var(--muted);letter-spacing:1px;line-height:2.2"><em>ANTIQUE &bull; GOLD &bull; SILVER</em><br><span style="font-size:0.6rem;letter-spacing:2px;color:#b8860b">BILL COPY</span></div>'
-      +'<div class="bill-logo">'
-        +'<div class="logo-circle">SG</div>'
-        +'<div class="brand-name">Antiques</div>'
-        +'<div class="brand-subtitle">Jewellery Manufacturers</div>'
-      +'</div>'
-      +'<div class="bis-badge">BIS<br>100% Hall Marked<br>Jewellery</div>'
-    +'</div>'
-    +'<div class="bill-top-meta">'
-      +'<span>GSTIN: '+gstin+'</span>'
-      +'<span>State Code: 33</span>'
-      +'<span>HSN Code: '+hsn+'</span>'
-    +'</div>'
-    +'<div class="bill-type-tag">Estimation Bill</div>'
-    +'<div class="bill-meta">'
-      +'<div class="meta-row"><span class="meta-label">Inv. No</span><span class="meta-value">: '+invNo+'</span></div>'
-      +'<div class="meta-row"><span class="meta-label">Gold Rate/'+carat+'ct</span><span class="meta-value">: Rs.'+fmtMoney(goldRate)+' /gram</span></div>'
-      +'<div class="meta-row"><span class="meta-label">Date</span><span class="meta-value">: '+invDate+'</span></div>'
-      +'<div></div>'
-      +'<div class="meta-row"><span class="meta-label">Customer Name</span><span class="meta-value">: '+custName+'</span></div>'
-      +'<div></div>'
-      +'<div class="meta-row" style="grid-column:span 2"><span class="meta-label">Address</span><span class="meta-value">: '+custAddr+'</span></div>'
-      +'<div class="meta-row"><span class="meta-label">PAN Card</span><span class="meta-value">: '+(custPan||'')+'</span></div>'
-      +'<div class="meta-row"><span class="meta-label">Customer GSTIN</span><span class="meta-value">: '+(custGstin||'')+'</span></div>'
-    +'</div>'
-    +'<table class="bill-table">'
-      +'<thead>'
-        +'<tr>'
-          +'<th style="width:36px">S.No</th>'
-          +'<th>Description</th>'
-          +'<th style="text-align:center">Gross Wt (g)</th>'
-          +'<th style="text-align:center;color:#e88">Deduction (g)</th>'
-          +'<th style="text-align:center">Net Gold Wt (g)</th>'
-          +'<th style="text-align:center">Gold Rate</th>'
-          +'<th style="text-align:right">Amount</th>'
-        +'</tr>'
-        +'<tr class="section-header"><td colspan="7">NEW JEWELS</td></tr>'
-      +'</thead>'
-      +'<tbody>'+itemRows+empties+'</tbody>'
-      +'<tfoot class="totals-section">'
+      + '<div style="font-size:0.7rem;color:var(--muted);letter-spacing:1px;line-height:2.2"><em>ANTIQUE &bull; GOLD &bull; SILVER</em><br><span style="font-size:0.6rem;letter-spacing:2px;color:#b8860b">BILL COPY</span></div>'
+      + '<div class="bill-logo"><div class="logo-circle">SG</div><div class="brand-name">Antiques</div><div class="brand-subtitle">Jewellery Manufacturers</div></div>'
+      + '<div class="bis-badge">BIS<br>100% Hall Marked<br>Jewellery</div>'
+    + '</div>'
+    + '<div class="bill-top-meta"><span>GSTIN: ' + gstin + '</span><span>State Code: 33</span><span>HSN Code: ' + hsn + '</span></div>'
+    + '<div class="bill-type-tag">Estimation Bill</div>'
+    + '<div class="bill-meta">'
+      + '<div class="meta-row"><span class="meta-label">Inv. No</span><span class="meta-value">: ' + invNo + '</span></div>'
+      + '<div class="meta-row"><span class="meta-label">Gold Rate/' + carat + 'ct</span><span class="meta-value">: Rs.' + fmtMoney(goldRate) + ' /gram</span></div>'
+      + '<div class="meta-row"><span class="meta-label">Date</span><span class="meta-value">: ' + invDate + '</span></div>'
+      + '<div></div>'
+      + '<div class="meta-row"><span class="meta-label">Customer Name</span><span class="meta-value">: ' + custName + '</span></div>'
+      + '<div></div>'
+      + '<div class="meta-row" style="grid-column:span 2"><span class="meta-label">Address</span><span class="meta-value">: ' + custAddr + '</span></div>'
+      + '<div class="meta-row"><span class="meta-label">PAN Card</span><span class="meta-value">: ' + (custPan||'') + '</span></div>'
+      + '<div class="meta-row"><span class="meta-label">Customer GSTIN</span><span class="meta-value">: ' + (custGstin||'') + '</span></div>'
+    + '</div>'
+    + '<table class="bill-table">'
+      + '<thead><tr>'
+        + '<th style="width:36px">S.No</th>'
+        + '<th style="width:36px;text-align:center">+/−</th>'
+        + '<th>Description</th>'
+        + '<th style="text-align:left">Weight (g)</th>'
+        + '<th style="text-align:center">Rate (Rs/g)</th>'
+        + '<th style="text-align:right">Amount</th>'
+      + '</tr>'
+      + '<tr class="section-header"><td colspan="6">NEW JEWELS</td></tr></thead>'
+      + '<tbody>' + itemRows + empties + '</tbody>'
+      + '<tfoot class="totals-section">'
         + wtSummary
-        +'<tr class="total-row">'
-          +'<td colspan="2"><strong>Total</strong></td>'
-          +'<td style="text-align:center"><strong>'+parseFloat(totalGross).toFixed(3)+' g</strong></td>'
-          +'<td style="text-align:center;color:#c0392b"><strong>'+(totalDeduct>0?'(-) '+parseFloat(totalDeduct).toFixed(3)+' g':'—')+'</strong></td>'
-          +'<td style="text-align:center;color:var(--g1)"><strong>'+parseFloat(totalNetGold).toFixed(3)+' g</strong></td>'
-          +'<td style="text-align:right"><strong>Subtotal</strong></td>'
-          +'<td style="text-align:right"><strong>Rs.'+fmtINR(subtotal)+'</strong></td>'
-        +'</tr>'
+        + '<tr class="total-row">'
+          + '<td colspan="2"></td>'
+          + '<td><strong>Total</strong></td>'
+          + '<td style="text-align:left"><strong>' + parseFloat(totalAddWt).toFixed(3) + 'g</strong>'
+            + (hasSub ? '<br><span style="font-size:0.72rem;color:#c0392b">Net: ' + parseFloat(netGoldWt).toFixed(3) + 'g</span>' : '')
+          + '</td>'
+          + '<td style="text-align:right"><strong>Subtotal</strong></td>'
+          + '<td style="text-align:right"><strong>Rs.' + fmtINR(subtotal) + '</strong></td>'
+        + '</tr>'
         + gstRows
-        +'<tr class="grand-total-row">'
-          +'<td colspan="3" style="font-size:0.72rem;opacity:0.75">'+(gstOn?'Incl. CGST '+cgstPct+'% + SGST '+sgstPct+'%':'GST Not Applicable')+'</td>'
-          +'<td colspan="2" style="font-size:0.72rem;opacity:0.75;text-align:center">Net Gold Wt: '+parseFloat(totalNetGold).toFixed(3)+' g</td>'
-          +'<td><strong>Net Total Rs.</strong></td>'
-          +'<td><strong>Rs.'+fmtINR(netTotal)+'</strong></td>'
-        +'</tr>'
-      +'</tfoot>'
-    +'</table>'
-    +'<div class="bill-footer">'
-      +'<div>'
-        +'<div style="margin-bottom:12px;font-style:italic;font-size:0.82rem;color:var(--muted)"><strong style="color:var(--text)">Amount in words:</strong> Rupees '+numToWords(netTotal)+'</div>'
-        +'<div class="bank-details"><strong>Account Details:</strong><br>Bank &amp; Branch: <strong>'+bankName+'</strong><br>Account No: <strong>'+bankAcc+'</strong><br>IFSC: <strong>'+bankIfsc+'</strong></div>'
-      +'</div>'
-      +'<div style="text-align:right;font-size:0.78rem;color:var(--muted);font-style:italic;align-self:flex-start">for '+shopName+'</div>'
-    +'</div>'
-    +'<div class="signature-row"><div class="sig-line">Receiver\'s Signature</div><div class="sig-line">Authorised Signature</div></div>'
-    +'<div class="bill-address">'+shopAddr+'<br>Ph: '+shopPhone+'<br>e-mail: anticjewels.cbe@gmail.com</div>';
+        + '<tr class="grand-total-row">'
+          + '<td colspan="5" style="text-align:right"><strong>Net Total Rs.</strong></td>'
+          + '<td><strong>Rs.' + fmtINR(netTotal) + '</strong></td>'
+        + '</tr>'
+      + '</tfoot>'
+    + '</table>'
+    + '<div class="bill-footer">'
+      + '<div>'
+        + '<div style="margin-bottom:12px;font-style:italic;font-size:0.82rem;color:var(--muted)"><strong style="color:var(--text)">Amount in words:</strong> Rupees ' + numToWords(netTotal) + '</div>'
+        + '<div class="bank-details"><strong>Account Details:</strong><br>Bank &amp; Branch: <strong>' + bankName + '</strong><br>Account No: <strong>' + bankAcc + '</strong><br>IFSC: <strong>' + bankIfsc + '</strong></div>'
+      + '</div>'
+      + '<div style="text-align:right;font-size:0.78rem;color:var(--muted);font-style:italic;align-self:flex-start">for ' + shopName + '</div>'
+    + '</div>'
+    + '<div class="signature-row"><div class="sig-line">Receiver\'s Signature</div><div class="sig-line">Authorised Signature</div></div>'
+    + '<div class="bill-address">' + shopAddr + '<br>Ph: ' + shopPhone + '<br>e-mail: anticjewels.cbe@gmail.com</div>';
 }
 
 async function downloadPDF() {

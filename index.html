@@ -382,7 +382,8 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
 .bill-table th:last-child, .bill-table td:last-child { text-align: right; }
 .bill-table th:nth-child(3), .bill-table td:nth-child(3),
 .bill-table th:nth-child(4), .bill-table td:nth-child(4),
-.bill-table th:nth-child(5), .bill-table td:nth-child(5) { text-align: center; }
+.bill-table th:nth-child(5), .bill-table td:nth-child(5),
+.bill-table th:nth-child(6), .bill-table td:nth-child(6) { text-align: center; }
 .bill-table td { padding: 7px 10px; border-bottom: 1px solid #edddb0; color: var(--text); }
 .bill-table tbody tr:nth-child(even) { background: rgba(218,165,32,0.04); }
 .section-header td {
@@ -521,10 +522,10 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
       <thead>
         <tr>
           <th style="width:36px">#</th>
-          <th style="width:190px">Description</th>
-          <th style="width:120px">Gross Wt (g)</th>
-          <th style="width:120px">Net Wt (g)</th>
-          <th style="width:120px">Gold Rate</th>
+          <th style="width:180px">Description</th>
+          <th style="width:110px">Gross Wt (g)</th>
+          <th style="width:120px">Deduction Wt (g)<br><span style="font-size:0.55rem;opacity:0.7;font-weight:400">stone/other wt to subtract</span></th>
+          <th style="width:100px">Gold Rate</th>
           <th style="width:150px">Amount (Rs.) — Editable</th>
           <th style="width:44px"></th>
         </tr>
@@ -550,7 +551,8 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
 
 <script>
 // amtOverride: null = auto-calc | number = manual override
-var items = [{ desc: 'COIN', gross: '500.000', net: '500.000', amtOverride: null }];
+// deduct: weight to subtract (stone wt etc.) — reduces net gold wt and auto amount
+var items = [{ desc: 'COIN', gross: '500.000', deduct: '', amtOverride: null }];
 
 function getGoldRate() { return parseFloat(document.getElementById('gold-rate').value) || 0; }
 
@@ -560,9 +562,15 @@ function fmtMoney(n) {
 }
 function fmtINR(n) { return Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 
+function netGoldWt(item) {
+  var gross = parseFloat(item.gross) || 0;
+  var deduct = parseFloat(item.deduct) || 0;
+  return Math.max(0, gross - deduct);
+}
+
 function autoAmt(item) {
-  // Always computed from gross x gold rate (ignores override)
-  return (parseFloat(item.gross) || 0) * getGoldRate();
+  // Net gold weight (gross minus deductions) x gold rate
+  return netGoldWt(item) * getGoldRate();
 }
 function calcAmt(item) {
   // Uses override if set, otherwise auto
@@ -588,11 +596,11 @@ function onGoldRateChange() {
   render();
 }
 
-// Called when description / gross / net changes
+// Called when description / gross / deduct changes
 function updateItem(i, field, val) {
   items[i][field] = val;
-  // If gross changes and no override, update the amount cell display
-  if (field === 'gross' && items[i].amtOverride === null) {
+  // If gross or deduct changes and no override, update the amount cell display
+  if ((field === 'gross' || field === 'deduct') && items[i].amtOverride === null) {
     var rows = document.querySelectorAll('#items-tbody tr');
     if (rows[i]) {
       var ai = rows[i].querySelector('.amt-input');
@@ -650,22 +658,22 @@ function renderItemsEditor() {
   var tbody = document.getElementById('items-tbody');
   tbody.innerHTML = items.map(function(it, i) {
     var computed = autoAmt(it);
-    // Display: override if set, else auto-calc — always formatted
     var dispAmt = it.amtOverride !== null && it.amtOverride !== ''
       ? fmtMoney(parseFloat(it.amtOverride))
       : (computed > 0 ? fmtMoney(computed) : '');
     var isOverride = it.amtOverride !== null && it.amtOverride !== '';
+    var netWt = netGoldWt(it);
     return '<tr>'
       + '<td style="color:var(--g3);font-size:0.8rem;padding:4px 8px;text-align:center">' + (i+1) + '</td>'
       + '<td><input value="' + esc(it.desc) + '" oninput="updateItem(' + i + ',\'desc\',this.value)"></td>'
-      + '<td><input type="number" step="0.001" value="' + (it.gross || '') + '" oninput="updateItem(' + i + ',\'gross\',this.value)" style="text-align:right"></td>'
-      + '<td><input type="number" step="0.001" value="' + (it.net || '') + '" oninput="updateItem(' + i + ',\'net\',this.value)" style="text-align:right"></td>'
+      + '<td><input type="number" step="0.001" value="' + (it.gross || '') + '" oninput="updateItem(' + i + ',\'gross\',this.value)" style="text-align:right" placeholder="0.000"></td>'
+      + '<td><input type="number" step="0.001" value="' + (it.deduct || '') + '" oninput="updateItem(' + i + ',\'deduct\',this.value)" style="text-align:right;background:rgba(255,100,100,0.08);border-color:rgba(255,150,100,0.3);color:#ffb89a" placeholder="0.000 (opt)"></td>'
       + '<td><span class="rate-cell">Rs.' + fmtMoney(rate) + '/g</span></td>'
       + '<td><input class="amt-input' + (isOverride ? ' amt-overridden' : '') + '" type="text" inputmode="decimal" value="' + dispAmt + '" '
         + 'onfocus="amtFocus(' + i + ')" '
         + 'oninput="amtInput(' + i + ',this.value)" '
         + 'onblur="amtBlur(' + i + ',this.value)" '
-        + 'title="' + (isOverride ? 'Manual override — clear to revert to auto' : 'Auto: Gross x Gold Rate') + '" '
+        + 'title="' + (isOverride ? 'Manual override — clear to revert to auto' : 'Auto: Net Gold Wt (' + netWt.toFixed(3) + 'g) x Gold Rate') + '" '
         + 'placeholder="auto"></td>'
       + '<td style="text-align:center"><button class="btn btn-danger" onclick="removeItem(' + i + ')">X</button></td>'
       + '</tr>';
@@ -675,7 +683,7 @@ function renderItemsEditor() {
 function esc(s) { return (s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
 
 function addItem() {
-  items.push({ desc: '', gross: '', net: '', amtOverride: null });
+  items.push({ desc: '', gross: '', deduct: '', amtOverride: null });
   renderItemsEditor(); render();
 }
 function removeItem(i) {
@@ -724,33 +732,45 @@ function render() {
   var shopName=g('shop-name'), shopPhone=g('shop-phone'), shopAddr=g('shop-addr');
   var bankName=g('bank-name'), bankAcc=g('bank-acc'), bankIfsc=g('bank-ifsc');
 
-  var subtotal=items.reduce(function(s,it){return s+calcAmt(it);},0);
-  var totalGross=items.reduce(function(s,it){return s+(parseFloat(it.gross)||0);},0);
-  var totalNet=items.reduce(function(s,it){return s+(parseFloat(it.net)||0);},0);
+  var subtotal = items.reduce(function(s,it){ return s+calcAmt(it); }, 0);
+  var totalGross = items.reduce(function(s,it){ return s+(parseFloat(it.gross)||0); }, 0);
+  var totalDeduct = items.reduce(function(s,it){ return s+(parseFloat(it.deduct)||0); }, 0);
+  var totalNetGold = totalGross - totalDeduct; // net gold weight after all deductions
   var cgstAmt = gstOn ? subtotal*cgstPct/100 : 0;
   var sgstAmt = gstOn ? subtotal*sgstPct/100 : 0;
-  var netTotal=subtotal+cgstAmt+sgstAmt;
+  var netTotal = subtotal + cgstAmt + sgstAmt;
 
-  var itemRows=items.map(function(it,i){
-    var amt=calcAmt(it);
+  var itemRows = items.map(function(it,i){
+    var amt = calcAmt(it);
+    var nwt = netGoldWt(it);
+    var deductVal = parseFloat(it.deduct)||0;
     return '<tr>'
       +'<td>'+( i+1)+'</td>'
       +'<td>'+(it.desc||'')+'</td>'
       +'<td style="text-align:center">'+(it.gross ? parseFloat(it.gross).toFixed(3) : '')+'</td>'
-      +'<td style="text-align:center">'+(it.net ? parseFloat(it.net).toFixed(3) : '')+'</td>'
+      +'<td style="text-align:center;color:#c0392b;font-size:0.78rem">'+(deductVal>0?'(-) '+deductVal.toFixed(3):'')+'</td>'
+      +'<td style="text-align:center;font-weight:600">'+nwt.toFixed(3)+'</td>'
       +'<td style="text-align:center">Rs.'+fmtMoney(goldRate)+'</td>'
       +'<td style="text-align:right">'+(amt>0?'Rs.'+fmtINR(amt):'')+'</td>'
       +'</tr>';
   }).join('');
 
   var empties='';
-  for(var e=items.length;e<9;e++) empties+='<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td></tr>';
+  for(var e=items.length;e<9;e++) empties+='<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>';
 
-  // GST rows — only show if GST is on
   var gstRows = gstOn
-    ? '<tr class="gst-row"><td colspan="4"></td><td style="text-align:right">CGST '+cgstPct+'%</td><td style="text-align:right">Rs.'+fmtINR(cgstAmt)+'</td></tr>'
-      +'<tr class="gst-row"><td colspan="4"></td><td style="text-align:right">SGST '+sgstPct+'%</td><td style="text-align:right">Rs.'+fmtINR(sgstAmt)+'</td></tr>'
+    ? '<tr class="gst-row"><td colspan="5"></td><td style="text-align:right">CGST '+cgstPct+'%</td><td style="text-align:right">Rs.'+fmtINR(cgstAmt)+'</td></tr>'
+      +'<tr class="gst-row"><td colspan="5"></td><td style="text-align:right">SGST '+sgstPct+'%</td><td style="text-align:right">Rs.'+fmtINR(sgstAmt)+'</td></tr>'
     : '';
+
+  // Weight summary line for bottom of table
+  var wtSummary = '<tr style="background:rgba(218,165,32,0.06);font-size:0.75rem;">'
+    +'<td colspan="2" style="padding:5px 10px;color:var(--muted);font-style:italic">Weight Summary</td>'
+    +'<td style="text-align:center;color:var(--muted)">Gross: <strong style="color:var(--text)">'+parseFloat(totalGross).toFixed(3)+'g</strong></td>'
+    +'<td style="text-align:center;color:#c0392b">Deduction: <strong>'+parseFloat(totalDeduct).toFixed(3)+'g</strong></td>'
+    +'<td style="text-align:center;color:var(--g1)">Net Gold: <strong style="color:var(--g1)">'+parseFloat(totalNetGold).toFixed(3)+'g</strong></td>'
+    +'<td colspan="2"></td>'
+    +'</tr>';
 
   document.getElementById('bill').innerHTML=
     '<div class="bill-header">'
@@ -782,25 +802,31 @@ function render() {
     +'<table class="bill-table">'
       +'<thead>'
         +'<tr>'
-          +'<th style="width:40px">S.No</th><th>Description</th>'
-          +'<th>Gross Weight (Grams)</th><th>Net Weight (Grams)</th>'
-          +'<th>Gold Rate</th><th>Amount</th>'
+          +'<th style="width:36px">S.No</th>'
+          +'<th>Description</th>'
+          +'<th style="text-align:center">Gross Wt (g)</th>'
+          +'<th style="text-align:center;color:#e88">Deduction (g)</th>'
+          +'<th style="text-align:center">Net Gold Wt (g)</th>'
+          +'<th style="text-align:center">Gold Rate</th>'
+          +'<th style="text-align:right">Amount</th>'
         +'</tr>'
-        +'<tr class="section-header"><td colspan="6">NEW JEWELS</td></tr>'
+        +'<tr class="section-header"><td colspan="7">NEW JEWELS</td></tr>'
       +'</thead>'
       +'<tbody>'+itemRows+empties+'</tbody>'
       +'<tfoot class="totals-section">'
+        + wtSummary
         +'<tr class="total-row">'
           +'<td colspan="2"><strong>Total</strong></td>'
           +'<td style="text-align:center"><strong>'+parseFloat(totalGross).toFixed(3)+' g</strong></td>'
-          +'<td style="text-align:center"><strong>'+parseFloat(totalNet).toFixed(3)+' g</strong></td>'
-          +'<td style="text-align:right"><strong>Total</strong></td>'
+          +'<td style="text-align:center;color:#c0392b"><strong>'+(totalDeduct>0?'(-) '+parseFloat(totalDeduct).toFixed(3)+' g':'—')+'</strong></td>'
+          +'<td style="text-align:center;color:var(--g1)"><strong>'+parseFloat(totalNetGold).toFixed(3)+' g</strong></td>'
+          +'<td style="text-align:right"><strong>Subtotal</strong></td>'
           +'<td style="text-align:right"><strong>Rs.'+fmtINR(subtotal)+'</strong></td>'
         +'</tr>'
         + gstRows
         +'<tr class="grand-total-row">'
-          +'<td colspan="2" style="font-size:0.72rem;opacity:0.7">'+(gstOn?'Incl. GST @'+(cgstPct+sgstPct)+'%':'GST Not Applicable')+'</td>'
-          +'<td colspan="2" style="font-size:0.72rem;opacity:0.7;text-align:center">Net Wt: '+parseFloat(totalNet).toFixed(3)+' g</td>'
+          +'<td colspan="3" style="font-size:0.72rem;opacity:0.75">'+(gstOn?'Incl. CGST '+cgstPct+'% + SGST '+sgstPct+'%':'GST Not Applicable')+'</td>'
+          +'<td colspan="2" style="font-size:0.72rem;opacity:0.75;text-align:center">Net Gold Wt: '+parseFloat(totalNetGold).toFixed(3)+' g</td>'
           +'<td><strong>Net Total Rs.</strong></td>'
           +'<td><strong>Rs.'+fmtINR(netTotal)+'</strong></td>'
         +'</tr>'

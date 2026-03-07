@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SG Antiques – Bill Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Cormorant+Garamond:wght@400;500;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root {
+  --g1: #b8860b;
+  --g2: #daa520;
+  --g3: #f5d060;
+  --g4: #fff8e7;
+  --g5: #3d2a00;
+  --g6: #6b4c00;
+  --gbg: #1a1000;
+  --gbg2: #241700;
+  --gbg3: #2e1e00;
+  --gtext: #fff3cc;
+  --gmuted: #c8a840;
+  --cream: #fffdf5;
+  --border: #c8960a;
+  --text: #1a0e00;
+  --muted: #7a5800;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { overflow-y: auto; height: auto; }
+body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1000 0%, #2e1e00 50%, #1a1000 100%); color: var(--text); min-height: 100vh; }
+
+/* ===== EDITOR ===== */
+#editor {
+  background: linear-gradient(180deg, #0d0800 0%, var(--gbg2) 100%);
+  color: var(--gtext);
+  padding: 28px 32px;
+  border-bottom: 2px solid var(--g2);
+  box-shadow: 0 4px 32px rgba(0,0,0,0.6);
+}
+#editor h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  color: var(--g3);
+  margin-bottom: 20px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+#editor h2::before, #editor h2::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--g2), transparent);
+}
+.editor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 12px 18px;
+}
+.field-group { display: flex; flex-direction: column; gap: 5px; }
+.field-group label {
+  font-size: 0.65rem;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: var(--gmuted);
+  font-weight: 700;
+}
+.field-group input, .field-group select {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(200,152,10,0.3);
+  border-radius: 4px;
+  color: var(--gtext);
+  font-family: 'Lato', sans-serif;
+  font-size: 0.85rem;
+  padding: 7px 11px;
+  transition: all 0.2s;
+  width: 100%;
+}
+.field-group input:focus, .field-group select:focus {
+  outline: none;
+  border-color: var(--g2);
+  background: rgba(255,220,50,0.07);
+  box-shadow: 0 0 0 2px rgba(218,165,32,0.2);
+}
+.field-group select option { background: #1a1000; color: var(--gtext); }
+/* Gold rate special */
+#gold-rate {
+  background: rgba(218,165,32,0.15) !important;
+  border: 2px solid var(--g2) !important;
+  color: var(--g3) !important;
+  font-weight: 700 !important;
+  font-size: 1.05rem !important;
+  box-shadow: 0 0 12px rgba(218,165,32,0.2) !important;
+}
+
+/* ===== ITEMS EDITOR ===== */
+#items-editor {
+  background: linear-gradient(180deg, var(--gbg2) 0%, var(--gbg3) 100%);
+  padding: 20px 32px 24px;
+  border-bottom: 2px solid var(--g2);
+}
+.items-editor-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+#items-editor h3 {
+  font-family: 'Playfair Display', serif;
+  color: var(--g3);
+  font-size: 0.95rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+.rate-badge {
+  background: linear-gradient(135deg, rgba(218,165,32,0.2), rgba(184,134,11,0.1));
+  border: 1px solid var(--g2);
+  border-radius: 20px;
+  padding: 5px 16px;
+  font-size: 0.78rem;
+  color: var(--g3);
+  font-weight: 700;
+  letter-spacing: 1px;
+  box-shadow: 0 0 8px rgba(218,165,32,0.15);
+}
+.items-table-wrap { overflow-x: auto; }
+.items-table-editor { width: 100%; border-collapse: collapse; min-width: 700px; }
+.items-table-editor thead tr {
+  background: linear-gradient(90deg, rgba(218,165,32,0.15), rgba(184,134,11,0.1), rgba(218,165,32,0.15));
+  border-bottom: 1px solid rgba(218,165,32,0.4);
+}
+.items-table-editor th {
+  font-size: 0.62rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--g2);
+  padding: 8px 8px;
+  text-align: left;
+  white-space: nowrap;
+}
+.items-table-editor td { padding: 4px 4px; vertical-align: middle; }
+.items-table-editor tbody tr:nth-child(even) { background: rgba(255,220,50,0.03); }
+.items-table-editor input {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(200,152,10,0.25);
+  border-radius: 3px;
+  color: var(--gtext);
+  font-family: 'Lato', sans-serif;
+  font-size: 0.82rem;
+  padding: 6px 8px;
+  width: 100%;
+  transition: all 0.15s;
+}
+.items-table-editor input:focus {
+  outline: none;
+  border-color: var(--g2);
+  background: rgba(255,220,50,0.07);
+}
+/* Editable amount — slightly distinct */
+.items-table-editor input.amt-input {
+  background: rgba(218,165,32,0.1);
+  border-color: rgba(218,165,32,0.4);
+  color: var(--g3);
+  font-weight: 700;
+  text-align: right;
+}
+.items-table-editor input.amt-input:focus {
+  background: rgba(218,165,32,0.18);
+  border-color: var(--g2);
+}
+.rate-cell {
+  color: rgba(218,165,32,0.65);
+  font-size: 0.78rem;
+  padding: 6px 8px;
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 4px;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-gold {
+  background: linear-gradient(135deg, var(--g2), var(--g1), var(--g2));
+  background-size: 200% auto;
+  color: #0d0800;
+  box-shadow: 0 2px 12px rgba(218,165,32,0.4);
+}
+.btn-gold:hover { background-position: right center; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(218,165,32,0.5); }
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--g2);
+  color: var(--g2);
+}
+.btn-outline:hover { background: rgba(218,165,32,0.12); }
+.btn-danger {
+  background: rgba(180,40,40,0.2);
+  border: 1px solid rgba(200,80,80,0.35);
+  color: #f88;
+  font-size: 0.72rem;
+  padding: 5px 10px;
+  letter-spacing: 0;
+}
+.btn-danger:hover { background: rgba(180,40,40,0.4); }
+.editor-actions { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; align-items: center; }
+
+/* ===== FLOATING ACTIONS (bottom right) ===== */
+#fab-actions {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 999;
+}
+#fab-actions .btn {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  border-radius: 6px;
+  white-space: nowrap;
+  font-size: 0.76rem;
+}
+
+/* ===== BILL PREVIEW ===== */
+#preview-wrap {
+  padding: 32px 24px 100px;
+  display: flex;
+  justify-content: center;
+}
+#bill {
+  background: var(--cream);
+  width: 800px;
+  max-width: 100%;
+  padding: 36px 42px;
+  box-shadow: 0 0 0 1px var(--border), 0 12px 60px rgba(0,0,0,0.5), inset 0 0 80px rgba(218,165,32,0.03);
+  border: 3px double var(--border);
+  position: relative;
+  border-radius: 2px;
+}
+#bill::before {
+  content: 'BILL COPY';
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%) rotate(-35deg);
+  font-family: 'Playfair Display', serif;
+  font-size: 5rem; font-weight: 700;
+  color: rgba(200,152,10,0.05);
+  white-space: nowrap; pointer-events: none; letter-spacing: 10px;
+}
+/* Decorative corner lines */
+#bill::after {
+  content: '';
+  position: absolute; inset: 8px;
+  border: 1px solid rgba(200,152,10,0.15);
+  pointer-events: none;
+}
+.bill-header {
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 2px solid var(--g1);
+  padding-bottom: 16px; margin-bottom: 12px;
+}
+.bill-logo { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.logo-circle {
+  width: 76px; height: 76px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--g2), var(--g1));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem; font-weight: 700; color: white;
+  border: 3px solid var(--g3);
+  box-shadow: 0 0 16px rgba(218,165,32,0.4);
+}
+.brand-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem; color: var(--text);
+  letter-spacing: 4px; text-transform: uppercase;
+  background: linear-gradient(135deg, var(--g1), var(--g2), var(--g1));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.brand-subtitle {
+  font-size: 0.68rem; letter-spacing: 4px;
+  text-transform: uppercase; color: var(--muted);
+}
+.bis-badge {
+  background: linear-gradient(135deg, var(--g2), var(--g1));
+  color: white; border-radius: 6px; padding: 8px 14px;
+  text-align: center; font-size: 0.65rem; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase; line-height: 1.7;
+  box-shadow: 0 2px 8px rgba(218,165,32,0.3);
+}
+.bill-top-meta {
+  display: flex; justify-content: space-between;
+  font-size: 0.72rem; margin-bottom: 10px;
+  color: var(--muted); letter-spacing: 1px;
+  text-transform: uppercase; font-weight: 700;
+  padding: 5px 0; border-bottom: 1px dotted rgba(200,152,10,0.3);
+}
+.bill-type-tag {
+  text-align: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.2rem; font-weight: 700;
+  color: var(--g1);
+  border: 1.5px solid rgba(200,152,10,0.3);
+  padding: 6px 0; margin-bottom: 14px;
+  letter-spacing: 5px; text-transform: uppercase;
+  background: linear-gradient(135deg, rgba(218,165,32,0.05), transparent);
+}
+.bill-meta {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 5px 24px; margin-bottom: 14px; font-size: 0.82rem;
+}
+.meta-row { display: flex; gap: 6px; }
+.meta-label { color: var(--muted); font-weight: 700; min-width: 130px; }
+.meta-value { color: var(--text); }
+.bill-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+.bill-table th {
+  background: linear-gradient(135deg, var(--g5), var(--g6));
+  color: var(--g3);
+  padding: 9px 10px; text-align: left;
+  font-weight: 700; letter-spacing: 1px; text-transform: uppercase; font-size: 0.7rem;
+}
+.bill-table th:last-child, .bill-table td:last-child { text-align: right; }
+.bill-table th:nth-child(3), .bill-table td:nth-child(3),
+.bill-table th:nth-child(4), .bill-table td:nth-child(4),
+.bill-table th:nth-child(5), .bill-table td:nth-child(5) { text-align: center; }
+.bill-table td { padding: 7px 10px; border-bottom: 1px solid #edddb0; color: var(--text); }
+.bill-table tbody tr:nth-child(even) { background: rgba(218,165,32,0.04); }
+.section-header td {
+  background: linear-gradient(90deg, rgba(218,165,32,0.12), rgba(218,165,32,0.06));
+  font-weight: 700; font-size: 0.7rem; letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--g1); padding: 5px 10px; border-bottom: none;
+}
+.totals-section { border-top: 2px solid var(--g1); }
+.totals-section td { font-weight: 700; border-bottom: none; }
+.total-row td { background: rgba(218,165,32,0.07); }
+.grand-total-row td {
+  background: linear-gradient(135deg, var(--g5), var(--g6));
+  color: var(--g3);
+  font-family: 'Playfair Display', serif; font-size: 1rem; padding: 11px 10px;
+}
+.gst-row td:first-child { padding-left: 30px; font-size: 0.78rem; color: var(--muted); }
+.bill-footer {
+  margin-top: 20px; border-top: 1px solid rgba(200,152,10,0.3);
+  padding-top: 16px; display: grid; grid-template-columns: 1fr auto;
+  gap: 20px; font-size: 0.8rem;
+}
+.bank-details { color: var(--muted); line-height: 1.8; }
+.bank-details strong { color: var(--text); }
+.signature-row {
+  display: flex; justify-content: space-between;
+  margin-top: 44px; font-size: 0.72rem; color: var(--muted); letter-spacing: 1px;
+}
+.sig-line { border-top: 1px solid rgba(200,152,10,0.4); padding-top: 6px; min-width: 140px; text-align: center; text-transform: uppercase; }
+.bill-address { text-align: center; margin-top: 20px; padding-top: 12px; border-top: 1px solid rgba(200,152,10,0.2); font-size: 0.71rem; color: var(--muted); line-height: 1.9; }
+@media print { #editor, #items-editor, #fab-actions { display: none; } }
+</style>
+</head>
+<body>
+
+<!-- ===== EDITOR ===== -->
+<div id="editor">
+  <h2>Bill Details</h2>
+  <div class="editor-grid">
+    <div class="field-group">
+      <label>Invoice No</label>
+      <input id="inv-no" value="625" oninput="render()">
+    </div>
+    <div class="field-group">
+      <label>Date</label>
+      <input id="inv-date" type="date" value="2026-03-07" oninput="render()">
+    </div>
+    <div class="field-group">
+      <label>&#9733; Gold Rate (Rs/gram)</label>
+      <input id="gold-rate" type="number" value="8000.00" step="0.01" oninput="onGoldRateChange()">
+    </div>
+    <div class="field-group">
+      <label>Carat</label>
+      <input id="carat" value="22" oninput="render()">
+    </div>
+    <div class="field-group" style="grid-column:span 2">
+      <label>Customer Name</label>
+      <input id="cust-name" value="Suman Jewellers" oninput="render()">
+    </div>
+    <div class="field-group" style="grid-column:span 2">
+      <label>Customer Address</label>
+      <input id="cust-addr" value="25, 11th Cross Street, Tatabad, Coimbatore" oninput="render()">
+    </div>
+    <div class="field-group">
+      <label>Customer PAN Card</label>
+      <input id="cust-pan" value="" oninput="render()">
+    </div>
+    <div class="field-group">
+      <label>Customer GSTIN</label>
+      <input id="cust-gstin" value="" oninput="render()">
+    </div>
+    <div class="field-group">
+      <label>GSTIN (Seller)</label>
+      <input id="gstin" value="33DUSPS7454F1Z0" oninput="render()">
+    </div>
+    <div class="field-group">
+      <label>HSN Code</label>
+      <input id="hsn" value="7113" oninput="render()">
+    </div>
+    <div class="field-group">
+      <label>CGST %</label>
+      <input id="cgst" type="number" value="1.5" step="0.01" oninput="render()">
+    </div>
+    <div class="field-group">
+      <label>SGST %</label>
+      <input id="sgst" type="number" value="1.5" step="0.01" oninput="render()">
+    </div>
+    <div class="field-group">
+      <label>Shop Name</label>
+      <input id="shop-name" value="SG Antiques Jewellery" oninput="render()">
+    </div>
+    <div class="field-group">
+      <label>Shop Phone</label>
+      <input id="shop-phone" value="9865031824, 0422-2341991" oninput="render()">
+    </div>
+    <div class="field-group" style="grid-column:span 2">
+      <label>Shop Address</label>
+      <input id="shop-addr" value="22B, Raj Nagar, Selvapuram, Coimbatore - 641026" oninput="render()">
+    </div>
+    <div class="field-group" style="grid-column:span 2">
+      <label>Bank Name and Branch</label>
+      <input id="bank-name" value="Axis Bank, Town Hall" oninput="render()">
+    </div>
+    <div class="field-group">
+      <label>Account Number</label>
+      <input id="bank-acc" value="918020021078772" oninput="render()">
+    </div>
+    <div class="field-group">
+      <label>IFSC Code</label>
+      <input id="bank-ifsc" value="UTIB0001919" oninput="render()">
+    </div>
+  </div>
+  <div class="editor-actions">
+    <button class="btn btn-gold" onclick="downloadPDF()">&#8659; Download PDF</button>
+    <button class="btn btn-outline" onclick="window.print()">&#128438; Print</button>
+  </div>
+</div>
+
+<!-- ===== ITEMS EDITOR ===== -->
+<div id="items-editor">
+  <div class="items-editor-top">
+    <h3>Line Items</h3>
+    <span class="rate-badge" id="rate-badge">Gold Rate: Rs.8,000.00 / gram</span>
+  </div>
+  <div class="items-table-wrap">
+    <table class="items-table-editor">
+      <thead>
+        <tr>
+          <th style="width:36px">#</th>
+          <th style="width:190px">Description</th>
+          <th style="width:120px">Gross Wt (g)</th>
+          <th style="width:120px">Net Wt (g)</th>
+          <th style="width:120px">Gold Rate</th>
+          <th style="width:150px">Amount (Rs.) — Editable</th>
+          <th style="width:44px"></th>
+        </tr>
+      </thead>
+      <tbody id="items-tbody"></tbody>
+    </table>
+  </div>
+  <div class="editor-actions" style="margin-top:12px">
+    <button class="btn btn-outline" onclick="addItem()">+ Add Row</button>
+  </div>
+</div>
+
+<!-- ===== BILL PREVIEW ===== -->
+<div id="preview-wrap">
+  <div id="bill"></div>
+</div>
+
+<!-- ===== FLOATING ACTION BUTTONS ===== -->
+<div id="fab-actions">
+  <button class="btn btn-gold" onclick="downloadPDF()">&#8659; Download PDF</button>
+  <button class="btn btn-outline" style="background:rgba(0,0,0,0.7);backdrop-filter:blur(8px)" onclick="window.print()">&#128438; Print</button>
+</div>
+
+<script>
+var items = [{ desc: 'COIN', gross: '500.000', net: '500.000', amtOverride: null }];
+
+function getGoldRate() { return parseFloat(document.getElementById('gold-rate').value) || 0; }
+
+// Format with paise (2 decimal places)
+function fmtMoney(n) {
+  var num = parseFloat(n) || 0;
+  return num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+// Format weight to 3 decimal places
+function fmtWeight(n) {
+  var num = parseFloat(n) || 0;
+  if (num === 0) return '';
+  return num.toFixed(3);
+}
+
+function fmtINR(n) { return Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+
+function calcAmt(item) {
+  if (item.amtOverride !== null && item.amtOverride !== '') return parseFloat(item.amtOverride) || 0;
+  return (parseFloat(item.gross) || 0) * getGoldRate();
+}
+
+function onGoldRateChange() {
+  var rate = getGoldRate();
+  document.getElementById('rate-badge').textContent = 'Gold Rate: Rs.' + fmtMoney(rate) + ' / gram';
+  // Update rate cells and recalc amounts (only if no override)
+  var rows = document.querySelectorAll('#items-tbody tr');
+  rows.forEach(function(row, i) {
+    var rc = row.querySelector('.rate-cell');
+    var ai = row.querySelector('.amt-input');
+    if (rc) rc.textContent = 'Rs.' + fmtMoney(rate) + '/g';
+    if (ai && items[i] && items[i].amtOverride === null) {
+      var gross = parseFloat(items[i].gross) || 0;
+      ai.value = gross > 0 ? fmtMoney(gross * rate) : '';
+    }
+  });
+  render();
+}
+
+function updateItem(i, field, val) {
+  items[i][field] = val;
+  if (field === 'gross' && items[i].amtOverride === null) {
+    var rows = document.querySelectorAll('#items-tbody tr');
+    if (rows[i]) {
+      var ai = rows[i].querySelector('.amt-input');
+      if (ai) {
+        var gross = parseFloat(val) || 0;
+        var rate = getGoldRate();
+        ai.value = gross > 0 ? fmtMoney(gross * rate) : '';
+      }
+    }
+  }
+  render();
+}
+
+function updateAmt(i, val) {
+  // If user clears the amount, revert to auto-calc
+  if (val === '' || val === null) {
+    items[i].amtOverride = null;
+  } else {
+    items[i].amtOverride = val;
+  }
+  render();
+}
+
+function renderItemsEditor() {
+  var rate = getGoldRate();
+  document.getElementById('rate-badge').textContent = 'Gold Rate: Rs.' + fmtMoney(rate) + ' / gram';
+  var tbody = document.getElementById('items-tbody');
+  tbody.innerHTML = items.map(function(it, i) {
+    var gross = parseFloat(it.gross) || 0;
+    var autoAmt = gross > 0 ? fmtMoney(gross * rate) : '';
+    var dispAmt = it.amtOverride !== null && it.amtOverride !== '' ? it.amtOverride : autoAmt;
+    return '<tr>'
+      + '<td style="color:var(--g3);font-size:0.8rem;padding:4px 8px;text-align:center">' + (i+1) + '</td>'
+      + '<td><input value="' + esc(it.desc) + '" oninput="updateItem(' + i + ',\'desc\',this.value)"></td>'
+      + '<td><input type="number" step="0.001" value="' + (it.gross || '') + '" oninput="updateItem(' + i + ',\'gross\',this.value)" style="text-align:right"></td>'
+      + '<td><input type="number" step="0.001" value="' + (it.net || '') + '" oninput="updateItem(' + i + ',\'net\',this.value)" style="text-align:right"></td>'
+      + '<td><span class="rate-cell">Rs.' + fmtMoney(rate) + '/g</span></td>'
+      + '<td><input class="amt-input" type="number" step="0.01" value="' + dispAmt + '" '
+        + 'oninput="updateAmt(' + i + ',this.value)" '
+        + 'onblur="if(this.value===\'\'){items[' + i + '].amtOverride=null;renderItemsEditor();render();}" '
+        + 'placeholder="auto"></td>'
+      + '<td style="text-align:center"><button class="btn btn-danger" onclick="removeItem(' + i + ')">X</button></td>'
+      + '</tr>';
+  }).join('');
+}
+
+function esc(s) { return (s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+function addItem() {
+  items.push({ desc: '', gross: '', net: '', amtOverride: null });
+  renderItemsEditor(); render();
+}
+function removeItem(i) {
+  items.splice(i, 1);
+  renderItemsEditor(); render();
+}
+
+function g(id) { var el = document.getElementById(id); return el ? el.value : ''; }
+
+function fmtDate(d) {
+  if (!d) return '';
+  var p = d.split('-');
+  return p[2] + '.' + p[1] + '.' + p[0];
+}
+
+function numToWords(n) {
+  var ones=['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten',
+    'Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
+  var tensW=['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+  function h(num) {
+    if(num===0) return '';
+    if(num<20) return ones[num]+' ';
+    if(num<100) return tensW[Math.floor(num/10)]+(num%10?' '+ones[num%10]:'')+' ';
+    return ones[Math.floor(num/100)]+' Hundred '+h(num%100);
+  }
+  var paisa = Math.round((n % 1) * 100);
+  n = Math.floor(n);
+  if(n===0 && paisa===0) return 'Zero';
+  var result='';
+  if(n>=10000000){result+=h(Math.floor(n/10000000))+'Crore ';n%=10000000;}
+  if(n>=100000){result+=h(Math.floor(n/100000))+'Lakh ';n%=100000;}
+  if(n>=1000){result+=h(Math.floor(n/1000))+'Thousand ';n%=1000;}
+  result+=h(n);
+  if(paisa>0) result+='and '+paisa+' Paise';
+  return result.trim()+' Only';
+}
+
+function render() {
+  var invNo=g('inv-no'), invDate=fmtDate(g('inv-date')), goldRate=getGoldRate();
+  var carat=g('carat'), custName=g('cust-name'), custAddr=g('cust-addr');
+  var custPan=g('cust-pan'), custGstin=g('cust-gstin');
+  var gstin=g('gstin'), hsn=g('hsn');
+  var cgstPct=parseFloat(g('cgst'))||0, sgstPct=parseFloat(g('sgst'))||0;
+  var shopName=g('shop-name'), shopPhone=g('shop-phone'), shopAddr=g('shop-addr');
+  var bankName=g('bank-name'), bankAcc=g('bank-acc'), bankIfsc=g('bank-ifsc');
+
+  var subtotal=items.reduce(function(s,it){return s+calcAmt(it);},0);
+  var totalGross=items.reduce(function(s,it){return s+(parseFloat(it.gross)||0);},0);
+  var totalNet=items.reduce(function(s,it){return s+(parseFloat(it.net)||0);},0);
+  var cgstAmt=subtotal*cgstPct/100, sgstAmt=subtotal*sgstPct/100;
+  var netTotal=subtotal+cgstAmt+sgstAmt;
+
+  var itemRows=items.map(function(it,i){
+    var amt=calcAmt(it);
+    return '<tr>'
+      +'<td>'+( i+1)+'</td>'
+      +'<td>'+(it.desc||'')+'</td>'
+      +'<td style="text-align:center">'+(it.gross ? parseFloat(it.gross).toFixed(3) : '')+'</td>'
+      +'<td style="text-align:center">'+(it.net ? parseFloat(it.net).toFixed(3) : '')+'</td>'
+      +'<td style="text-align:center">Rs.'+fmtMoney(goldRate)+'</td>'
+      +'<td style="text-align:right">'+(amt>0?'Rs.'+fmtINR(amt):'')+'</td>'
+      +'</tr>';
+  }).join('');
+
+  var empties='';
+  for(var e=items.length;e<9;e++) empties+='<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td></tr>';
+
+  document.getElementById('bill').innerHTML=
+    '<div class="bill-header">'
+      +'<div style="font-size:0.7rem;color:var(--muted);letter-spacing:1px;line-height:2.2"><em>ANTIQUE &bull; GOLD &bull; SILVER</em><br><span style="font-size:0.6rem;letter-spacing:2px;color:#b8860b">BILL COPY</span></div>'
+      +'<div class="bill-logo">'
+        +'<div class="logo-circle">SG</div>'
+        +'<div class="brand-name">Antiques</div>'
+        +'<div class="brand-subtitle">Jewellery Manufacturers</div>'
+      +'</div>'
+      +'<div class="bis-badge">BIS<br>100% Hall Marked<br>Jewellery</div>'
+    +'</div>'
+    +'<div class="bill-top-meta">'
+      +'<span>GSTIN: '+gstin+'</span>'
+      +'<span>State Code: 33</span>'
+      +'<span>HSN Code: '+hsn+'</span>'
+    +'</div>'
+    +'<div class="bill-type-tag">Estimation Bill</div>'
+    +'<div class="bill-meta">'
+      +'<div class="meta-row"><span class="meta-label">Inv. No</span><span class="meta-value">: '+invNo+'</span></div>'
+      +'<div class="meta-row"><span class="meta-label">Gold Rate/'+carat+'ct</span><span class="meta-value">: Rs.'+fmtMoney(goldRate)+' /gram</span></div>'
+      +'<div class="meta-row"><span class="meta-label">Date</span><span class="meta-value">: '+invDate+'</span></div>'
+      +'<div></div>'
+      +'<div class="meta-row"><span class="meta-label">Customer Name</span><span class="meta-value">: '+custName+'</span></div>'
+      +'<div></div>'
+      +'<div class="meta-row" style="grid-column:span 2"><span class="meta-label">Address</span><span class="meta-value">: '+custAddr+'</span></div>'
+      +'<div class="meta-row"><span class="meta-label">PAN Card</span><span class="meta-value">: '+(custPan||'')+'</span></div>'
+      +'<div class="meta-row"><span class="meta-label">Customer GSTIN</span><span class="meta-value">: '+(custGstin||'')+'</span></div>'
+    +'</div>'
+    +'<table class="bill-table">'
+      +'<thead>'
+        +'<tr>'
+          +'<th style="width:40px">S.No</th><th>Description</th>'
+          +'<th>Gross Weight (Grams)</th><th>Net Weight (Grams)</th>'
+          +'<th>Gold Rate</th><th>Amount</th>'
+        +'</tr>'
+        +'<tr class="section-header"><td colspan="6">NEW JEWELS</td></tr>'
+      +'</thead>'
+      +'<tbody>'+itemRows+empties+'</tbody>'
+      +'<tfoot class="totals-section">'
+        +'<tr class="total-row"><td colspan="2"><strong>Total</strong></td><td style="text-align:center"><strong>'+parseFloat(totalGross).toFixed(3)+'</strong></td><td style="text-align:center"><strong>'+parseFloat(totalNet).toFixed(3)+'</strong></td><td style="text-align:right"><strong>Total</strong></td><td style="text-align:right"><strong>Rs.'+fmtINR(subtotal)+'</strong></td></tr>'
+        +'<tr class="gst-row"><td colspan="4"></td><td style="text-align:right">CGST '+cgstPct+'%</td><td style="text-align:right">Rs.'+fmtINR(cgstAmt)+'</td></tr>'
+        +'<tr class="gst-row"><td colspan="4"></td><td style="text-align:right">SGST '+sgstPct+'%</td><td style="text-align:right">Rs.'+fmtINR(sgstAmt)+'</td></tr>'
+        +'<tr class="grand-total-row"><td colspan="4"></td><td><strong>Net Total Rs.</strong></td><td><strong>Rs.'+fmtINR(netTotal)+'</strong></td></tr>'
+      +'</tfoot>'
+    +'</table>'
+    +'<div class="bill-footer">'
+      +'<div>'
+        +'<div style="margin-bottom:12px;font-style:italic;font-size:0.82rem;color:var(--muted)"><strong style="color:var(--text)">Amount in words:</strong> Rupees '+numToWords(netTotal)+'</div>'
+        +'<div class="bank-details"><strong>Account Details:</strong><br>Bank &amp; Branch: <strong>'+bankName+'</strong><br>Account No: <strong>'+bankAcc+'</strong><br>IFSC: <strong>'+bankIfsc+'</strong></div>'
+      +'</div>'
+      +'<div style="text-align:right;font-size:0.78rem;color:var(--muted);font-style:italic;align-self:flex-start">for '+shopName+'</div>'
+    +'</div>'
+    +'<div class="signature-row"><div class="sig-line">Receiver\'s Signature</div><div class="sig-line">Authorised Signature</div></div>'
+    +'<div class="bill-address">'+shopAddr+'<br>Ph: '+shopPhone+'<br>e-mail: anticjewels.cbe@gmail.com</div>';
+}
+
+async function downloadPDF() {
+  var btn = event.target;
+  var orig = btn.textContent;
+  btn.textContent = 'Generating...';
+  btn.disabled = true;
+  try {
+    var bill = document.getElementById('bill');
+    var canvas = await html2canvas(bill, { scale: 2, useCORS: true, backgroundColor: '#fffdf5' });
+    var jsPDF = window.jspdf.jsPDF;
+    var pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    var imgData = canvas.toDataURL('image/png');
+    var pdfW = pdf.internal.pageSize.getWidth();
+    var pdfH = (canvas.height * pdfW) / canvas.width;
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfW, pdfH);
+    var invNo = document.getElementById('inv-no').value || 'bill';
+    var cn = document.getElementById('cust-name').value.replace(/\s+/g,'_') || 'customer';
+    pdf.save('Invoice_' + invNo + '_' + cn + '.pdf');
+  } catch(e) { alert('PDF generation failed: ' + e.message); }
+  btn.textContent = orig;
+  btn.disabled = false;
+}
+
+renderItemsEditor();
+render();
+</script>
+</body>
+</html>

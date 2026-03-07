@@ -473,6 +473,58 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
 .sig-line { border-top: 1px solid rgba(200,152,10,0.4); padding-top: 6px; min-width: 140px; text-align: center; text-transform: uppercase; }
 .bill-address { text-align: center; margin-top: 20px; padding-top: 12px; border-top: 1px solid rgba(200,152,10,0.2); font-size: 0.71rem; color: var(--muted); line-height: 1.9; }
 @media print { #editor, #items-editor, #fab-actions { display: none; } }
+
+/* Editor section labels */
+.editor-section-label {
+  font-size: 0.68rem; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--g2); font-weight: 700;
+  border-bottom: 1px solid rgba(218,165,32,0.2);
+  padding-bottom: 8px; margin-bottom: 14px; margin-top: 4px;
+  display: flex; align-items: center; gap: 10px;
+}
+.btn-manage-cust {
+  margin-left: auto;
+  background: rgba(218,165,32,0.12);
+  border: 1px solid rgba(218,165,32,0.4);
+  color: var(--g3); border-radius: 20px;
+  padding: 4px 14px; font-size: 0.68rem;
+  letter-spacing: 1px; cursor: pointer;
+  font-family: 'Lato', sans-serif; font-weight: 700;
+  transition: all 0.15s;
+}
+.btn-manage-cust:hover { background: rgba(218,165,32,0.25); }
+
+/* Customer card in modal */
+.cust-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(218,165,32,0.2);
+  border-radius: 6px; padding: 14px 16px;
+  margin-bottom: 10px;
+  display: flex; align-items: flex-start; gap: 14px;
+}
+.cust-card:hover { background: rgba(218,165,32,0.06); border-color: rgba(218,165,32,0.4); }
+.cust-card-info { flex: 1; }
+.cust-card-name { font-weight: 700; color: var(--g3); font-size: 0.92rem; margin-bottom: 4px; }
+.cust-card-detail { font-size: 0.75rem; color: var(--gmuted); line-height: 1.7; }
+.cust-card-actions { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
+.btn-use-cust {
+  background: linear-gradient(135deg, var(--g2), var(--g1));
+  border: none; color: #0d0800; border-radius: 4px;
+  padding: 6px 14px; font-size: 0.72rem; font-weight: 700;
+  cursor: pointer; white-space: nowrap; font-family: 'Lato', sans-serif;
+  letter-spacing: 1px;
+}
+.btn-del-cust {
+  background: rgba(180,40,40,0.2); border: 1px solid rgba(200,80,80,0.3);
+  color: #f88; border-radius: 4px;
+  padding: 5px 14px; font-size: 0.72rem; font-weight: 700;
+  cursor: pointer; font-family: 'Lato', sans-serif; letter-spacing: 1px;
+}
+.btn-del-cust:hover { background: rgba(180,40,40,0.4); }
+.no-customers {
+  text-align: center; padding: 32px; color: var(--gmuted);
+  font-size: 0.82rem; letter-spacing: 1px;
+}
 </style>
 </head>
 <body>
@@ -480,7 +532,10 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
 <!-- ===== EDITOR ===== -->
 <div id="editor">
   <h2>Bill Details</h2>
-  <div class="editor-grid">
+
+  <!-- SECTION 1: Bill Info -->
+  <div class="editor-section-label">📋 Bill Info</div>
+  <div class="editor-grid" style="margin-bottom:18px">
     <div class="field-group">
       <label>Invoice No</label>
       <input id="inv-no" value="625" oninput="render()">
@@ -497,30 +552,6 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
       <label>Carat</label>
       <input id="carat" value="22" oninput="render()">
     </div>
-    <div class="field-group" style="grid-column:span 2">
-      <label>Customer Name</label>
-      <input id="cust-name" value="Suman Jewellers" oninput="render()">
-    </div>
-    <div class="field-group" style="grid-column:span 2">
-      <label>Customer Address</label>
-      <input id="cust-addr" value="25, 11th Cross Street, Tatabad, Coimbatore" oninput="render()">
-    </div>
-    <div class="field-group">
-      <label>Customer PAN Card</label>
-      <input id="cust-pan" value="" oninput="render()">
-    </div>
-    <div class="field-group">
-      <label>Customer GSTIN</label>
-      <input id="cust-gstin" value="" oninput="render()">
-    </div>
-    <div class="field-group">
-      <label>GSTIN (Seller)</label>
-      <input id="gstin" value="33DUSPS7454F1Z0" oninput="render()">
-    </div>
-    <div class="field-group">
-      <label>HSN Code</label>
-      <input id="hsn" value="7113" oninput="render()">
-    </div>
     <div class="field-group">
       <label>CGST %</label>
       <input id="cgst" type="number" value="1.5" step="0.01" oninput="render()">
@@ -528,6 +559,10 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
     <div class="field-group">
       <label>SGST %</label>
       <input id="sgst" type="number" value="1.5" step="0.01" oninput="render()">
+    </div>
+    <div class="field-group">
+      <label>HSN Code</label>
+      <input id="hsn" value="7113" oninput="render()">
     </div>
     <div class="field-group" style="justify-content:flex-end">
       <label>GST Applicable</label>
@@ -538,6 +573,54 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
           <span class="toggle-slider"></span>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: Customer -->
+  <div class="editor-section-label">👤 Customer
+    <button class="btn-manage-cust" onclick="openCustomerManager()">⚙ Manage Customers</button>
+  </div>
+  <div class="editor-grid" style="margin-bottom:18px">
+    <div class="field-group" style="grid-column:span 2;position:relative">
+      <label>Customer Name</label>
+      <div style="display:flex;gap:8px">
+        <select id="cust-select" onchange="selectCustomer(this.value)" style="flex:1">
+          <option value="">— Select saved customer —</option>
+        </select>
+      </div>
+    </div>
+    <div class="field-group" style="grid-column:span 2">
+      <label>Name (on bill)</label>
+      <input id="cust-name" value="" oninput="render()" placeholder="Customer name">
+    </div>
+    <div class="field-group" style="grid-column:span 2">
+      <label>Address</label>
+      <input id="cust-addr" value="" oninput="render()" placeholder="Customer address">
+    </div>
+    <div class="field-group">
+      <label>PAN Card</label>
+      <input id="cust-pan" value="" oninput="render()" placeholder="AAABB1234C">
+    </div>
+    <div class="field-group">
+      <label>Customer GSTIN</label>
+      <input id="cust-gstin" value="" oninput="render()" placeholder="33XXXXX...">
+    </div>
+    <div class="field-group">
+      <label>Phone</label>
+      <input id="cust-phone" value="" oninput="render()" placeholder="9XXXXXXXXX">
+    </div>
+  </div>
+
+  <!-- SECTION 3: Shop & Bank (fixed/collapsed) -->
+  <div class="editor-section-label" style="cursor:pointer" onclick="toggleShopSection()">
+    🏪 Shop &amp; Bank Details
+    <span id="shop-toggle-icon" style="margin-left:8px;font-size:0.8rem">▼</span>
+    <span style="font-size:0.6rem;opacity:0.6;margin-left:8px;font-weight:400">click to expand/collapse</span>
+  </div>
+  <div id="shop-section" class="editor-grid" style="margin-bottom:18px;display:none">
+    <div class="field-group">
+      <label>GSTIN (Seller)</label>
+      <input id="gstin" value="33DUSPS7454F1Z0" oninput="render()">
     </div>
     <div class="field-group">
       <label>Shop Name</label>
@@ -564,9 +647,61 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
       <input id="bank-ifsc" value="UTIB0001919" oninput="render()">
     </div>
   </div>
+
   <div class="editor-actions">
     <button class="btn btn-gold" onclick="downloadPDF()">&#8659; Download PDF</button>
     <button class="btn btn-outline" onclick="window.print()">&#128438; Print</button>
+  </div>
+</div>
+
+<!-- ===== CUSTOMER MANAGER MODAL ===== -->
+<div id="cust-modal-overlay" onclick="closeCustModal(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;backdrop-filter:blur(4px);overflow-y:auto">
+  <div id="cust-modal" style="background:linear-gradient(160deg,#1a1000,#2e1e00);border:2px solid var(--g2);border-radius:10px;max-width:720px;width:94%;margin:40px auto;padding:32px;box-shadow:0 20px 60px rgba(0,0,0,0.8)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+      <h3 style="font-family:'Playfair Display',serif;color:var(--g3);font-size:1.1rem;letter-spacing:3px;text-transform:uppercase">👤 Customer Directory</h3>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button onclick="exportCustomers()" style="background:rgba(218,165,32,0.12);border:1px solid rgba(218,165,32,0.35);color:var(--g3);border-radius:4px;padding:6px 12px;cursor:pointer;font-size:0.72rem;font-weight:700;letter-spacing:1px">⬇ Export</button>
+        <label style="background:rgba(218,165,32,0.12);border:1px solid rgba(218,165,32,0.35);color:var(--g3);border-radius:4px;padding:6px 12px;cursor:pointer;font-size:0.72rem;font-weight:700;letter-spacing:1px">⬆ Import<input type="file" accept=".json" onchange="importCustomers(event)" style="display:none"></label>
+        <button onclick="closeCustomerManager()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(218,165,32,0.3);color:var(--g3);border-radius:4px;padding:6px 14px;cursor:pointer;font-size:0.85rem">✕ Close</button>
+      </div>
+    </div>
+
+    <!-- Add new customer form -->
+    <div style="background:rgba(218,165,32,0.06);border:1px solid rgba(218,165,32,0.2);border-radius:8px;padding:20px;margin-bottom:24px">
+      <div style="font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--gmuted);font-weight:700;margin-bottom:14px">➕ Add New Customer</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 14px">
+        <div class="field-group" style="grid-column:span 2">
+          <label>Customer Name *</label>
+          <input id="nc-name" placeholder="Full name or business name">
+        </div>
+        <div class="field-group" style="grid-column:span 2">
+          <label>Address</label>
+          <input id="nc-addr" placeholder="Street, City, Pincode">
+        </div>
+        <div class="field-group">
+          <label>PAN Card</label>
+          <input id="nc-pan" placeholder="AAABB1234C">
+        </div>
+        <div class="field-group">
+          <label>GSTIN</label>
+          <input id="nc-gstin" placeholder="33XXXXX...">
+        </div>
+        <div class="field-group">
+          <label>Phone</label>
+          <input id="nc-phone" placeholder="9XXXXXXXXX">
+        </div>
+        <div class="field-group" style="justify-content:flex-end;padding-top:18px">
+          <button class="btn btn-gold" onclick="saveNewCustomer()" style="width:100%">💾 Save Customer</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Existing customers list -->
+    <div style="font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--gmuted);font-weight:700;margin-bottom:12px">📋 Saved Customers (<span id="cust-count">0</span>)</div>
+    <div id="gh-status-bar" style="background:rgba(218,165,32,0.06);border:1px solid rgba(218,165,32,0.15);border-radius:5px;padding:9px 14px;margin-bottom:14px;font-size:0.72rem;color:var(--gmuted);line-height:1.6">
+      🔄 Connecting to GitHub...
+    </div>
+    <div id="cust-list"></div>
   </div>
 </div>
 
@@ -787,6 +922,242 @@ function amtBlur(i, val) {
   render();
 }
 
+// ===== CUSTOMER DIRECTORY — GitHub Storage =====
+var GH = {
+  token: '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',
+  repo:  'LogeshApps/Billing',
+  file:  'customers.json',
+  sha:   null   // tracks current file SHA for updates
+};
+
+// In-memory customer list (synced from GitHub)
+var customersList = [];
+var ghSyncing = false;
+
+function ghSetStatus(msg, color) {
+  var el = document.getElementById('gh-status-bar');
+  if (el) el.innerHTML = msg;
+}
+
+async function ghFetchCustomers() {
+  ghSetStatus('🔄 Syncing from GitHub...', '#c8a840');
+  try {
+    var resp = await fetch('https://api.github.com/repos/' + GH.repo + '/contents/' + GH.file, {
+      headers: {
+        'Authorization': 'token ' + GH.token,
+        'Accept': 'application/vnd.github.v3+json'
+      }
+    });
+    if (resp.status === 404) {
+      // File doesn't exist yet — start fresh
+      customersList = [];
+      GH.sha = null;
+      ghSetStatus('✅ <strong style="color:var(--g3)">GitHub connected.</strong> No customers yet — add your first one above.', '');
+      return;
+    }
+    if (!resp.ok) throw new Error('GitHub error: ' + resp.status);
+    var data = await resp.json();
+    GH.sha = data.sha;
+    var decoded = atob(data.content.replace(/\n/g, ''));
+    customersList = JSON.parse(decoded) || [];
+    ghSetStatus('✅ <strong style="color:var(--g3)">GitHub synced.</strong> ' + customersList.length + ' customer(s) loaded from <code style="color:var(--g3)">LogeshApps/Billing/customers.json</code>', '');
+  } catch(e) {
+    ghSetStatus('❌ <strong style="color:#f88">GitHub sync failed:</strong> ' + e.message + '. Check token/repo.', '');
+    // Fall back to localStorage
+    try { customersList = JSON.parse(localStorage.getItem('sg_customers') || '[]'); } catch(ex) { customersList = []; }
+  }
+}
+
+async function ghSaveCustomers() {
+  var content = btoa(unescape(encodeURIComponent(JSON.stringify(customersList, null, 2))));
+  var body = {
+    message: 'Update customers.json — ' + new Date().toLocaleString('en-IN'),
+    content: content
+  };
+  if (GH.sha) body.sha = GH.sha;
+  ghSetStatus('🔄 Saving to GitHub...', '');
+  try {
+    var resp = await fetch('https://api.github.com/repos/' + GH.repo + '/contents/' + GH.file, {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'token ' + GH.token,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+    if (!resp.ok) throw new Error('GitHub save error: ' + resp.status);
+    var result = await resp.json();
+    GH.sha = result.content.sha;
+    // Also cache locally as backup
+    localStorage.setItem('sg_customers', JSON.stringify(customersList));
+    ghSetStatus('✅ <strong style="color:var(--g3)">Saved to GitHub</strong> — ' + customersList.length + ' customer(s) in <code style="color:var(--g3)">LogeshApps/Billing/customers.json</code>', '');
+  } catch(e) {
+    ghSetStatus('❌ <strong style="color:#f88">Save failed:</strong> ' + e.message, '');
+  }
+}
+
+// Legacy wrappers (sync, for non-async callers)
+function loadCustomers() { return customersList; }
+function saveCustomers(list) {
+  customersList = list;
+  ghSaveCustomers();  // async fire-and-forget
+}
+
+function exportCustomers() {
+  var blob = new Blob([JSON.stringify(customersList, null, 2)], { type: 'application/json' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'SG_Customers_' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function importCustomers(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      var data = JSON.parse(ev.target.result);
+      if (!Array.isArray(data)) throw new Error('Invalid format');
+      var names = customersList.map(function(c){ return c.name.toLowerCase(); });
+      var added = 0;
+      data.forEach(function(c) {
+        if (c.name && names.indexOf(c.name.toLowerCase()) === -1) {
+          customersList.push(c); names.push(c.name.toLowerCase()); added++;
+        }
+      });
+      ghSaveCustomers();
+      renderCustomerList();
+      refreshCustomerDropdown();
+      alert('✔ Imported ' + added + ' customer(s). ' + (data.length - added) + ' duplicate(s) skipped.');
+    } catch(err) { alert('Invalid file. Please use a previously exported customer JSON.'); }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+function refreshCustomerDropdown() {
+  var sel = document.getElementById('cust-select');
+  var custs = loadCustomers();
+  var cur = sel.value;
+  sel.innerHTML = '<option value="">— Select saved customer —</option>'
+    + custs.map(function(c, i) {
+        return '<option value="' + i + '">' + esc(c.name) + (c.phone ? ' · ' + c.phone : '') + '</option>';
+      }).join('');
+  if (cur !== '') sel.value = cur;
+}
+
+function selectCustomer(idx) {
+  if (idx === '') return;
+  var custs = loadCustomers();
+  var c = custs[parseInt(idx)];
+  if (!c) return;
+  document.getElementById('cust-name').value  = c.name  || '';
+  document.getElementById('cust-addr').value  = c.addr  || '';
+  document.getElementById('cust-pan').value   = c.pan   || '';
+  document.getElementById('cust-gstin').value = c.gstin || '';
+  document.getElementById('cust-phone').value = c.phone || '';
+  render();
+}
+
+function openCustomerManager() {
+  document.getElementById('cust-modal-overlay').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+  ghFetchCustomers().then(function() {
+    renderCustomerList();
+    refreshCustomerDropdown();
+  });
+}
+function closeCustomerManager() {
+  document.getElementById('cust-modal-overlay').style.display = 'none';
+  document.body.style.overflow = '';
+  refreshCustomerDropdown();
+}
+function closeCustModal(e) {
+  if (e.target === document.getElementById('cust-modal-overlay')) closeCustomerManager();
+}
+
+function renderCustomerList() {
+  var custs = loadCustomers();
+  document.getElementById('cust-count').textContent = custs.length;
+  var el = document.getElementById('cust-list');
+  if (custs.length === 0) {
+    el.innerHTML = '<div class="no-customers">No customers saved yet. Add one above ☝</div>';
+    return;
+  }
+  el.innerHTML = custs.map(function(c, i) {
+    return '<div class="cust-card">'
+      + '<div class="cust-card-info">'
+        + '<div class="cust-card-name">' + esc(c.name) + '</div>'
+        + '<div class="cust-card-detail">'
+          + (c.addr  ? '📍 ' + esc(c.addr)  + '<br>' : '')
+          + (c.phone ? '📞 ' + esc(c.phone) + '&nbsp;&nbsp;' : '')
+          + (c.pan   ? 'PAN: ' + esc(c.pan)   + '&nbsp;&nbsp;' : '')
+          + (c.gstin ? 'GSTIN: ' + esc(c.gstin) : '')
+        + '</div>'
+      + '</div>'
+      + '<div class="cust-card-actions">'
+        + '<button class="btn-use-cust" onclick="useCustFromModal(' + i + ')">✔ Use</button>'
+        + '<button class="btn-del-cust" onclick="deleteCustomer(' + i + ')">🗑 Delete</button>'
+      + '</div>'
+    + '</div>';
+  }).join('');
+}
+
+function saveNewCustomer() {
+  var name = document.getElementById('nc-name').value.trim();
+  if (!name) { alert('Customer name is required.'); return; }
+  var custs = loadCustomers();
+  custs.push({
+    name:  name,
+    addr:  document.getElementById('nc-addr').value.trim(),
+    pan:   document.getElementById('nc-pan').value.trim(),
+    gstin: document.getElementById('nc-gstin').value.trim(),
+    phone: document.getElementById('nc-phone').value.trim()
+  });
+  saveCustomers(custs);
+  // Clear form
+  ['nc-name','nc-addr','nc-pan','nc-gstin','nc-phone'].forEach(function(id) {
+    document.getElementById(id).value = '';
+  });
+  renderCustomerList();
+}
+
+function deleteCustomer(i) {
+  if (!confirm('Delete this customer?')) return;
+  var custs = loadCustomers();
+  custs.splice(i, 1);
+  saveCustomers(custs);
+  renderCustomerList();
+}
+
+function useCustFromModal(i) {
+  var custs = loadCustomers();
+  var c = custs[i];
+  if (!c) return;
+  document.getElementById('cust-name').value  = c.name  || '';
+  document.getElementById('cust-addr').value  = c.addr  || '';
+  document.getElementById('cust-pan').value   = c.pan   || '';
+  document.getElementById('cust-gstin').value = c.gstin || '';
+  document.getElementById('cust-phone').value = c.phone || '';
+  render();
+  closeCustomerManager();
+}
+
+function toggleShopSection() {
+  var sec = document.getElementById('shop-section');
+  var icon = document.getElementById('shop-toggle-icon');
+  if (sec.style.display === 'none') {
+    sec.style.display = 'grid';
+    icon.textContent = '▲';
+  } else {
+    sec.style.display = 'none';
+    icon.textContent = '▼';
+  }
+}
+
 // ===== PRESET ITEMS REGISTRY =====
 // These are ready-made item templates — add more here as needed
 var PRESET_ITEMS = {
@@ -909,7 +1280,7 @@ function numToWords(n) {
 function render() {
   var invNo=g('inv-no'), invDate=fmtDate(g('inv-date')), goldRate=getGoldRate();
   var carat=g('carat'), custName=g('cust-name'), custAddr=g('cust-addr');
-  var custPan=g('cust-pan'), custGstin=g('cust-gstin');
+  var custPan=g('cust-pan'), custGstin=g('cust-gstin'), custPhone=g('cust-phone');
   var gstin=g('gstin'), hsn=g('hsn');
   var gstOn = document.getElementById('gst-toggle') ? document.getElementById('gst-toggle').checked : true;
   var cgstPct = gstOn ? (parseFloat(g('cgst'))||0) : 0;
@@ -989,6 +1360,7 @@ function render() {
       + '<div class="meta-row" style="grid-column:span 2"><span class="meta-label">Address</span><span class="meta-value">: ' + custAddr + '</span></div>'
       + '<div class="meta-row"><span class="meta-label">PAN Card</span><span class="meta-value">: ' + (custPan||'') + '</span></div>'
       + '<div class="meta-row"><span class="meta-label">Customer GSTIN</span><span class="meta-value">: ' + (custGstin||'') + '</span></div>'
+      + (custPhone ? '<div class="meta-row"><span class="meta-label">Phone</span><span class="meta-value">: ' + custPhone + '</span></div><div></div>' : '')
     + '</div>'
     + '<table class="bill-table">'
       + '<thead><tr>'
@@ -1054,6 +1426,8 @@ async function downloadPDF() {
 
 renderItemsEditor();
 render();
+// Load customers from GitHub on startup
+ghFetchCustomers().then(function() { refreshCustomerDropdown(); });
 </script>
 </body>
 </html>

@@ -488,6 +488,33 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
 }
 .sig-line { border-top: 1px solid rgba(200,152,10,0.4); padding-top: 6px; min-width: 140px; text-align: center; text-transform: uppercase; }
 .bill-address { text-align: center; margin-top: 20px; padding-top: 12px; border-top: 1px solid rgba(200,152,10,0.2); font-size: 0.71rem; color: var(--muted); line-height: 1.9; }
+
+/* Gold ornament footer */
+.bill-ornament {
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  opacity: 0.72;
+}
+.bill-ornament-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 0 14px;
+}
+.orn-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #c8960a 30%, #daa520 60%, #c8960a 80%, transparent);
+}
+.orn-line-rev {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #c8960a 20%, #daa520 50%, #c8960a 70%, transparent);
+}
 @media print { #editor, #items-editor, #fab-actions { display: none; } }
 
 /* ===== LOGIN SCREEN ===== */
@@ -1898,7 +1925,67 @@ function render() {
       + '<div style="text-align:right;font-size:0.78rem;color:var(--muted);font-style:italic;align-self:flex-start">for ' + shopName + '</div>'
     + '</div>'
     + '<div class="signature-row"><div class="sig-line">Receiver\'s Signature</div><div class="sig-line">Authorised Signature</div></div>'
-    + '<div class="bill-address">' + shopAddr + '<br>Ph: ' + shopPhone + '<br>e-mail: ' + shopEmail + '</div>';
+    + '<div class="bill-address">' + shopAddr + '<br>Ph: ' + shopPhone + '<br>e-mail: ' + shopEmail + '</div>'
+    + '<div class="bill-ornament">'
+      + '<div class="orn-line"></div>'
+      + '<div class="bill-ornament-center">'
+        + '<svg width="220" height="38" viewBox="0 0 220 38" fill="none" xmlns="http://www.w3.org/2000/svg">'
+          /* outer scrolls left */
+          + '<path d="M2 19 Q10 6 22 10 Q30 13 28 19 Q26 25 18 23 Q12 21 14 16 Q16 11 22 13" stroke="#b8860b" stroke-width="1.2" fill="none" stroke-linecap="round"/>'
+          + '<path d="M2 19 Q6 26 12 27 Q18 28 20 24" stroke="#daa520" stroke-width="0.8" fill="none" stroke-linecap="round"/>'
+          /* left vine tendrils */
+          + '<path d="M28 19 Q36 12 44 15 Q50 17 48 22 Q46 26 40 24" stroke="#b8860b" stroke-width="1.1" fill="none" stroke-linecap="round"/>'
+          + '<path d="M36 14 Q38 9 42 10" stroke="#daa520" stroke-width="0.7" fill="none" stroke-linecap="round"/>'
+          + '<path d="M44 22 Q46 28 50 26" stroke="#daa520" stroke-width="0.7" fill="none" stroke-linecap="round"/>'
+          /* left leaf cluster */
+          + '<ellipse cx="52" cy="16" rx="5" ry="3" transform="rotate(-30 52 16)" fill="rgba(184,134,11,0.18)" stroke="#b8860b" stroke-width="0.9"/>'
+          + '<ellipse cx="54" cy="22" rx="4" ry="2.5" transform="rotate(20 54 22)" fill="rgba(218,165,32,0.15)" stroke="#daa520" stroke-width="0.8"/>'
+          /* left connecting stem */
+          + '<path d="M58 19 Q64 14 70 17 Q74 19 72 22 Q70 25 66 23" stroke="#b8860b" stroke-width="1" fill="none" stroke-linecap="round"/>'
+          + '<circle cx="66" cy="13" r="2" fill="rgba(218,165,32,0.3)" stroke="#daa520" stroke-width="0.8"/>'
+          /* center diamond motif */
+          + '<path d="M84 19 L90 12 L96 19 L90 26 Z" fill="rgba(218,165,32,0.18)" stroke="#b8860b" stroke-width="1.2"/>'
+          + '<path d="M87 19 L90 15 L93 19 L90 23 Z" fill="rgba(218,165,32,0.35)" stroke="#daa520" stroke-width="0.8"/>'
+          + '<circle cx="90" cy="19" r="1.8" fill="#daa520" opacity="0.7"/>'
+          /* center large floral */
+          + '<circle cx="110" cy="19" r="7" fill="rgba(218,165,32,0.12)" stroke="#b8860b" stroke-width="1.2"/>'
+          + '<circle cx="110" cy="19" r="4" fill="rgba(218,165,32,0.22)" stroke="#daa520" stroke-width="0.9"/>'
+          + '<circle cx="110" cy="19" r="2" fill="#daa520" opacity="0.65"/>'
+          + '<line x1="110" y1="10" x2="110" y2="28" stroke="#b8860b" stroke-width="0.7" opacity="0.5"/>'
+          + '<line x1="101" y1="19" x2="119" y2="19" stroke="#b8860b" stroke-width="0.7" opacity="0.5"/>'
+          + '<line x1="104" y1="13" x2="116" y2="25" stroke="#b8860b" stroke-width="0.6" opacity="0.35"/>'
+          + '<line x1="116" y1="13" x2="104" y2="25" stroke="#b8860b" stroke-width="0.6" opacity="0.35"/>'
+          /* petal dots around center */
+          + '<circle cx="110" cy="11" r="1.4" fill="#daa520" opacity="0.5"/>'
+          + '<circle cx="110" cy="27" r="1.4" fill="#daa520" opacity="0.5"/>'
+          + '<circle cx="102" cy="19" r="1.4" fill="#daa520" opacity="0.5"/>'
+          + '<circle cx="118" cy="19" r="1.4" fill="#daa520" opacity="0.5"/>'
+          /* right diamond motif (mirror) */
+          + '<path d="M124 19 L130 12 L136 19 L130 26 Z" fill="rgba(218,165,32,0.18)" stroke="#b8860b" stroke-width="1.2"/>'
+          + '<path d="M127 19 L130 15 L133 19 L130 23 Z" fill="rgba(218,165,32,0.35)" stroke="#daa520" stroke-width="0.8"/>'
+          + '<circle cx="130" cy="19" r="1.8" fill="#daa520" opacity="0.7"/>'
+          /* right connecting stem */
+          + '<path d="M142 19 Q148 14 154 17 Q158 22 154 24 Q150 26 148 22" stroke="#b8860b" stroke-width="1" fill="none" stroke-linecap="round"/>'
+          + '<circle cx="154" cy="13" r="2" fill="rgba(218,165,32,0.3)" stroke="#daa520" stroke-width="0.8"/>'
+          /* right leaf cluster */
+          + '<ellipse cx="163" cy="16" rx="5" ry="3" transform="rotate(30 163 16)" fill="rgba(184,134,11,0.18)" stroke="#b8860b" stroke-width="0.9"/>'
+          + '<ellipse cx="165" cy="22" rx="4" ry="2.5" transform="rotate(-20 165 22)" fill="rgba(218,165,32,0.15)" stroke="#daa520" stroke-width="0.8"/>'
+          /* right vine tendrils */
+          + '<path d="M168 19 Q174 12 180 15 Q186 18 184 23 Q182 27 176 25" stroke="#b8860b" stroke-width="1.1" fill="none" stroke-linecap="round"/>'
+          + '<path d="M176 13 Q180 8 184 10" stroke="#daa520" stroke-width="0.7" fill="none" stroke-linecap="round"/>'
+          + '<path d="M180 24 Q182 29 186 27" stroke="#daa520" stroke-width="0.7" fill="none" stroke-linecap="round"/>'
+          /* outer scrolls right */
+          + '<path d="M218 19 Q210 6 198 10 Q190 13 192 19 Q194 25 202 23 Q208 21 206 16 Q204 11 198 13" stroke="#b8860b" stroke-width="1.2" fill="none" stroke-linecap="round"/>'
+          + '<path d="M218 19 Q214 26 208 27 Q202 28 200 24" stroke="#daa520" stroke-width="0.8" fill="none" stroke-linecap="round"/>'
+        + '</svg>'
+        + '<div style="display:flex;align-items:center;gap:8px;margin-top:2px">'
+          + '<span style="color:#b8860b;font-size:0.55rem;letter-spacing:0.5px">&#9670;</span>'
+          + '<span style="font-family:\'Cormorant Garamond\',serif;font-size:0.6rem;letter-spacing:4px;text-transform:uppercase;color:#b8860b;opacity:0.7">Thank You</span>'
+          + '<span style="color:#b8860b;font-size:0.55rem;letter-spacing:0.5px">&#9670;</span>'
+        + '</div>'
+      + '</div>'
+      + '<div class="orn-line-rev"></div>'
+    + '</div>';
 }
 
 async function downloadPDF() {

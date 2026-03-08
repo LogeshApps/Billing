@@ -393,13 +393,23 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
   font-family: 'Playfair Display', serif;
   font-size: 1.6rem; color: var(--text);
   letter-spacing: 4px; text-transform: uppercase;
+  text-align: center;
   background: linear-gradient(135deg, var(--g1), var(--g2), var(--g1));
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+/* pdf-mode: disable gradient clip so html2canvas renders clean text */
+.pdf-mode .brand-name {
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: #b8860b !important;
+  background-clip: unset !important;
+  color: #b8860b !important;
+}
 .brand-subtitle {
   font-size: 0.68rem; letter-spacing: 4px;
   text-transform: uppercase; color: var(--muted);
+  text-align: center;
 }
 .bis-badge {
   background: linear-gradient(135deg, var(--g2), var(--g1));
@@ -611,20 +621,31 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
     </div>
   </div>
 
-  <!-- SECTION 3: Shop & Bank (fixed/collapsed) -->
+  <!-- SECTION 3: Shop & Bank -->
   <div class="editor-section-label" style="cursor:pointer" onclick="toggleShopSection()">
     🏪 Shop &amp; Bank Details
-    <span id="shop-toggle-icon" style="margin-left:8px;font-size:0.8rem">▼</span>
+    <button class="btn-manage-cust" onclick="event.stopPropagation();openShopManager()" style="margin-left:10px">⚙ Manage Shops</button>
+    <span id="shop-toggle-icon" style="margin-left:auto;font-size:0.8rem">▼</span>
     <span style="font-size:0.6rem;opacity:0.6;margin-left:8px;font-weight:400">click to expand/collapse</span>
   </div>
   <div id="shop-section" class="editor-grid" style="margin-bottom:18px;display:none">
-    <div class="field-group">
-      <label>GSTIN (Seller)</label>
-      <input id="gstin" value="33DUSPS7454F1Z0" oninput="render()">
+    <div class="field-group" style="grid-column:span 2">
+      <label>Select Saved Shop</label>
+      <select id="shop-select" onchange="selectShop(this.value)">
+        <option value="">— Select saved shop —</option>
+      </select>
     </div>
     <div class="field-group">
       <label>Shop Name</label>
       <input id="shop-name" value="SG Antiques Jewellery" oninput="render()">
+    </div>
+    <div class="field-group">
+      <label>Logo Initials (2–3 letters)</label>
+      <input id="shop-logo" value="SG" maxlength="3" oninput="render()" placeholder="e.g. SG">
+    </div>
+    <div class="field-group">
+      <label>Brand Tagline</label>
+      <input id="shop-tagline" value="Jewellery Manufacturers" oninput="render()" placeholder="e.g. Jewellery Manufacturers">
     </div>
     <div class="field-group">
       <label>Shop Phone</label>
@@ -633,6 +654,14 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
     <div class="field-group" style="grid-column:span 2">
       <label>Shop Address</label>
       <input id="shop-addr" value="22B, Raj Nagar, Selvapuram, Coimbatore - 641026" oninput="render()">
+    </div>
+    <div class="field-group">
+      <label>GSTIN (Seller)</label>
+      <input id="gstin" value="33DUSPS7454F1Z0" oninput="render()">
+    </div>
+    <div class="field-group">
+      <label>Email</label>
+      <input id="shop-email" value="anticjewels.cbe@gmail.com" oninput="render()">
     </div>
     <div class="field-group" style="grid-column:span 2">
       <label>Bank Name and Branch</label>
@@ -702,6 +731,68 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
       🔄 Connecting to GitHub...
     </div>
     <div id="cust-list"></div>
+  </div>
+</div>
+
+<!-- ===== SHOP MANAGER MODAL ===== -->
+<div id="shop-modal-overlay" onclick="closeShopModal(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;backdrop-filter:blur(4px);overflow-y:auto">
+  <div style="background:linear-gradient(160deg,#1a1000,#2e1e00);border:2px solid var(--g2);border-radius:10px;max-width:720px;width:94%;margin:40px auto;padding:32px;box-shadow:0 20px 60px rgba(0,0,0,0.8)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+      <h3 style="font-family:'Playfair Display',serif;color:var(--g3);font-size:1.1rem;letter-spacing:3px;text-transform:uppercase">🏪 Shop Directory</h3>
+      <button onclick="closeShopManager()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(218,165,32,0.3);color:var(--g3);border-radius:4px;padding:6px 14px;cursor:pointer;font-size:0.85rem">✕ Close</button>
+    </div>
+    <!-- Add new shop form -->
+    <div style="background:rgba(218,165,32,0.06);border:1px solid rgba(218,165,32,0.2);border-radius:8px;padding:20px;margin-bottom:24px">
+      <div style="font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--gmuted);font-weight:700;margin-bottom:14px">➕ Add New Shop</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 14px">
+        <div class="field-group" style="grid-column:span 2">
+          <label>Shop Name *</label>
+          <input id="ns-name" placeholder="e.g. SG Antiques Jewellery">
+        </div>
+        <div class="field-group">
+          <label>Logo Initials</label>
+          <input id="ns-logo" placeholder="e.g. SG" maxlength="3">
+        </div>
+        <div class="field-group">
+          <label>Brand Tagline</label>
+          <input id="ns-tagline" placeholder="e.g. Jewellery Manufacturers">
+        </div>
+        <div class="field-group">
+          <label>Phone</label>
+          <input id="ns-phone" placeholder="9XXXXXXXXX">
+        </div>
+        <div class="field-group">
+          <label>Email</label>
+          <input id="ns-email" placeholder="shop@email.com">
+        </div>
+        <div class="field-group" style="grid-column:span 2">
+          <label>Address</label>
+          <input id="ns-addr" placeholder="Street, City, Pincode">
+        </div>
+        <div class="field-group">
+          <label>GSTIN</label>
+          <input id="ns-gstin" placeholder="33XXXXX...">
+        </div>
+        <div class="field-group">
+          <label>Bank &amp; Branch</label>
+          <input id="ns-bank" placeholder="Axis Bank, Town Hall">
+        </div>
+        <div class="field-group">
+          <label>Account Number</label>
+          <input id="ns-acc" placeholder="9180XXXXXXXX">
+        </div>
+        <div class="field-group">
+          <label>IFSC Code</label>
+          <input id="ns-ifsc" placeholder="UTIB0001919">
+        </div>
+        <div class="field-group" style="grid-column:span 2">
+          <button class="btn btn-gold" onclick="saveNewShop()" style="width:100%">💾 Save Shop</button>
+        </div>
+      </div>
+    </div>
+    <!-- Saved shops list -->
+    <div style="font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--gmuted);font-weight:700;margin-bottom:12px">📋 Saved Shops (<span id="shop-count">0</span>)</div>
+    <div id="shop-list"></div>
   </div>
 </div>
 
@@ -924,10 +1015,11 @@ function amtBlur(i, val) {
 
 // ===== CUSTOMER DIRECTORY — GitHub Storage =====
 var GH = {
-  token: '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',
+  token: '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',
   repo:  'LogeshApps/Billing',
   file:  'customers.json',
-  sha:   null   // tracks current file SHA for updates
+  sha:   null,
+  shopSha: null
 };
 
 // In-memory customer list (synced from GitHub)
@@ -1088,7 +1180,8 @@ function renderCustomerList() {
     return;
   }
   el.innerHTML = custs.map(function(c, i) {
-    return '<div class="cust-card">'
+    var editId = 'cust-edit-' + i;
+    return '<div class="cust-card" id="cust-card-' + i + '">'
       + '<div class="cust-card-info">'
         + '<div class="cust-card-name">' + esc(c.name) + '</div>'
         + '<div class="cust-card-detail">'
@@ -1097,13 +1190,48 @@ function renderCustomerList() {
           + (c.pan   ? 'PAN: ' + esc(c.pan)   + '&nbsp;&nbsp;' : '')
           + (c.gstin ? 'GSTIN: ' + esc(c.gstin) : '')
         + '</div>'
+        // Inline edit form (hidden by default)
+        + '<div id="' + editId + '" style="display:none;margin-top:12px;display:none">'
+          + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;margin-top:10px">'
+            + '<div class="field-group" style="grid-column:span 2"><label>Name</label><input id="ce-name-' + i + '" value="' + esc(c.name) + '"></div>'
+            + '<div class="field-group" style="grid-column:span 2"><label>Address</label><input id="ce-addr-' + i + '" value="' + esc(c.addr||'') + '"></div>'
+            + '<div class="field-group"><label>PAN</label><input id="ce-pan-' + i + '" value="' + esc(c.pan||'') + '"></div>'
+            + '<div class="field-group"><label>GSTIN</label><input id="ce-gstin-' + i + '" value="' + esc(c.gstin||'') + '"></div>'
+            + '<div class="field-group"><label>Phone</label><input id="ce-phone-' + i + '" value="' + esc(c.phone||'') + '"></div>'
+            + '<div class="field-group" style="justify-content:flex-end;padding-top:18px">'
+              + '<button class="btn-use-cust" onclick="saveEditCustomer(' + i + ')" style="width:100%">💾 Save</button>'
+            + '</div>'
+          + '</div>'
+        + '</div>'
       + '</div>'
       + '<div class="cust-card-actions">'
         + '<button class="btn-use-cust" onclick="useCustFromModal(' + i + ')">✔ Use</button>'
+        + '<button class="btn-use-cust" onclick="toggleCustEdit(' + i + ')" style="background:rgba(218,165,32,0.2);border:1px solid var(--g2);color:var(--g3)">✏ Edit</button>'
         + '<button class="btn-del-cust" onclick="deleteCustomer(' + i + ')">🗑 Delete</button>'
       + '</div>'
     + '</div>';
   }).join('');
+}
+
+function toggleCustEdit(i) {
+  var el = document.getElementById('cust-edit-' + i);
+  if (!el) return;
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function saveEditCustomer(i) {
+  var custs = loadCustomers();
+  custs[i] = {
+    name:  document.getElementById('ce-name-'  + i).value.trim(),
+    addr:  document.getElementById('ce-addr-'  + i).value.trim(),
+    pan:   document.getElementById('ce-pan-'   + i).value.trim(),
+    gstin: document.getElementById('ce-gstin-' + i).value.trim(),
+    phone: document.getElementById('ce-phone-' + i).value.trim()
+  };
+  if (!custs[i].name) { alert('Name is required.'); return; }
+  saveCustomers(custs);
+  renderCustomerList();
+  refreshCustomerDropdown();
 }
 
 function saveNewCustomer() {
@@ -1156,6 +1284,191 @@ function toggleShopSection() {
     sec.style.display = 'none';
     icon.textContent = '▼';
   }
+}
+
+// ===== SHOP DIRECTORY =====
+var shopsList = [];
+
+function loadShops() { return shopsList; }
+function saveShopsLocal() { localStorage.setItem('sg_shops', JSON.stringify(shopsList)); }
+
+async function ghFetchShops() {
+  try {
+    var resp = await fetch('https://api.github.com/repos/' + GH.repo + '/contents/shops.json', {
+      headers: { 'Authorization': 'token ' + GH.token, 'Accept': 'application/vnd.github.v3+json' }
+    });
+    if (resp.status === 404) { shopsList = []; GH.shopSha = null; return; }
+    if (!resp.ok) throw new Error('GitHub error: ' + resp.status);
+    var data = await resp.json();
+    GH.shopSha = data.sha;
+    shopsList = JSON.parse(atob(data.content.replace(/\n/g,''))) || [];
+  } catch(e) {
+    try { shopsList = JSON.parse(localStorage.getItem('sg_shops') || '[]'); } catch(ex) { shopsList = []; }
+  }
+}
+
+async function ghSaveShops() {
+  var content = btoa(unescape(encodeURIComponent(JSON.stringify(shopsList, null, 2))));
+  var body = { message: 'Update shops.json — ' + new Date().toLocaleString('en-IN'), content: content };
+  if (GH.shopSha) body.sha = GH.shopSha;
+  try {
+    var resp = await fetch('https://api.github.com/repos/' + GH.repo + '/contents/shops.json', {
+      method: 'PUT',
+      headers: { 'Authorization': 'token ' + GH.token, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (!resp.ok) throw new Error('Save failed: ' + resp.status);
+    var result = await resp.json();
+    GH.shopSha = result.content.sha;
+    saveShopsLocal();
+  } catch(e) { saveShopsLocal(); console.warn('Shop GitHub save failed:', e.message); }
+}
+
+function refreshShopDropdown() {
+  var sel = document.getElementById('shop-select');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">— Select saved shop —</option>'
+    + shopsList.map(function(s, i) {
+        return '<option value="' + i + '">' + esc(s.name) + '</option>';
+      }).join('');
+}
+
+function selectShop(idx) {
+  if (idx === '') return;
+  var s = shopsList[parseInt(idx)];
+  if (!s) return;
+  document.getElementById('shop-name').value    = s.name    || '';
+  document.getElementById('shop-logo').value    = s.logo    || '';
+  document.getElementById('shop-tagline').value = s.tagline || '';
+  document.getElementById('shop-phone').value   = s.phone   || '';
+  document.getElementById('shop-email').value   = s.email   || '';
+  document.getElementById('shop-addr').value    = s.addr    || '';
+  document.getElementById('gstin').value        = s.gstin   || '';
+  document.getElementById('bank-name').value    = s.bank    || '';
+  document.getElementById('bank-acc').value     = s.acc     || '';
+  document.getElementById('bank-ifsc').value    = s.ifsc    || '';
+  render();
+}
+
+function openShopManager() {
+  document.getElementById('shop-modal-overlay').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+  renderShopList();
+}
+function closeShopManager() {
+  document.getElementById('shop-modal-overlay').style.display = 'none';
+  document.body.style.overflow = '';
+  refreshShopDropdown();
+}
+function closeShopModal(e) {
+  if (e.target === document.getElementById('shop-modal-overlay')) closeShopManager();
+}
+
+function renderShopList() {
+  document.getElementById('shop-count').textContent = shopsList.length;
+  var el = document.getElementById('shop-list');
+  if (shopsList.length === 0) {
+    el.innerHTML = '<div class="no-customers">No shops saved yet. Add one above ☝</div>';
+    return;
+  }
+  el.innerHTML = shopsList.map(function(s, i) {
+    return '<div class="cust-card" id="shop-card-' + i + '">'
+      + '<div class="cust-card-info">'
+        + '<div class="cust-card-name">'
+          + '<span style="background:linear-gradient(135deg,var(--g2),var(--g1));color:#0d0800;border-radius:50%;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;margin-right:8px">' + esc(s.logo||'?') + '</span>'
+          + esc(s.name)
+        + '</div>'
+        + '<div class="cust-card-detail">'
+          + (s.addr  ? '📍 ' + esc(s.addr) + '<br>' : '')
+          + (s.phone ? '📞 ' + esc(s.phone) + '&nbsp;&nbsp;' : '')
+          + (s.gstin ? 'GSTIN: ' + esc(s.gstin) + '&nbsp;&nbsp;' : '')
+          + (s.bank  ? '🏦 ' + esc(s.bank) : '')
+        + '</div>'
+        // Inline edit form
+        + '<div id="shop-edit-' + i + '" style="display:none;margin-top:12px">'
+          + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;margin-top:10px">'
+            + '<div class="field-group" style="grid-column:span 2"><label>Shop Name</label><input id="se-name-' + i + '" value="' + esc(s.name||'') + '"></div>'
+            + '<div class="field-group"><label>Logo Initials</label><input id="se-logo-' + i + '" value="' + esc(s.logo||'') + '" maxlength="3"></div>'
+            + '<div class="field-group"><label>Tagline</label><input id="se-tagline-' + i + '" value="' + esc(s.tagline||'') + '"></div>'
+            + '<div class="field-group"><label>Phone</label><input id="se-phone-' + i + '" value="' + esc(s.phone||'') + '"></div>'
+            + '<div class="field-group"><label>Email</label><input id="se-email-' + i + '" value="' + esc(s.email||'') + '"></div>'
+            + '<div class="field-group" style="grid-column:span 2"><label>Address</label><input id="se-addr-' + i + '" value="' + esc(s.addr||'') + '"></div>'
+            + '<div class="field-group"><label>GSTIN</label><input id="se-gstin-' + i + '" value="' + esc(s.gstin||'') + '"></div>'
+            + '<div class="field-group"><label>Bank &amp; Branch</label><input id="se-bank-' + i + '" value="' + esc(s.bank||'') + '"></div>'
+            + '<div class="field-group"><label>Account No</label><input id="se-acc-' + i + '" value="' + esc(s.acc||'') + '"></div>'
+            + '<div class="field-group"><label>IFSC</label><input id="se-ifsc-' + i + '" value="' + esc(s.ifsc||'') + '"></div>'
+            + '<div class="field-group" style="grid-column:span 2">'
+              + '<button class="btn-use-cust" onclick="saveEditShop(' + i + ')" style="width:100%">💾 Save Changes</button>'
+            + '</div>'
+          + '</div>'
+        + '</div>'
+      + '</div>'
+      + '<div class="cust-card-actions">'
+        + '<button class="btn-use-cust" onclick="useShopFromModal(' + i + ')">✔ Use</button>'
+        + '<button class="btn-use-cust" onclick="toggleShopEdit(' + i + ')" style="background:rgba(218,165,32,0.2);border:1px solid var(--g2);color:var(--g3)">✏ Edit</button>'
+        + '<button class="btn-del-cust" onclick="deleteShop(' + i + ')">🗑 Delete</button>'
+      + '</div>'
+    + '</div>';
+  }).join('');
+}
+
+function toggleShopEdit(i) {
+  var el = document.getElementById('shop-edit-' + i);
+  if (!el) return;
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function saveEditShop(i) {
+  if (!document.getElementById('se-name-' + i).value.trim()) { alert('Shop name is required.'); return; }
+  shopsList[i] = {
+    name:    document.getElementById('se-name-'    + i).value.trim(),
+    logo:    document.getElementById('se-logo-'    + i).value.trim(),
+    tagline: document.getElementById('se-tagline-' + i).value.trim(),
+    phone:   document.getElementById('se-phone-'   + i).value.trim(),
+    email:   document.getElementById('se-email-'   + i).value.trim(),
+    addr:    document.getElementById('se-addr-'    + i).value.trim(),
+    gstin:   document.getElementById('se-gstin-'   + i).value.trim(),
+    bank:    document.getElementById('se-bank-'    + i).value.trim(),
+    acc:     document.getElementById('se-acc-'     + i).value.trim(),
+    ifsc:    document.getElementById('se-ifsc-'    + i).value.trim()
+  };
+  ghSaveShops();
+  renderShopList();
+  refreshShopDropdown();
+}
+
+function saveNewShop() {
+  var name = document.getElementById('ns-name').value.trim();
+  if (!name) { alert('Shop name is required.'); return; }
+  shopsList.push({
+    name:    name,
+    logo:    document.getElementById('ns-logo').value.trim(),
+    tagline: document.getElementById('ns-tagline').value.trim(),
+    phone:   document.getElementById('ns-phone').value.trim(),
+    email:   document.getElementById('ns-email').value.trim(),
+    addr:    document.getElementById('ns-addr').value.trim(),
+    gstin:   document.getElementById('ns-gstin').value.trim(),
+    bank:    document.getElementById('ns-bank').value.trim(),
+    acc:     document.getElementById('ns-acc').value.trim(),
+    ifsc:    document.getElementById('ns-ifsc').value.trim()
+  });
+  ghSaveShops();
+  ['ns-name','ns-logo','ns-tagline','ns-phone','ns-email','ns-addr','ns-gstin','ns-bank','ns-acc','ns-ifsc'].forEach(function(id){
+    document.getElementById(id).value = '';
+  });
+  renderShopList();
+}
+
+function deleteShop(i) {
+  if (!confirm('Delete this shop?')) return;
+  shopsList.splice(i, 1);
+  ghSaveShops();
+  renderShopList();
+}
+
+function useShopFromModal(i) {
+  selectShop(i);
+  closeShopManager();
 }
 
 // ===== PRESET ITEMS REGISTRY =====
@@ -1286,6 +1599,8 @@ function render() {
   var cgstPct = gstOn ? (parseFloat(g('cgst'))||0) : 0;
   var sgstPct = gstOn ? (parseFloat(g('sgst'))||0) : 0;
   var shopName=g('shop-name'), shopPhone=g('shop-phone'), shopAddr=g('shop-addr');
+  var shopLogo=g('shop-logo')||'SG', shopTagline=g('shop-tagline')||'Jewellery Manufacturers';
+  var shopEmail=g('shop-email')||'anticjewels.cbe@gmail.com';
   var bankName=g('bank-name'), bankAcc=g('bank-acc'), bankIfsc=g('bank-ifsc');
 
   // Net total = sum of signed amounts
@@ -1345,7 +1660,7 @@ function render() {
   document.getElementById('bill').innerHTML =
     '<div class="bill-header">'
       + '<div style="font-size:0.7rem;color:var(--muted);letter-spacing:1px;line-height:2.2"><em>ANTIQUE &bull; GOLD &bull; SILVER</em><br><span style="font-size:0.6rem;letter-spacing:2px;color:#b8860b">BILL COPY</span></div>'
-      + '<div class="bill-logo"><div class="logo-circle">SG</div><div class="brand-name">Antiques</div><div class="brand-subtitle">Jewellery Manufacturers</div></div>'
+      + '<div class="bill-logo"><div class="logo-circle">' + shopLogo + '</div><div class="brand-name" style="text-align:center">' + shopName + '</div><div class="brand-subtitle" style="text-align:center">' + shopTagline + '</div></div>'
       + '<div class="bis-badge">BIS<br>100% Hall Marked<br>Jewellery</div>'
     + '</div>'
     + '<div class="bill-top-meta"><span>GSTIN: ' + gstin + '</span><span>State Code: 33</span><span>HSN Code: ' + hsn + '</span></div>'
@@ -1399,7 +1714,7 @@ function render() {
       + '<div style="text-align:right;font-size:0.78rem;color:var(--muted);font-style:italic;align-self:flex-start">for ' + shopName + '</div>'
     + '</div>'
     + '<div class="signature-row"><div class="sig-line">Receiver\'s Signature</div><div class="sig-line">Authorised Signature</div></div>'
-    + '<div class="bill-address">' + shopAddr + '<br>Ph: ' + shopPhone + '<br>e-mail: anticjewels.cbe@gmail.com</div>';
+    + '<div class="bill-address">' + shopAddr + '<br>Ph: ' + shopPhone + '<br>e-mail: ' + shopEmail + '</div>';
 }
 
 async function downloadPDF() {
@@ -1409,7 +1724,11 @@ async function downloadPDF() {
   btn.disabled = true;
   try {
     var bill = document.getElementById('bill');
+    // Add pdf-mode to neutralise CSS effects that html2canvas can't handle
+    bill.classList.add('pdf-mode');
+    await new Promise(function(r){ setTimeout(r, 50); }); // let styles apply
     var canvas = await html2canvas(bill, { scale: 2, useCORS: true, backgroundColor: '#fffdf5' });
+    bill.classList.remove('pdf-mode');
     var jsPDF = window.jspdf.jsPDF;
     var pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
     var imgData = canvas.toDataURL('image/png');
@@ -1419,15 +1738,19 @@ async function downloadPDF() {
     var invNo = document.getElementById('inv-no').value || 'bill';
     var cn = document.getElementById('cust-name').value.replace(/\s+/g,'_') || 'customer';
     pdf.save('Invoice_' + invNo + '_' + cn + '.pdf');
-  } catch(e) { alert('PDF generation failed: ' + e.message); }
+  } catch(e) {
+    document.getElementById('bill').classList.remove('pdf-mode');
+    alert('PDF generation failed: ' + e.message);
+  }
   btn.textContent = orig;
   btn.disabled = false;
 }
 
 renderItemsEditor();
 render();
-// Load customers from GitHub on startup
+// Load customers and shops from GitHub on startup
 ghFetchCustomers().then(function() { refreshCustomerDropdown(); });
+ghFetchShops().then(function() { refreshShopDropdown(); });
 </script>
 </body>
 </html>

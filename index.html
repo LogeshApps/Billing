@@ -490,6 +490,127 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
 .bill-address { text-align: center; margin-top: 20px; padding-top: 12px; border-top: 1px solid rgba(200,152,10,0.2); font-size: 0.71rem; color: var(--muted); line-height: 1.9; }
 @media print { #editor, #items-editor, #fab-actions { display: none; } }
 
+/* ===== LOGIN SCREEN ===== */
+#login-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: radial-gradient(ellipse at 35% 25%, #1c0e05 0%, #0a0500 45%, #160b02 75%, #0a0500 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Lato', sans-serif;
+}
+#login-overlay.hidden { display: none; }
+.login-box {
+  background: linear-gradient(160deg, #1e0f04 0%, #2a1505 50%, #1e0f04 100%);
+  border: 1.5px solid #c8761a;
+  border-radius: 16px;
+  padding: 44px 44px 38px;
+  width: 100%; max-width: 410px;
+  box-shadow: 0 0 0 1px rgba(210,120,30,0.12), 0 0 50px rgba(210,120,30,0.12), 0 28px 80px rgba(0,0,0,0.9);
+  position: relative;
+  overflow: hidden;
+}
+.login-box::before {
+  content: '';
+  position: absolute; inset: 9px;
+  border: 1px solid rgba(210,120,30,0.1);
+  border-radius: 9px;
+  pointer-events: none;
+}
+.login-box::after {
+  content: '';
+  position: absolute; top: 0; left: 10%; right: 10%; height: 2px;
+  background: linear-gradient(90deg, transparent, #e8922a, #ffd280, #e8922a, transparent);
+  border-radius: 2px;
+}
+.login-logo-wrap {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  margin-bottom: 30px;
+}
+.login-logo-box {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  background: linear-gradient(135deg, #8a4608 0%, #c8720e 30%, #f0aa38 58%, #c8720e 80%, #8a4608 100%);
+  border: 2px solid #ffd280;
+  border-radius: 10px;
+  padding: 14px 28px;
+  box-shadow: 0 0 0 3px rgba(210,140,30,0.18), 0 0 28px rgba(210,140,30,0.35), inset 0 1px 0 rgba(255,255,255,0.2);
+  margin-bottom: 6px;
+}
+.login-logo-text {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem; font-weight: 700; color: #fff8e0;
+  letter-spacing: 7px; text-shadow: 0 1px 6px rgba(0,0,0,0.5);
+  line-height: 1;
+}
+.login-logo-icon { color: rgba(255,248,220,0.55); font-size: 0.65rem; }
+.login-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.45rem; font-weight: 700;
+  color: #f0a830;
+  letter-spacing: 4px; text-transform: uppercase; text-align: center;
+  text-shadow: 0 0 20px rgba(240,168,48,0.25);
+  line-height: 1.15;
+}
+.login-title2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.05rem; font-weight: 600;
+  color: #c8861a;
+  letter-spacing: 8px; text-transform: uppercase; text-align: center;
+}
+.login-subtitle {
+  font-size: 0.6rem; letter-spacing: 2.5px; text-transform: uppercase;
+  color: #7a4e14; text-align: center; margin-top: 2px;
+}
+.login-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.login-field label {
+  font-size: 0.62rem; letter-spacing: 2px; text-transform: uppercase;
+  color: #c8861a; font-weight: 700;
+}
+.login-field input {
+  background: rgba(255,160,30,0.05);
+  border: 1px solid rgba(200,118,26,0.35);
+  border-radius: 7px; color: #ffe8b0;
+  font-family: 'Lato', sans-serif; font-size: 0.95rem;
+  padding: 11px 14px; transition: all 0.2s; width: 100%;
+}
+.login-field input::placeholder { color: rgba(200,140,50,0.35); }
+.login-field input:focus {
+  outline: none; border-color: #d4820f;
+  background: rgba(212,130,15,0.09);
+  box-shadow: 0 0 0 3px rgba(212,130,15,0.18);
+}
+.login-btn {
+  width: 100%; padding: 13px;
+  background: linear-gradient(135deg, #b86a0a 0%, #e89020 40%, #ffc84a 65%, #e89020 85%, #b86a0a 100%);
+  background-size: 200% auto;
+  border: none; border-radius: 8px;
+  color: #1a0800; font-family: 'Lato', sans-serif;
+  font-size: 0.88rem; font-weight: 900;
+  letter-spacing: 4px; text-transform: uppercase;
+  cursor: pointer; margin-top: 8px;
+  box-shadow: 0 4px 20px rgba(200,120,20,0.45), inset 0 1px 0 rgba(255,255,255,0.2);
+  transition: all 0.25s;
+}
+.login-btn:hover {
+  background-position: right center;
+  box-shadow: 0 6px 30px rgba(200,120,20,0.6), inset 0 1px 0 rgba(255,255,255,0.2);
+  transform: translateY(-1px);
+}
+.login-btn:active { transform: translateY(0); }
+.login-error {
+  color: #ff9070; font-size: 0.74rem; text-align: center;
+  margin-top: 12px; min-height: 18px; letter-spacing: 0.5px;
+  display: none;
+}
+.login-error.show { display: block; }
+.login-shake { animation: shake 0.4s ease; }
+@keyframes shake {
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-8px)}
+  40%{transform:translateX(8px)}
+  60%{transform:translateX(-6px)}
+  80%{transform:translateX(6px)}
+}
+
+
 /* Editor section labels */
 .editor-section-label {
   font-size: 0.68rem; letter-spacing: 2px; text-transform: uppercase;
@@ -544,6 +665,35 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
 </style>
 </head>
 <body>
+
+<!-- ===== LOGIN OVERLAY ===== -->
+<div id="login-overlay">
+  <div class="login-box" id="login-box">
+    <div class="login-logo-wrap">
+      <div class="login-logo-box">
+        <span class="login-logo-icon">&#9670;</span>
+        <span class="login-logo-text">LB</span>
+        <span class="login-logo-icon">&#9670;</span>
+      </div>
+      <div class="login-title">Logesh Billing</div>
+      <div class="login-title2">Software</div>
+      <div class="login-subtitle">Jewellery Bill Generator &bull; Secure Access</div>
+    </div>
+    <div class="login-field">
+      <label>Username</label>
+      <input type="text" id="login-user" placeholder="Enter username" autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('login-pwd').focus()">
+    </div>
+    <div class="login-field">
+      <label>Password</label>
+      <div style="position:relative">
+        <input type="password" id="login-pwd" placeholder="Enter password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()" style="padding-right:42px">
+        <button onclick="togglePwd()" id="pwd-eye" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--gmuted);font-size:1rem;padding:0;line-height:1" title="Show/Hide password">&#128065;</button>
+      </div>
+    </div>
+    <button class="login-btn" onclick="doLogin()">Sign In</button>
+    <div class="login-error" id="login-error">&#10060; Invalid username or password. Please try again.</div>
+  </div>
+</div>
 
 <!-- ===== EDITOR ===== -->
 <div id="editor">
@@ -1813,3 +1963,44 @@ ghFetchShops().then(function() { refreshShopDropdown(); });
 </script>
 </body>
 </html>
+<script>
+// ===== LOGIN =====
+var LOGIN_USER = 'LogeshApps';
+var LOGIN_PWD  = '12345678';
+
+function doLogin() {
+  var u = document.getElementById('login-user').value.trim();
+  var p = document.getElementById('login-pwd').value;
+  var errEl = document.getElementById('login-error');
+  var box = document.getElementById('login-box');
+  if (u === LOGIN_USER && p === LOGIN_PWD) {
+    errEl.classList.remove('show');
+    document.getElementById('login-overlay').classList.add('hidden');
+    document.getElementById('login-user').value = '';
+    document.getElementById('login-pwd').value = '';
+  } else {
+    errEl.classList.add('show');
+    box.classList.remove('login-shake');
+    void box.offsetWidth;
+    box.classList.add('login-shake');
+    document.getElementById('login-pwd').value = '';
+    document.getElementById('login-pwd').focus();
+  }
+}
+
+function togglePwd() {
+  var inp = document.getElementById('login-pwd');
+  var eye = document.getElementById('pwd-eye');
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    eye.textContent = '\uD83D\uDE48';
+  } else {
+    inp.type = 'password';
+    eye.textContent = '\uD83D\uDC41';
+  }
+}
+
+window.addEventListener('load', function() {
+  document.getElementById('login-user').focus();
+});
+</script>

@@ -347,14 +347,15 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
   padding: 32px 24px 100px;
   display: flex;
   justify-content: center;
+  overflow-x: hidden;
 }
 #bill {
   background: var(--cream);
   width: 800px;
   max-width: 100%;
   padding: 36px 42px;
-  box-shadow: 0 0 0 1px var(--border), 0 12px 60px rgba(0,0,0,0.5), inset 0 0 80px rgba(218,165,32,0.03);
-  border: 3px double var(--border);
+  box-shadow: 0 12px 60px rgba(0,0,0,0.5), inset 0 0 80px rgba(218,165,32,0.03);
+  border: 1.5px solid var(--border);
   position: relative;
   border-radius: 2px;
 }
@@ -371,7 +372,7 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
 #bill::after {
   content: '';
   position: absolute; inset: 8px;
-  border: 1px solid rgba(200,152,10,0.15);
+  border: none;
   pointer-events: none;
 }
 .bill-header {
@@ -411,6 +412,58 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
   -webkit-text-fill-color: #b8860b !important;
   background-clip: unset !important;
   color: #b8860b !important;
+}
+/* pdf-mode: compact layout to fit single A4 page */
+.pdf-mode {
+  padding: 20px 28px !important;
+}
+.pdf-mode .bill-header {
+  padding-bottom: 10px !important;
+  margin-bottom: 8px !important;
+}
+.pdf-mode .bill-top-meta {
+  margin-bottom: 6px !important;
+}
+.pdf-mode .bill-type-tag {
+  padding: 4px 0 !important;
+  margin-bottom: 8px !important;
+}
+.pdf-mode .bill-meta {
+  margin-bottom: 8px !important;
+  gap: 3px 20px !important;
+  font-size: 0.78rem !important;
+}
+.pdf-mode .bill-table td {
+  padding: 5px 8px !important;
+}
+.pdf-mode .bill-table th {
+  padding: 6px 8px !important;
+}
+.pdf-mode .bill-footer {
+  margin-top: 12px !important;
+  padding-top: 10px !important;
+}
+.pdf-mode .signature-section {
+  margin-top: 18px !important;
+}
+.pdf-mode .sig-space {
+  height: 30px !important;
+}
+.pdf-mode .for-shop-label {
+  font-size: 0.78rem !important;
+}
+.pdf-mode .bill-address {
+  margin-top: 12px !important;
+  padding-top: 8px !important;
+}
+.pdf-mode .bill-ornament {
+  margin-top: 10px !important;
+}
+.pdf-mode .logo-circle {
+  width: 62px !important; height: 62px !important; font-size: 1.4rem !important;
+}
+.pdf-mode .brand-name {
+  font-size: 1.3rem !important;
 }
 .brand-subtitle {
   font-size: 0.68rem; letter-spacing: 4px;
@@ -482,12 +535,69 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
 }
 .bank-details { color: var(--muted); line-height: 1.8; }
 .bank-details strong { color: var(--text); }
-.signature-row {
-  display: flex; justify-content: space-between;
-  margin-top: 44px; font-size: 0.72rem; color: var(--muted); letter-spacing: 1px;
+.signature-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 28px;
 }
-.sig-line { border-top: 1px solid rgba(200,152,10,0.4); padding-top: 6px; min-width: 140px; text-align: center; text-transform: uppercase; }
-.bill-address { text-align: center; margin-top: 20px; padding-top: 12px; border-top: 1px solid rgba(200,152,10,0.2); font-size: 0.71rem; color: var(--muted); line-height: 1.9; }
+.sig-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 160px;
+}
+.sig-block-right {
+  align-items: flex-end;
+}
+.for-shop-label {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--muted);
+  letter-spacing: 0.8px;
+  margin-bottom: 6px;
+  text-align: right;
+}
+.sig-space {
+  height: 44px;
+  width: 100%;
+}
+.sig-line {
+  border-top: 1px solid rgba(200,152,10,0.4);
+  padding-top: 6px;
+  min-width: 160px;
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  color: var(--muted);
+  letter-spacing: 1px;
+}
+.bill-address { text-align: center; margin-top: 20px; padding-top: 12px; border-top: 1px solid rgba(200,152,10,0.2); font-size: 0.71rem; color: var(--muted); line-height: 1.9; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0; }
+.bill-addr-line { font-family: 'Cormorant Garamond', serif; font-size: 0.78rem; letter-spacing: 0.8px; color: var(--muted); }
+.bill-addr-sep { margin: 0 10px; color: var(--g2); font-size: 0.6rem; }
+
+/* Hallmark rows */
+.hallmark-charge-row td { background: rgba(184,134,11,0.06); border-top: 1px solid rgba(200,152,10,0.2); padding: 6px 10px; }
+.hallmark-gst-row td { background: rgba(184,134,11,0.04); padding: 5px 10px; border-bottom: 1px solid rgba(200,152,10,0.18); }
+.hallmark-label {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.88rem; font-weight: 600;
+  color: var(--g1); letter-spacing: 0.5px;
+}
+.hallmark-amt-val {
+  font-family: 'Lato', sans-serif;
+  font-weight: 700; font-size: 0.86rem; color: var(--text);
+}
+.hallmark-gst-label {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.82rem; font-style: italic; color: var(--muted); letter-spacing: 0.3px;
+}
+.hallmark-gst-label em { font-style: italic; font-size: 0.76rem; opacity: 0.8; }
+.hallmark-gst-val {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.82rem; color: var(--muted);
+}
 
 /* Gold ornament footer */
 .bill-ornament {
@@ -1198,6 +1308,20 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
           <span class="toggle-slider"></span>
         </div>
       </div>
+    </div>
+    <div class="field-group" style="justify-content:flex-end">
+      <label>Hallmark Charge</label>
+      <div class="gst-toggle-wrap" onclick="document.getElementById('hallmark-toggle').click()">
+        <label for="hallmark-toggle">Hallmark On / Off</label>
+        <div class="toggle-switch">
+          <input type="checkbox" id="hallmark-toggle" onchange="toggleHallmarkField();render()">
+          <span class="toggle-slider"></span>
+        </div>
+      </div>
+    </div>
+    <div class="field-group" id="hallmark-amt-field" style="display:none">
+      <label>Hallmark Amount (Rs.)</label>
+      <input id="hallmark-amt" type="number" value="100" step="1" min="0" oninput="render()" placeholder="e.g. 100">
     </div>
   </div>
 
@@ -2244,6 +2368,8 @@ function render() {
   var gstOn = document.getElementById('gst-toggle') ? document.getElementById('gst-toggle').checked : true;
   var cgstPct = gstOn ? (parseFloat(g('cgst'))||0) : 0;
   var sgstPct = gstOn ? (parseFloat(g('sgst'))||0) : 0;
+  var hallmarkOn = document.getElementById('hallmark-toggle') ? document.getElementById('hallmark-toggle').checked : false;
+  var hallmarkAmt = hallmarkOn ? (parseFloat(g('hallmark-amt'))||0) : 0;
   var shopName=g('shop-name'), shopPhone=g('shop-phone'), shopAddr=g('shop-addr');
   var shopLogo=g('shop-logo')||'SG', shopTagline=g('shop-tagline')||'Jewellery Manufacturers';
   var shopEmail=g('shop-email')||'anticjewels.cbe@gmail.com';
@@ -2258,7 +2384,10 @@ function render() {
 
   var cgstAmt = gstOn ? subtotal * cgstPct / 100 : 0;
   var sgstAmt = gstOn ? subtotal * sgstPct / 100 : 0;
-  var netTotal = subtotal + cgstAmt + sgstAmt;
+  // Hallmark attracts 9% GST (CGST 4.5% + SGST 4.5%) separately
+  var hallmarkCgst = hallmarkOn ? hallmarkAmt * 4.5 / 100 : 0;
+  var hallmarkSgst = hallmarkOn ? hallmarkAmt * 4.5 / 100 : 0;
+  var netTotal = subtotal + cgstAmt + sgstAmt + hallmarkAmt + hallmarkCgst + hallmarkSgst;
 
   var itemRows = items.map(function(it, i) {
     var amt = calcAmt(it);
@@ -2286,11 +2415,25 @@ function render() {
   }).join('');
 
   var empties = '';
-  for (var e = items.length; e < 9; e++) empties += '<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td></tr>';
 
   var gstRows = gstOn
     ? '<tr class="gst-row"><td colspan="4"></td><td style="text-align:right">CGST ' + cgstPct + '%</td><td style="text-align:right">Rs.' + fmtINR(cgstAmt) + '</td></tr>'
       + '<tr class="gst-row"><td colspan="4"></td><td style="text-align:right">SGST ' + sgstPct + '%</td><td style="text-align:right">Rs.' + fmtINR(sgstAmt) + '</td></tr>'
+    : '';
+
+  var hallmarkRow = hallmarkOn
+    ? '<tr class="hallmark-charge-row"><td colspan="4"></td>'
+        + '<td style="text-align:right">'
+          + '<span class="hallmark-label">✦ Hallmark Charge</span>'
+        + '</td>'
+        + '<td style="text-align:right"><span class="hallmark-amt-val">Rs.' + fmtINR(hallmarkAmt) + '</span></td>'
+      + '</tr>'
+      + '<tr class="hallmark-gst-row"><td colspan="4"></td>'
+        + '<td style="text-align:right">'
+          + '<span class="hallmark-gst-label">GST @ 9% <em>(on Hallmark)</em></span>'
+        + '</td>'
+        + '<td style="text-align:right"><span class="hallmark-gst-val">Rs.' + fmtINR(hallmarkCgst + hallmarkSgst) + '</span></td>'
+      + '</tr>'
     : '';
 
   // Weight summary — only shown if there are subtracted rows
@@ -2353,6 +2496,7 @@ function render() {
           + '<td style="text-align:right"><strong>Rs.' + fmtINR(subtotal) + '</strong></td>'
         + '</tr>'
         + gstRows
+        + hallmarkRow
         + '<tr class="grand-total-row">'
           + '<td colspan="5" style="text-align:right"><strong>Net Total Rs.</strong></td>'
           + '<td><strong>Rs.' + fmtINR(netTotal) + '</strong></td>'
@@ -2364,10 +2508,23 @@ function render() {
         + '<div style="margin-bottom:12px;font-style:italic;font-size:0.82rem;color:var(--muted)"><strong style="color:var(--text)">Amount in words:</strong> Rupees ' + numToWords(netTotal) + '</div>'
         + (bankOn ? '<div class="bank-details"><strong>Account Details:</strong><br>Bank &amp; Branch: <strong>' + bankName + '</strong><br>Account No: <strong>' + bankAcc + '</strong><br>IFSC: <strong>' + bankIfsc + '</strong></div>' : '')
       + '</div>'
-      + '<div style="text-align:right;font-size:0.78rem;color:var(--muted);font-style:italic;align-self:flex-start">for ' + shopName + '</div>'
     + '</div>'
-    + '<div class="signature-row"><div class="sig-line">Receiver\'s Signature</div><div class="sig-line">Authorised Signature</div></div>'
-    + '<div class="bill-address">' + shopAddr + '<br>Ph: ' + shopPhone + '<br>e-mail: ' + shopEmail + '</div>'
+    + '<div class="signature-section">'
+      + '<div class="sig-block">'
+        + '<div class="sig-space"></div>'
+        + '<div class="sig-line">Receiver\'s Signature</div>'
+      + '</div>'
+      + '<div class="sig-block sig-block-right">'
+        + '<div class="for-shop-label">for <em>' + shopName + '</em></div>'
+        + '<div class="sig-space"></div>'
+        + '<div class="sig-line">Authorised Signature</div>'
+      + '</div>'
+    + '</div>'
+    + '<div class="bill-address">'
+      + '<span class="bill-addr-line">' + shopAddr + '</span>'
+      + (shopPhone ? '<span class="bill-addr-sep">&#8226;</span><span class="bill-addr-line">Ph: ' + shopPhone + '</span>' : '')
+      + (shopEmail ? '<span class="bill-addr-sep">&#8226;</span><span class="bill-addr-line">' + shopEmail + '</span>' : '')
+      + '</div>'
     + '<div class="bill-ornament">'
       + '<div class="orn-line"></div>'
       + '<div class="bill-ornament-center">'
@@ -2435,26 +2592,84 @@ async function downloadPDF() {
   var orig = btn.textContent;
   btn.textContent = 'Generating...';
   btn.disabled = true;
+
   try {
     var bill = document.getElementById('bill');
-    // Add pdf-mode to neutralise CSS effects that html2canvas can't handle
+
+    // ── Step 1: Switch to pdf-mode & snapshot current styles ──
     bill.classList.add('pdf-mode');
-    await new Promise(function(r){ setTimeout(r, 50); }); // let styles apply
-    var canvas = await html2canvas(bill, { scale: 2, useCORS: true, backgroundColor: '#fffdf5' });
+    var prevCssText = bill.style.cssText;
+
+    // ── Step 2: Force the bill to exact A4 width (794px = 210mm @ 96dpi)
+    //           so html2canvas captures it at the correct proportions
+    bill.style.cssText = '';
+    bill.style.width        = '794px';
+    bill.style.minWidth     = '794px';
+    bill.style.maxWidth     = '794px';
+    bill.style.padding      = '28px 36px';
+    bill.style.boxSizing    = 'border-box';
+    bill.style.overflow     = 'visible';
+    bill.style.height       = 'auto';
+    bill.style.boxShadow    = 'none';
+    bill.style.border       = '1.5px solid #c8960a';
+    bill.style.borderRadius = '0';
+    bill.style.margin       = '0';
+
+    // Give the browser a moment to reflow
+    await new Promise(function(r){ setTimeout(r, 120); });
+
+    var billH = bill.scrollHeight;
+    var billW = bill.scrollWidth;
+
+    // ── Step 3: Capture at 2× for sharp output ──
+    var canvas = await html2canvas(bill, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#fffdf5',
+      width: billW,
+      height: billH,
+      windowWidth: billW,
+      windowHeight: billH + 200
+    });
+
+    // ── Step 4: Restore original styles ──
+    bill.style.cssText = prevCssText;
     bill.classList.remove('pdf-mode');
+
+    // ── Step 5: Build PDF ──
     var jsPDF = window.jspdf.jsPDF;
+    // A4 in mm: 210 × 297
     var pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    var imgData = canvas.toDataURL('image/png');
-    var pdfW = pdf.internal.pageSize.getWidth();
-    var pdfH = (canvas.height * pdfW) / canvas.width;
-    pdf.addImage(imgData, 'PNG', 0, 0, pdfW, pdfH);
+    var pdfW = pdf.internal.pageSize.getWidth();   // 210
+    var pdfH = pdf.internal.pageSize.getHeight();  // 297
+
+    // Convert canvas to JPEG (much smaller than PNG)
+    var imgData = canvas.toDataURL('image/jpeg', 0.92);
+
+    // Compute rendered height in mm at full A4 width
+    var imgH_mm = (canvas.height / canvas.width) * pdfW;
+
+    if (imgH_mm <= pdfH) {
+      // Fits in one page — fill full width, anchor to top
+      pdf.addImage(imgData, 'JPEG', 0, 0, pdfW, imgH_mm);
+    } else {
+      // Content taller than A4 — scale to fit height (keeps single page)
+      var ratio   = pdfH / imgH_mm;
+      var fitW    = pdfW * ratio;
+      var offsetX = (pdfW - fitW) / 2;
+      pdf.addImage(imgData, 'JPEG', offsetX, 0, fitW, pdfH);
+    }
+
+    // ── Step 6: Trigger direct browser download ──
     var invNo = document.getElementById('inv-no').value || 'bill';
-    var cn = document.getElementById('cust-name').value.replace(/\s+/g,'_') || 'customer';
+    var cn    = document.getElementById('cust-name').value.replace(/\s+/g,'_') || 'customer';
     pdf.save('Invoice_' + invNo + '_' + cn + '.pdf');
+
   } catch(e) {
     document.getElementById('bill').classList.remove('pdf-mode');
     alert('PDF generation failed: ' + e.message);
   }
+
   btn.textContent = orig;
   btn.disabled = false;
 }
@@ -2482,6 +2697,11 @@ function setBillType(type) {
   applyStyle(btnEstimation, type === 'estimation' ? activeStyle : inactiveStyle);
 
   render();
+}
+
+function toggleHallmarkField() {
+  var on = document.getElementById('hallmark-toggle').checked;
+  document.getElementById('hallmark-amt-field').style.display = on ? '' : 'none';
 }
 
 renderItemsEditor();

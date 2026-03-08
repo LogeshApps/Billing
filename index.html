@@ -412,43 +412,6 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
   background-clip: unset !important;
   color: #b8860b !important;
 }
-/* pdf-mode: strip ALL animations and shimmer for clean capture */
-.pdf-mode, .pdf-mode * {
-  animation: none !important;
-  transition: none !important;
-  text-shadow: none !important;
-}
-.pdf-mode .logo-circle {
-  filter: none !important;
-  transform: none !important;
-}
-.pdf-mode .bill-ornament {
-  filter: none !important;
-  transform: none !important;
-}
-/* pdf-mode: ensure full-width table columns don't collapse */
-.pdf-mode .bill-table {
-  width: 100% !important;
-  font-size: 0.82rem !important;
-}
-.pdf-mode .bill-table th,
-.pdf-mode .bill-table td {
-  font-size: 0.8rem !important;
-  padding: 7px 10px !important;
-}
-.pdf-mode .bill-meta {
-  grid-template-columns: 1fr 1fr !important;
-  font-size: 0.8rem !important;
-}
-.pdf-mode .bill-footer {
-  grid-template-columns: 1fr 1fr !important;
-  font-size: 0.8rem !important;
-}
-.pdf-mode .bill-header {
-  flex-wrap: nowrap !important;
-}
-.pdf-mode .brand-name { font-size: 1.4rem !important; }
-.pdf-mode .grand-total-row td { font-size: 1rem !important; }
 .brand-subtitle {
   font-size: 0.68rem; letter-spacing: 4px;
   text-transform: uppercase; color: var(--muted);
@@ -968,457 +931,135 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
 /* ==============================================
    📱 MOBILE RESPONSIVE STYLES
    ============================================== */
-/* =====================================================
-   📱 MOBILE BOTTOM NAV BAR
-   ===================================================== */
-#mobile-nav {
-  display: none;
-}
 @media (max-width: 768px) {
-  #mobile-nav {
-    display: flex;
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    z-index: 900;
-    background: linear-gradient(180deg, #1a0e00, #0d0700);
-    border-top: 1.5px solid rgba(218,165,32,0.35);
-    box-shadow: 0 -4px 24px rgba(0,0,0,0.7);
-    height: 60px;
-    align-items: stretch;
-  }
-  .mnav-btn {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 3px;
-    background: none;
-    border: none;
-    color: rgba(200,168,64,0.55);
-    font-family: 'Lato', sans-serif;
-    font-size: 0.52rem;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    cursor: pointer;
-    padding: 6px 2px;
-    transition: all 0.15s;
-    position: relative;
-  }
-  .mnav-btn .mnav-icon { font-size: 1.3rem; line-height: 1; }
-  .mnav-btn.active {
-    color: var(--g3);
-  }
-  .mnav-btn.active::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 15%; right: 15%;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--g2), transparent);
-    border-radius: 2px;
-  }
-  .mnav-btn.mnav-pdf {
-    background: linear-gradient(180deg, rgba(218,165,32,0.18), rgba(184,134,11,0.08));
-    color: var(--g3);
-    border-left: 1px solid rgba(218,165,32,0.2);
-    border-right: 1px solid rgba(218,165,32,0.2);
-  }
-}
-
-/* =====================================================
-   📱 MOBILE SECTION TABS (Editor / Items / Preview)
-   ===================================================== */
-#mobile-tab-bar {
-  display: none;
-}
-@media (max-width: 768px) {
-  #mobile-tab-bar {
-    display: flex;
-    position: sticky;
-    top: 0;
-    z-index: 500;
-    background: #0d0800;
-    border-bottom: 1.5px solid rgba(218,165,32,0.25);
-    box-shadow: 0 2px 12px rgba(0,0,0,0.6);
-  }
-  .mtab {
-    flex: 1;
-    padding: 11px 4px;
-    background: none;
-    border: none;
-    color: rgba(200,168,64,0.5);
-    font-family: 'Lato', sans-serif;
-    font-size: 0.62rem;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.15s;
-    position: relative;
-  }
-  .mtab.active {
-    color: var(--g3);
-    background: rgba(218,165,32,0.07);
-  }
-  .mtab.active::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 10%; right: 10%;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--g2), transparent);
-  }
-
-  /* Hide sections not active on mobile — JS toggles .mob-hidden */
-  .mob-section.mob-hidden { display: none !important; }
-}
-
-/* =====================================================
-   📱 MOBILE FULL LAYOUT OVERHAUL (≤768px)
-   ===================================================== */
-@media (max-width: 768px) {
-
-  /* Body padding for bottom nav */
-  body { padding-bottom: 0; }
 
   /* ── Login ── */
-  #login-overlay { align-items: flex-start; padding-top: 40px; overflow-y: auto; }
   .login-box {
-    padding: 28px 18px 24px;
-    margin: 0 12px 30px;
-    border-radius: 16px;
-    max-width: 100%;
+    padding: 32px 22px 28px;
+    margin: 16px;
+    border-radius: 14px;
   }
-  .login-logo-box { padding: 10px 16px; }
-  .login-logo-text { font-size: 1.5rem; letter-spacing: 4px; }
-  .login-title { font-size: 1.1rem; letter-spacing: 2px; }
-  .login-title2 { font-size: 0.85rem; letter-spacing: 4px; }
-  .login-field { margin-bottom: 14px; }
-  .login-field input { font-size: 16px; padding: 14px 14px; border-radius: 8px; }
-  .login-btn { padding: 16px; font-size: 1rem; border-radius: 8px; margin-top: 4px; }
+  .login-logo-box { padding: 12px 18px; }
+  .login-logo-text { font-size: 1.6rem; letter-spacing: 4px; }
+  .login-title { font-size: 1.15rem; letter-spacing: 2px; }
+  .login-title2 { font-size: 0.9rem; letter-spacing: 4px; }
+  .login-field input { font-size: 1rem; padding: 13px 14px; }
+  .login-btn { padding: 15px; font-size: 0.9rem; }
 
-  /* ── Editor Panel ── */
-  #editor {
-    padding: 14px 14px 18px;
-  }
-  #editor h2 {
-    font-size: 0.85rem;
-    letter-spacing: 2px;
-    margin-bottom: 14px;
-    padding-top: 4px;
-  }
+  /* ── Editor ── */
+  #editor { padding: 18px 16px; }
+  #editor h2 { font-size: 1rem; letter-spacing: 2px; margin-bottom: 14px; }
   .editor-grid {
     grid-template-columns: 1fr 1fr !important;
-    gap: 10px 10px;
+    gap: 10px 12px;
   }
-  /* Keep span-2 working */
   .editor-grid .field-group[style*="grid-column:span 2"],
   .editor-grid .field-group[style*="grid-column: span 2"] {
     grid-column: span 2;
   }
-  .field-group label {
-    font-size: 0.6rem;
-    letter-spacing: 1px;
-  }
   .field-group input, .field-group select {
-    font-size: 16px; /* prevents iOS zoom */
-    padding: 11px 12px;
-    border-radius: 6px;
-    min-height: 44px;
+    font-size: 0.95rem;
+    padding: 9px 11px;
   }
-  .gst-toggle-wrap { padding: 8px 12px; min-height: 44px; }
-  .editor-section-label {
-    font-size: 0.6rem;
-    letter-spacing: 1.5px;
-    padding: 10px 0 8px;
-    margin-top: 8px;
-  }
-  #gold-rate { font-size: 16px !important; min-height: 48px !important; }
+  .gst-toggle-wrap { padding: 7px 10px; }
+  .editor-section-label { font-size: 0.62rem; }
+  #gold-rate { font-size: 0.95rem !important; }
 
-  /* Bill type buttons — full width row */
+  /* Bill type toggle buttons */
   #btn-original, #btn-copy, #btn-estimation {
     font-size: 0.7rem;
-    padding: 11px 6px;
+    padding: 8px 6px;
     letter-spacing: 0.5px;
-    min-height: 44px;
-  }
-
-  /* Editor bottom actions */
-  .editor-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-top: 16px;
-  }
-  .editor-actions .btn {
-    padding: 13px 10px;
-    font-size: 0.72rem;
-    letter-spacing: 1px;
-    min-height: 48px;
-    text-align: center;
   }
 
   /* ── Items Editor ── */
-  #items-editor {
-    padding: 14px 12px 18px;
-  }
-  .items-editor-top {
-    flex-direction: row;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 12px;
-  }
-  #items-editor h3 { font-size: 0.85rem; }
-  .rate-badge {
-    font-size: 0.68rem;
-    padding: 5px 12px;
-    margin-left: auto;
-  }
-
-  /* Preset quick-add — horizontal scroll */
-  .preset-bar {
-    display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    gap: 7px;
-    padding-bottom: 10px;
-    scrollbar-width: none;
-  }
-  .preset-bar::-webkit-scrollbar { display: none; }
-  .preset-bar-label { display: none; } /* hidden on mobile, saves space */
-  .preset-btn {
-    font-size: 0.72rem;
-    padding: 8px 14px;
-    white-space: nowrap;
-    min-height: 38px;
-    flex-shrink: 0;
-  }
-
-  /* Items table → CARD layout on mobile */
-  .items-table-wrap { overflow: visible; }
-  .items-table-editor { display: none; } /* hide desktop table */
-
-  /* Mobile item cards injected by JS */
-  #mobile-items-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 12px;
-  }
-  .mob-item-card {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(218,165,32,0.25);
-    border-radius: 10px;
-    padding: 12px 14px;
-    position: relative;
-  }
-  .mob-item-card:nth-child(even) { background: rgba(218,165,32,0.04); }
-  .mob-item-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 10px;
-  }
-  .mob-item-num {
-    font-size: 0.6rem;
-    color: var(--gmuted);
-    font-weight: 700;
-    background: rgba(218,165,32,0.12);
-    border-radius: 50%;
-    width: 22px; height: 22px;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
-  .mob-item-desc {
-    flex: 1;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(200,152,10,0.3);
-    border-radius: 6px;
-    color: var(--gtext);
-    font-family: 'Lato', sans-serif;
-    font-size: 16px;
-    padding: 9px 12px;
-    min-height: 44px;
-  }
-  .mob-item-desc:focus { outline: none; border-color: var(--g2); background: rgba(255,220,50,0.07); }
-  .mob-item-type-toggle {
-    display: flex;
-    border-radius: 6px;
-    overflow: hidden;
-    border: 1px solid rgba(218,165,32,0.3);
-    flex-shrink: 0;
-  }
-  .mob-item-type-toggle button {
-    padding: 9px 12px;
-    border: none;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 700;
-    background: rgba(255,255,255,0.05);
-    color: var(--gmuted);
-    min-height: 44px;
-    min-width: 44px;
-    transition: all 0.15s;
-  }
-  .mob-item-type-toggle button.active-add { background: rgba(50,180,80,0.25); color: #6fea8a; }
-  .mob-item-type-toggle button.active-sub { background: rgba(220,60,60,0.25); color: #ff9090; }
-  .mob-item-del {
-    background: rgba(180,40,40,0.15);
-    border: 1px solid rgba(200,80,80,0.3);
-    border-radius: 6px;
-    color: #f88;
-    font-size: 1rem;
-    padding: 9px 11px;
-    cursor: pointer;
-    min-height: 44px;
-    min-width: 44px;
-    flex-shrink: 0;
-  }
-  .mob-item-fields {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-  .mob-item-field { display: flex; flex-direction: column; gap: 4px; }
-  .mob-item-field label {
-    font-size: 0.58rem;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: var(--gmuted);
-    font-weight: 700;
-  }
-  .mob-item-field input {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(200,152,10,0.25);
-    border-radius: 6px;
-    color: var(--gtext);
-    font-family: 'Lato', sans-serif;
-    font-size: 16px;
-    padding: 9px 10px;
-    min-height: 44px;
-    width: 100%;
-  }
-  .mob-item-field input:focus { outline: none; border-color: var(--g2); background: rgba(255,220,50,0.07); }
-  .mob-item-field input.amt-overridden { background: rgba(255,180,0,0.18) !important; border-color: var(--g2) !important; border-style: dashed !important; color: #ffe066 !important; }
-  .mob-item-field input.rate-custom { background: rgba(218,165,32,0.18) !important; border-color: var(--g2) !important; border-style: dashed !important; color: #ffe066 !important; }
-  .mob-item-amt {
-    background: rgba(218,165,32,0.1) !important;
-    border-color: rgba(218,165,32,0.4) !important;
-    color: var(--g3) !important;
-    font-weight: 700 !important;
-    text-align: right;
-  }
-  .mob-add-row-btn {
-    width: 100%;
-    padding: 14px;
-    background: rgba(218,165,32,0.08);
-    border: 1.5px dashed rgba(218,165,32,0.4);
-    border-radius: 10px;
-    color: var(--g3);
-    font-family: 'Lato', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    cursor: pointer;
-    margin-top: 4px;
-    min-height: 50px;
-    transition: all 0.15s;
-  }
-  .mob-add-row-btn:active { background: rgba(218,165,32,0.18); }
+  #items-editor { padding: 14px 14px 18px; }
+  .items-editor-top { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .rate-badge { font-size: 0.72rem; padding: 4px 12px; align-self: flex-start; }
+  .preset-bar { gap: 5px; }
+  .preset-btn { font-size: 0.7rem; padding: 5px 10px; }
+  .items-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .items-table-editor { min-width: 580px; }
+  .editor-actions { gap: 8px; }
+  .editor-actions .btn { padding: 9px 14px; font-size: 0.72rem; letter-spacing: 1px; }
 
   /* ── Bill Preview ── */
-  #preview-wrap {
-    padding: 12px 8px 80px;
-  }
+  #preview-wrap { padding: 16px 8px 100px; }
   #bill {
-    padding: 16px 12px;
+    padding: 20px 16px;
     width: 100%;
-    font-size: 0.72rem;
-    border-radius: 8px;
+    font-size: 0.75rem;
   }
-  .bill-header {
-    flex-wrap: wrap;
-    gap: 8px;
-    justify-content: center;
-  }
+  .bill-header { flex-wrap: wrap; gap: 10px; justify-content: center; }
   .bill-header > div:first-child { order: 3; width: 100%; text-align: center; }
   .bill-header > div:last-child { order: 2; }
-  .logo-circle { width: 58px; height: 58px; font-size: 1.2rem; }
-  .brand-name { font-size: 1.1rem; letter-spacing: 2px; }
-  .brand-subtitle { font-size: 0.56rem; letter-spacing: 1.5px; }
-  .bis-badge { font-size: 0.56rem; padding: 5px 8px; }
-  .bill-top-meta { font-size: 0.6rem; flex-wrap: wrap; gap: 3px 8px; }
-  .bill-type-tag { font-size: 0.95rem; letter-spacing: 2px; padding: 5px 14px; }
-  .bill-meta { grid-template-columns: 1fr; font-size: 0.72rem; gap: 3px 0; }
-  .meta-label { min-width: 110px; font-size: 0.68rem; }
-  .bill-table { font-size: 0.68rem; }
-  .bill-table th { padding: 6px 5px; font-size: 0.58rem; }
-  .bill-table td { padding: 5px 5px; }
-  .grand-total-row td { font-size: 0.85rem; padding: 9px 5px; }
-  .bill-footer { grid-template-columns: 1fr; gap: 10px; font-size: 0.68rem; }
-  .signature-row { margin-top: 28px; }
-  .sig-line { min-width: 90px; font-size: 0.62rem; }
-  .bill-address { font-size: 0.62rem; }
+  .logo-circle { width: 60px; height: 60px; font-size: 1.3rem; }
+  .brand-name { font-size: 1.2rem; letter-spacing: 2px; }
+  .brand-subtitle { font-size: 0.58rem; letter-spacing: 2px; }
+  .bis-badge { font-size: 0.58rem; padding: 6px 10px; }
+  .bill-top-meta { font-size: 0.62rem; flex-wrap: wrap; gap: 4px 10px; }
+  .bill-type-tag { font-size: 1rem; letter-spacing: 3px; }
+  .bill-meta { grid-template-columns: 1fr; gap: 4px 0; font-size: 0.75rem; }
+  .meta-label { min-width: 100px; font-size: 0.72rem; }
+  .bill-table { font-size: 0.72rem; }
+  .bill-table th { padding: 7px 6px; font-size: 0.6rem; }
+  .bill-table td { padding: 5px 6px; }
+  .grand-total-row td { font-size: 0.88rem; padding: 9px 6px; }
+  .bill-footer { grid-template-columns: 1fr; gap: 10px; font-size: 0.72rem; }
+  .signature-row { margin-top: 30px; }
+  .sig-line { min-width: 100px; font-size: 0.65rem; }
+  .bill-address { font-size: 0.65rem; }
 
-  /* ── Hide FAB on mobile (replaced by bottom nav) ── */
-  #fab-actions { display: none !important; }
-
-  /* ── Gold Ticker on mobile ── */
-  #gold-ticker {
-    top: auto;
-    bottom: 68px;
-    left: 8px;
-    min-width: 122px;
-    padding: 7px 10px 6px;
+  /* ── Floating buttons ── */
+  #fab-actions {
+    bottom: 12px;
+    right: 12px;
+    gap: 7px;
   }
-  #ticker-price { font-size: 1rem; }
-  #ticker-icon { font-size: 1rem; }
-  #ticker-label { font-size: 0.48rem; }
-
-  /* ── Modals ── */
-  #cust-modal, #shop-modal-overlay > div {
-    margin: 10px auto !important;
-    padding: 20px 14px !important;
-    width: 96% !important;
-    border-radius: 12px !important;
+  #fab-actions .btn {
+    font-size: 0.68rem;
+    padding: 9px 14px;
+    letter-spacing: 1px;
   }
-  #cust-modal h3, #shop-modal-overlay h3 { font-size: 0.9rem !important; letter-spacing: 2px !important; }
-  #cust-modal [style*="display:flex;gap:8px"],
-  #cust-modal [style*="display: flex; gap: 8px"] { flex-wrap: wrap; }
-  .cust-card { flex-direction: column; gap: 8px; }
 
   /* ── Send Modal ── */
   #send-modal {
-    margin: 10px auto !important;
-    padding: 18px 14px !important;
-    width: 96% !important;
-    border-radius: 12px !important;
+    margin: 20px auto;
+    padding: 22px 16px;
   }
-  #send-modal h3 { font-size: 0.85rem !important; }
+  #send-modal > div:first-child h3 { font-size: 0.88rem; }
   #send-modal [style*="grid-template-columns: 1fr 1fr"],
   #send-modal [style*="grid-template-columns:1fr 1fr"] {
     grid-template-columns: 1fr !important;
   }
-  #send-modal .field-group input { font-size: 16px; min-height: 44px; }
+  #send-modal button[onclick*="sendWhatsApp"],
+  #send-modal button[onclick*="sendEmail"] {
+    min-width: unset;
+    font-size: 0.7rem;
+    padding: 10px 10px;
+  }
 
-} /* end 768px */
+  /* ── Customer / Shop Modals ── */
+  #cust-modal, #cust-modal ~ div {
+    padding: 20px 14px;
+    margin: 16px auto;
+  }
+  .cust-card { flex-direction: column; gap: 10px; }
+  .cust-card-actions { flex-direction: row; }
+}
 
-/* =====================================================
-   📱 SMALL PHONE (≤420px)
-   ===================================================== */
 @media (max-width: 420px) {
   .editor-grid { grid-template-columns: 1fr !important; }
   .editor-grid .field-group[style*="grid-column:span 2"],
-  .editor-grid .field-group[style*="grid-column: span 2"] { grid-column: span 1 !important; }
-  .login-box { padding: 22px 14px 20px; }
-  .login-logo-text { font-size: 1.3rem; }
-  .bill-table { font-size: 0.62rem; }
-  .bill-table th, .bill-table td { padding: 4px 3px; }
-  #bill { padding: 12px 8px; }
-  .mob-item-fields { grid-template-columns: 1fr; }
-  #gold-ticker { display: none; } /* too cramped on tiny phones */
+  .editor-grid .field-group[style*="grid-column: span 2"] {
+    grid-column: span 1 !important;
+  }
+  .login-box { padding: 26px 16px 24px; }
+  .login-logo-text { font-size: 1.4rem; }
+  .bill-table { font-size: 0.66rem; }
+  .bill-table th, .bill-table td { padding: 4px 4px; }
+  #bill { padding: 14px 10px; }
+  #fab-actions .btn { font-size: 0.63rem; padding: 8px 10px; }
 }
 
 
@@ -1505,15 +1146,8 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
   </div>
 </div>
 
-<!-- ===== MOBILE TAB BAR ===== -->
-<div id="mobile-tab-bar">
-  <button class="mtab active" onclick="showMobTab('editor')" id="mtab-editor">📋<br>Details</button>
-  <button class="mtab" onclick="showMobTab('items')" id="mtab-items">💎<br>Items</button>
-  <button class="mtab" onclick="showMobTab('preview')" id="mtab-preview">🧾<br>Preview</button>
-</div>
-
 <!-- ===== EDITOR ===== -->
-<div id="editor" class="mob-section" data-tab="editor">
+<div id="editor">
   <h2>Bill Details</h2>
 
   <!-- SECTION 1: Bill Info -->
@@ -1564,20 +1198,6 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
           <span class="toggle-slider"></span>
         </div>
       </div>
-    </div>
-    <div class="field-group" style="justify-content:flex-end">
-      <label>🔖 Hallmark Charges</label>
-      <div class="gst-toggle-wrap" onclick="document.getElementById('hallmark-toggle').click()">
-        <label for="hallmark-toggle">Hallmark On / Off</label>
-        <div class="toggle-switch">
-          <input type="checkbox" id="hallmark-toggle" onchange="render()">
-          <span class="toggle-slider"></span>
-        </div>
-      </div>
-    </div>
-    <div class="field-group" id="hallmark-charge-field" style="display:none">
-      <label>Hallmark Charge (Rs.)</label>
-      <input id="hallmark-charge" type="number" value="45" step="0.01" oninput="render()" placeholder="e.g. 45">
     </div>
   </div>
 
@@ -1802,7 +1422,7 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
 </div>
 
 <!-- ===== ITEMS EDITOR ===== -->
-<div id="items-editor" class="mob-section" data-tab="items">
+<div id="items-editor">
   <div class="items-editor-top">
     <h3>Line Items</h3>
     <span class="rate-badge" id="rate-badge">Gold Rate: Rs.16,000.00 / gram</span>
@@ -1840,27 +1460,11 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
 </div>
 
 <!-- ===== BILL PREVIEW ===== -->
-<div id="preview-wrap" class="mob-section" data-tab="preview">
+<div id="preview-wrap">
   <div id="bill"></div>
 </div>
 
-<!-- ===== MOBILE BOTTOM NAV ===== -->
-<div id="mobile-nav">
-  <button class="mnav-btn active" id="mnav-editor" onclick="showMobTab('editor')">
-    <span class="mnav-icon">📋</span>Details
-  </button>
-  <button class="mnav-btn" id="mnav-items" onclick="showMobTab('items')">
-    <span class="mnav-icon">💎</span>Items
-  </button>
-  <button class="mnav-btn" id="mnav-preview" onclick="showMobTab('preview')">
-    <span class="mnav-icon">🧾</span>Preview
-  </button>
-  <button class="mnav-btn mnav-pdf" onclick="downloadPDF()">
-    <span class="mnav-icon">⬇</span>PDF
-  </button>
-</div>
-
-<!-- ===== FLOATING ACTION BUTTONS (desktop only) ===== -->
+<!-- ===== FLOATING ACTION BUTTONS ===== -->
 <div id="fab-actions">
   <button class="btn btn-gold" onclick="downloadPDF()">&#8659; Download PDF</button>
   <button class="btn btn-outline" style="background:rgba(0,0,0,0.7);backdrop-filter:blur(8px)" onclick="window.print()">&#128438; Print</button>
@@ -2646,15 +2250,6 @@ function render() {
   var bankOn = document.getElementById('bank-toggle') ? document.getElementById('bank-toggle').checked : true;
   var bankName=g('bank-name'), bankAcc=g('bank-acc'), bankIfsc=g('bank-ifsc');
 
-  // Hallmark
-  var hallmarkOn = document.getElementById('hallmark-toggle') ? document.getElementById('hallmark-toggle').checked : false;
-  var hallmarkCharge = hallmarkOn ? (parseFloat(g('hallmark-charge'))||0) : 0;
-  var hallmarkGstPct = 9; // fixed 9% GST on hallmark
-  var hallmarkGstAmt = hallmarkOn ? hallmarkCharge * hallmarkGstPct / 100 : 0;
-  // Show/hide hallmark charge input
-  var hcf = document.getElementById('hallmark-charge-field');
-  if (hcf) hcf.style.display = hallmarkOn ? '' : 'none';
-
   // Net total = sum of signed amounts
   var subtotal = items.reduce(function(s, it) { return s + signedAmt(it); }, 0);
   var totalAddWt = items.filter(function(it){ return it.type !== 'sub'; }).reduce(function(s,it){ return s+(parseFloat(it.gross)||0); }, 0);
@@ -2663,7 +2258,7 @@ function render() {
 
   var cgstAmt = gstOn ? subtotal * cgstPct / 100 : 0;
   var sgstAmt = gstOn ? subtotal * sgstPct / 100 : 0;
-  var netTotal = subtotal + cgstAmt + sgstAmt + hallmarkCharge + hallmarkGstAmt;
+  var netTotal = subtotal + cgstAmt + sgstAmt;
 
   var itemRows = items.map(function(it, i) {
     var amt = calcAmt(it);
@@ -2696,19 +2291,6 @@ function render() {
   var gstRows = gstOn
     ? '<tr class="gst-row"><td colspan="4"></td><td style="text-align:right">CGST ' + cgstPct + '%</td><td style="text-align:right">Rs.' + fmtINR(cgstAmt) + '</td></tr>'
       + '<tr class="gst-row"><td colspan="4"></td><td style="text-align:right">SGST ' + sgstPct + '%</td><td style="text-align:right">Rs.' + fmtINR(sgstAmt) + '</td></tr>'
-    : '';
-
-  var hallmarkRows = hallmarkOn
-    ? '<tr class="gst-row" style="background:rgba(184,134,11,0.06)">'
-        + '<td colspan="4"></td>'
-        + '<td style="text-align:right;color:#b8860b;font-weight:700">🔖 Hallmark Charges</td>'
-        + '<td style="text-align:right;color:#b8860b;font-weight:700">Rs.' + fmtINR(hallmarkCharge) + '</td>'
-      + '</tr>'
-      + '<tr class="gst-row" style="background:rgba(184,134,11,0.06)">'
-        + '<td colspan="4"></td>'
-        + '<td style="text-align:right;color:#b8860b">GST on Hallmark ' + hallmarkGstPct + '%</td>'
-        + '<td style="text-align:right;color:#b8860b">Rs.' + fmtINR(hallmarkGstAmt) + '</td>'
-      + '</tr>'
     : '';
 
   // Weight summary — only shown if there are subtracted rows
@@ -2771,7 +2353,6 @@ function render() {
           + '<td style="text-align:right"><strong>Rs.' + fmtINR(subtotal) + '</strong></td>'
         + '</tr>'
         + gstRows
-        + hallmarkRows
         + '<tr class="grand-total-row">'
           + '<td colspan="5" style="text-align:right"><strong>Net Total Rs.</strong></td>'
           + '<td><strong>Rs.' + fmtINR(netTotal) + '</strong></td>'
@@ -2850,152 +2431,32 @@ function render() {
 }
 
 async function downloadPDF() {
-  var btn = (typeof event !== 'undefined' && event && event.target && event.target.tagName === 'BUTTON')
-    ? event.target
-    : document.querySelector('#fab-actions .btn-gold, .mnav-pdf');
-  var orig = btn ? btn.textContent : '';
-  if (btn) { btn.textContent = '⏳ Generating...'; btn.disabled = true; }
-
+  var btn = event.target;
+  var orig = btn.textContent;
+  btn.textContent = 'Generating...';
+  btn.disabled = true;
   try {
-    // ── A4 constants ──
-    var A4_MM_W = 210, A4_MM_H = 297;
-    var SCALE   = 2;             // retina quality
-    var DPI_PX  = 794;           // 210mm @ 96dpi = 794px — exact A4 width
-    var PAD     = 36;            // px padding inside bill
-
-    // ── 1. Build a full desktop render of the bill ──
-    // We re-run render() inside a hidden iframe-sized container so mobile
-    // media queries NEVER fire (the container is wider than 768px).
-    var billSrc = document.getElementById('bill');
-
-    // Create an invisible fixed container wider than any mobile breakpoint
-    var ghost = document.createElement('div');
-    ghost.style.cssText = [
-      'position:fixed',
-      'left:-9999px',
-      'top:0',
-      'width:' + (DPI_PX + PAD * 2) + 'px',
-      'min-width:' + (DPI_PX + PAD * 2) + 'px',
-      'background:#fffdf5',
-      'z-index:-999',
-      'overflow:visible',
-      'pointer-events:none'
-    ].join(';');
-    document.body.appendChild(ghost);
-
-    // Clone the bill into the ghost container
-    var billClone = billSrc.cloneNode(true);
-    billClone.style.cssText = [
-      'width:' + DPI_PX + 'px',
-      'min-width:' + DPI_PX + 'px',
-      'max-width:' + DPI_PX + 'px',
-      'box-sizing:border-box',
-      'padding:' + PAD + 'px',
-      'font-size:0.82rem',
-      'border-radius:0',
-      'box-shadow:none',
-      'animation:none',
-      'background:#fffdf5'
-    ].join(';');
-    billClone.id = 'bill-pdf-clone';
-    billClone.classList.add('pdf-mode');
-
-    // Fix shimmer text: brand-name uses -webkit-text-fill-color which html2canvas can't render
-    var brandEl = billClone.querySelector('.brand-name');
-    if (brandEl) {
-      brandEl.style.cssText += ';background:none!important;-webkit-background-clip:unset!important;-webkit-text-fill-color:#b8860b!important;background-clip:unset!important;color:#b8860b!important;animation:none!important';
-    }
-    // Strip animation from all elements in clone
-    var allEls = billClone.querySelectorAll('*');
-    allEls.forEach(function(el) {
-      el.style.animation = 'none';
-      el.style.transition = 'none';
-    });
-
-    ghost.appendChild(billClone);
-
-    // Force desktop layout — give browser time to reflow at full width
-    await new Promise(function(r){ setTimeout(r, 180); });
-
-    // ── 2. Capture ──
-    var canvas = await html2canvas(billClone, {
-      scale: SCALE,
-      useCORS: true,
-      backgroundColor: '#fffdf5',
-      width: DPI_PX,
-      windowWidth: DPI_PX + PAD * 2,
-      logging: false,
-      allowTaint: true
-    });
-
-    // ── 3. Clean up ghost ──
-    document.body.removeChild(ghost);
-
-    // ── 4. Smart single-page: trim excess blank bottom ──
-    // Scan upward from bottom of canvas to find last non-white row
-    var ctx2 = canvas.getContext('2d');
-    var imgDataRaw = ctx2.getImageData(0, 0, canvas.width, canvas.height);
-    var lastRow = canvas.height - 1;
-    outer: for (var row = canvas.height - 1; row >= 0; row--) {
-      for (var col = 0; col < canvas.width; col++) {
-        var idx = (row * canvas.width + col) * 4;
-        var r = imgDataRaw.data[idx], g = imgDataRaw.data[idx+1], b = imgDataRaw.data[idx+2];
-        // Any pixel darker than near-white counts as content
-        if (r < 250 || g < 248 || b < 240) { lastRow = row; break outer; }
-      }
-    }
-    var contentH = lastRow + 20; // +20px breathing room at bottom
-
-    // ── 5. Build PDF ──
-    var jsPDF  = window.jspdf.jsPDF;
-    var pdf    = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    var pdfW   = pdf.internal.pageSize.getWidth();   // 210mm
-    var pdfH   = pdf.internal.pageSize.getHeight();  // 297mm
-    var imgW   = pdfW;
-    var imgH   = (contentH * imgW) / (canvas.width / SCALE); // mm height of content
-
-    // Crop canvas to content height only
-    var croppedCanvas = document.createElement('canvas');
-    croppedCanvas.width  = canvas.width;
-    croppedCanvas.height = contentH * SCALE;
-    var cCtx = croppedCanvas.getContext('2d');
-    cCtx.drawImage(canvas, 0, 0, canvas.width, contentH * SCALE, 0, 0, canvas.width, contentH * SCALE);
-
-    var imgData = croppedCanvas.toDataURL('image/png');
-    var finalH  = (croppedCanvas.height * imgW) / croppedCanvas.width;
-
-    if (finalH <= pdfH) {
-      // Perfect single page
-      pdf.addImage(imgData, 'PNG', 0, 0, imgW, finalH);
-    } else {
-      // Multi-page (genuinely long bill)
-      var pageHpx    = Math.floor(croppedCanvas.width * pdfH / imgW);
-      var totalPages = Math.ceil(croppedCanvas.height / pageHpx);
-      for (var pg = 0; pg < totalPages; pg++) {
-        if (pg > 0) pdf.addPage();
-        var sy   = pg * pageHpx;
-        var sh   = Math.min(pageHpx, croppedCanvas.height - sy);
-        var slCv = document.createElement('canvas');
-        slCv.width  = croppedCanvas.width;
-        slCv.height = sh;
-        var slCtx = slCv.getContext('2d');
-        slCtx.drawImage(croppedCanvas, 0, sy, croppedCanvas.width, sh, 0, 0, croppedCanvas.width, sh);
-        pdf.addImage(slCv.toDataURL('image/png'), 'PNG', 0, 0, imgW, (sh * imgW) / croppedCanvas.width);
-      }
-    }
-
+    var bill = document.getElementById('bill');
+    // Add pdf-mode to neutralise CSS effects that html2canvas can't handle
+    bill.classList.add('pdf-mode');
+    await new Promise(function(r){ setTimeout(r, 50); }); // let styles apply
+    var canvas = await html2canvas(bill, { scale: 2, useCORS: true, backgroundColor: '#fffdf5' });
+    bill.classList.remove('pdf-mode');
+    var jsPDF = window.jspdf.jsPDF;
+    var pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    var imgData = canvas.toDataURL('image/png');
+    var pdfW = pdf.internal.pageSize.getWidth();
+    var pdfH = (canvas.height * pdfW) / canvas.width;
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfW, pdfH);
     var invNo = document.getElementById('inv-no').value || 'bill';
-    var cn    = (document.getElementById('cust-name').value || 'customer').replace(/\s+/g, '_');
+    var cn = document.getElementById('cust-name').value.replace(/\s+/g,'_') || 'customer';
     pdf.save('Invoice_' + invNo + '_' + cn + '.pdf');
-
   } catch(e) {
-    // Safety cleanup
-    var g2 = document.getElementById('bill-pdf-clone');
-    if (g2 && g2.parentNode) g2.parentNode.removeChild(g2.parentNode);
+    document.getElementById('bill').classList.remove('pdf-mode');
     alert('PDF generation failed: ' + e.message);
   }
-
-  if (btn) { btn.textContent = orig; btn.disabled = false; }
+  btn.textContent = orig;
+  btn.disabled = false;
 }
 
 // Bill type: 'original' | 'copy'
@@ -3028,123 +2489,6 @@ render();
 // Load customers and shops from GitHub on startup
 ghFetchCustomers().then(function() { refreshCustomerDropdown(); });
 ghFetchShops().then(function() { refreshShopDropdown(); });
-
-// ===== MOBILE TAB SWITCHING =====
-function isMobile() { return window.innerWidth <= 768; }
-
-function showMobTab(tab) {
-  if (!isMobile()) return;
-  // Update tab bar
-  document.querySelectorAll('.mtab').forEach(function(b) { b.classList.remove('active'); });
-  var tabEl = document.getElementById('mtab-' + tab);
-  if (tabEl) tabEl.classList.add('active');
-  // Update bottom nav
-  document.querySelectorAll('.mnav-btn').forEach(function(b) { b.classList.remove('active'); });
-  var navEl = document.getElementById('mnav-' + tab);
-  if (navEl) navEl.classList.add('active');
-  // Show/hide sections
-  document.querySelectorAll('.mob-section').forEach(function(s) {
-    if (s.getAttribute('data-tab') === tab) {
-      s.classList.remove('mob-hidden');
-    } else {
-      s.classList.add('mob-hidden');
-    }
-  });
-  // If switching to items, refresh card list
-  if (tab === 'items') renderMobileItems();
-  // If switching to preview, re-render bill
-  if (tab === 'preview') render();
-  window.scrollTo(0, 0);
-}
-
-// On resize, remove mob-hidden if switching back to desktop
-window.addEventListener('resize', function() {
-  if (!isMobile()) {
-    document.querySelectorAll('.mob-section').forEach(function(s) { s.classList.remove('mob-hidden'); });
-  } else {
-    // re-apply current tab
-    var active = document.querySelector('.mtab.active');
-    if (active) showMobTab(active.id.replace('mtab-', ''));
-  }
-});
-
-// Init mobile view on load
-if (isMobile()) {
-  showMobTab('editor');
-}
-
-// ===== MOBILE CARD-BASED ITEMS RENDERER =====
-function renderMobileItems() {
-  var wrap = document.getElementById('mobile-items-list');
-  if (!wrap) return;
-  wrap.innerHTML = '';
-  items.forEach(function(item, idx) {
-    var card = document.createElement('div');
-    card.className = 'mob-item-card';
-    var addActive = item.type !== 'sub' ? 'active-add' : '';
-    var subActive = item.type === 'sub' ? 'active-sub' : '';
-    var rateVal = item.rateOverride !== null && item.rateOverride !== '' ? item.rateOverride : '';
-    var amtVal  = item.amtOverride  !== null && item.amtOverride  !== '' ? item.amtOverride  : autoAmt(item).toFixed(2);
-    var rateClass = rateVal ? 'rate-custom' : '';
-    var amtClass  = (item.amtOverride !== null && item.amtOverride !== '') ? 'amt-overridden' : '';
-    card.innerHTML =
-      '<div class="mob-item-header">'
-        + '<span class="mob-item-num">' + (idx+1) + '</span>'
-        + '<input class="mob-item-desc" value="' + esc(item.desc||'') + '" placeholder="Description" oninput="mobUpdateDesc(' + idx + ',this.value)">'
-        + '<div class="mob-item-type-toggle">'
-          + '<button class="' + addActive + '" onclick="mobSetType(' + idx + ',\'add\')">+</button>'
-          + '<button class="' + subActive + '" onclick="mobSetType(' + idx + ',\'sub\')">−</button>'
-        + '</div>'
-        + '<button class="mob-item-del" onclick="removeItem(' + idx + ')">🗑</button>'
-      + '</div>'
-      + '<div class="mob-item-fields">'
-        + '<div class="mob-item-field"><label>Weight (g)</label><input type="number" value="' + (item.gross||'') + '" placeholder="0.000" step="0.001" oninput="mobUpdateGross(' + idx + ',this.value)"></div>'
-        + '<div class="mob-item-field"><label>Rate (Rs/g)</label><input type="number" class="' + rateClass + '" value="' + rateVal + '" placeholder="' + getGoldRate() + '" step="0.01" oninput="mobUpdateRate(' + idx + ',this.value)"></div>'
-        + '<div class="mob-item-field" style="grid-column:span 2"><label>Amount (Rs.)</label><input type="number" class="mob-item-amt ' + amtClass + '" value="' + amtVal + '" step="0.01" oninput="mobUpdateAmt(' + idx + ',this.value)"></div>'
-      + '</div>';
-    wrap.appendChild(card);
-  });
-  // Add row button
-  var addBtn = document.createElement('button');
-  addBtn.className = 'mob-add-row-btn';
-  addBtn.textContent = '+ Add Item';
-  addBtn.onclick = function() { addItem(); renderMobileItems(); };
-  wrap.appendChild(addBtn);
-}
-
-function mobUpdateDesc(i, v)  { if(items[i]) { items[i].desc = v; render(); } }
-function mobUpdateGross(i, v) { if(items[i]) { items[i].gross = v; renderMobileItemAmt(i); render(); } }
-function mobUpdateRate(i, v)  { if(items[i]) { items[i].rateOverride = v===''?null:v; renderMobileItemAmt(i); render(); } }
-function mobUpdateAmt(i, v)   { if(items[i]) { items[i].amtOverride  = v===''?null:v; render(); } }
-function mobSetType(i, t) {
-  if (!items[i]) return;
-  items[i].type = t;
-  renderMobileItems(); render();
-}
-function renderMobileItemAmt(i) {
-  var cards = document.querySelectorAll('.mob-item-card');
-  if (!cards[i]) return;
-  var amtInput = cards[i].querySelector('.mob-item-amt');
-  if (amtInput && (items[i].amtOverride === null || items[i].amtOverride === '')) {
-    amtInput.value = autoAmt(items[i]).toFixed(2);
-  }
-}
-
-// Patch addItem and removeItem to also refresh mobile list
-var _origAddItem = addItem;
-addItem = function() { _origAddItem(); if(isMobile()) renderMobileItems(); };
-var _origRemoveItem = removeItem;
-removeItem = function(i) { _origRemoveItem(i); if(isMobile()) renderMobileItems(); render(); };
-
-// Inject mobile-items-list div into items editor
-(function() {
-  var wrap = document.querySelector('.items-table-wrap');
-  if (wrap) {
-    var mob = document.createElement('div');
-    mob.id = 'mobile-items-list';
-    wrap.parentNode.insertBefore(mob, wrap);
-  }
-})();
 </script>
 </body>
 </html>
@@ -3152,17 +2496,6 @@ removeItem = function(i) { _origRemoveItem(i); if(isMobile()) renderMobileItems(
 // ===== LOGIN =====
 var LOGIN_USER = 'LogeshApps';
 var LOGIN_PWD  = '12345678';
-var SESSION_KEY = 'lbs_auth';
-
-// On load: if already authenticated in this browser session, skip login screen
-(function() {
-  try {
-    if (sessionStorage.getItem(SESSION_KEY) === '1') {
-      var overlay = document.getElementById('login-overlay');
-      if (overlay) overlay.classList.add('hidden');
-    }
-  } catch(e) {}
-})();
 
 function doLogin() {
   var u = document.getElementById('login-user').value.trim();
@@ -3171,7 +2504,6 @@ function doLogin() {
   var box = document.getElementById('login-box');
   if (u === LOGIN_USER && p === LOGIN_PWD) {
     errEl.classList.remove('show');
-    try { sessionStorage.setItem(SESSION_KEY, '1'); } catch(e) {}
     document.getElementById('login-overlay').classList.add('hidden');
     document.getElementById('login-user').value = '';
     document.getElementById('login-pwd').value = '';

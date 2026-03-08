@@ -2850,100 +2850,137 @@ function render() {
 }
 
 async function downloadPDF() {
-  var btn = event ? event.target : document.querySelector('[onclick="downloadPDF()"]');
+  var btn = (typeof event !== 'undefined' && event && event.target && event.target.tagName === 'BUTTON')
+    ? event.target
+    : document.querySelector('#fab-actions .btn-gold, .mnav-pdf');
   var orig = btn ? btn.textContent : '';
-  if (btn) { btn.textContent = 'Generating...'; btn.disabled = true; }
+  if (btn) { btn.textContent = '⏳ Generating...'; btn.disabled = true; }
+
   try {
-    var bill = document.getElementById('bill');
-    var previewWrap = document.getElementById('preview-wrap');
+    // ── A4 constants ──
+    var A4_MM_W = 210, A4_MM_H = 297;
+    var SCALE   = 2;             // retina quality
+    var DPI_PX  = 794;           // 210mm @ 96dpi = 794px — exact A4 width
+    var PAD     = 36;            // px padding inside bill
 
-    // ── 1. Force bill to standard A4-equivalent desktop width for capture ──
-    var A4_PX = 794; // 210mm @ 96dpi
+    // ── 1. Build a full desktop render of the bill ──
+    // We re-run render() inside a hidden iframe-sized container so mobile
+    // media queries NEVER fire (the container is wider than 768px).
+    var billSrc = document.getElementById('bill');
 
-    // Save original styles
-    var origBillStyle       = bill.getAttribute('style') || '';
-    var origWrapDisplay     = previewWrap ? previewWrap.style.display : '';
-    var origWrapVisibility  = previewWrap ? previewWrap.style.visibility : '';
+    // Create an invisible fixed container wider than any mobile breakpoint
+    var ghost = document.createElement('div');
+    ghost.style.cssText = [
+      'position:fixed',
+      'left:-9999px',
+      'top:0',
+      'width:' + (DPI_PX + PAD * 2) + 'px',
+      'min-width:' + (DPI_PX + PAD * 2) + 'px',
+      'background:#fffdf5',
+      'z-index:-999',
+      'overflow:visible',
+      'pointer-events:none'
+    ].join(';');
+    document.body.appendChild(ghost);
 
-    // Make preview-wrap visible but off-screen so layout is correct
-    if (previewWrap) {
-      previewWrap.style.display     = 'block';
-      previewWrap.style.visibility  = 'visible';
-      previewWrap.style.position    = 'fixed';
-      previewWrap.style.left        = '-9999px';
-      previewWrap.style.top         = '0';
-      previewWrap.style.width       = (A4_PX + 48) + 'px';
-      previewWrap.style.zIndex      = '-1';
+    // Clone the bill into the ghost container
+    var billClone = billSrc.cloneNode(true);
+    billClone.style.cssText = [
+      'width:' + DPI_PX + 'px',
+      'min-width:' + DPI_PX + 'px',
+      'max-width:' + DPI_PX + 'px',
+      'box-sizing:border-box',
+      'padding:' + PAD + 'px',
+      'font-size:0.82rem',
+      'border-radius:0',
+      'box-shadow:none',
+      'animation:none',
+      'background:#fffdf5'
+    ].join(';');
+    billClone.id = 'bill-pdf-clone';
+    billClone.classList.add('pdf-mode');
+
+    // Fix shimmer text: brand-name uses -webkit-text-fill-color which html2canvas can't render
+    var brandEl = billClone.querySelector('.brand-name');
+    if (brandEl) {
+      brandEl.style.cssText += ';background:none!important;-webkit-background-clip:unset!important;-webkit-text-fill-color:#b8860b!important;background-clip:unset!important;color:#b8860b!important;animation:none!important';
     }
-
-    // Force bill to A4 width with proper padding
-    bill.style.width         = A4_PX + 'px';
-    bill.style.minWidth      = A4_PX + 'px';
-    bill.style.maxWidth      = A4_PX + 'px';
-    bill.style.boxSizing     = 'border-box';
-    bill.style.padding       = '32px 36px';
-    bill.style.fontSize      = '0.82rem';
-    bill.style.borderRadius  = '0';
-
-    // Add pdf-mode class to neutralise gradient text + shimmer effects
-    bill.classList.add('pdf-mode');
-
-    // Wait for layout reflow
-    await new Promise(function(r){ setTimeout(r, 120); });
-
-    // ── 2. Capture at 2× for crisp resolution ──
-    var canvas = await html2canvas(bill, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: '#fffdf5',
-      width: A4_PX,
-      windowWidth: A4_PX + 48,
-      logging: false
+    // Strip animation from all elements in clone
+    var allEls = billClone.querySelectorAll('*');
+    allEls.forEach(function(el) {
+      el.style.animation = 'none';
+      el.style.transition = 'none';
     });
 
-    // ── 3. Restore all styles ──
-    bill.classList.remove('pdf-mode');
-    bill.setAttribute('style', origBillStyle);
-    if (previewWrap) {
-      previewWrap.style.display     = origWrapDisplay;
-      previewWrap.style.visibility  = origWrapVisibility;
-      previewWrap.style.position    = '';
-      previewWrap.style.left        = '';
-      previewWrap.style.top         = '';
-      previewWrap.style.width       = '';
-      previewWrap.style.zIndex      = '';
+    ghost.appendChild(billClone);
+
+    // Force desktop layout — give browser time to reflow at full width
+    await new Promise(function(r){ setTimeout(r, 180); });
+
+    // ── 2. Capture ──
+    var canvas = await html2canvas(billClone, {
+      scale: SCALE,
+      useCORS: true,
+      backgroundColor: '#fffdf5',
+      width: DPI_PX,
+      windowWidth: DPI_PX + PAD * 2,
+      logging: false,
+      allowTaint: true
+    });
+
+    // ── 3. Clean up ghost ──
+    document.body.removeChild(ghost);
+
+    // ── 4. Smart single-page: trim excess blank bottom ──
+    // Scan upward from bottom of canvas to find last non-white row
+    var ctx2 = canvas.getContext('2d');
+    var imgDataRaw = ctx2.getImageData(0, 0, canvas.width, canvas.height);
+    var lastRow = canvas.height - 1;
+    outer: for (var row = canvas.height - 1; row >= 0; row--) {
+      for (var col = 0; col < canvas.width; col++) {
+        var idx = (row * canvas.width + col) * 4;
+        var r = imgDataRaw.data[idx], g = imgDataRaw.data[idx+1], b = imgDataRaw.data[idx+2];
+        // Any pixel darker than near-white counts as content
+        if (r < 250 || g < 248 || b < 240) { lastRow = row; break outer; }
+      }
     }
+    var contentH = lastRow + 20; // +20px breathing room at bottom
 
-    // ── 4. Build PDF — multi-page if content is taller than A4 ──
-    var jsPDF = window.jspdf.jsPDF;
-    var pdf   = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    var pdfW  = pdf.internal.pageSize.getWidth();   // 210mm
-    var pdfH  = pdf.internal.pageSize.getHeight();  // 297mm
+    // ── 5. Build PDF ──
+    var jsPDF  = window.jspdf.jsPDF;
+    var pdf    = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    var pdfW   = pdf.internal.pageSize.getWidth();   // 210mm
+    var pdfH   = pdf.internal.pageSize.getHeight();  // 297mm
+    var imgW   = pdfW;
+    var imgH   = (contentH * imgW) / (canvas.width / SCALE); // mm height of content
 
-    var imgData     = canvas.toDataURL('image/png');
-    var imgW        = pdfW;                                 // fill full page width
-    var imgH        = (canvas.height * imgW) / canvas.width; // proportional height in mm
+    // Crop canvas to content height only
+    var croppedCanvas = document.createElement('canvas');
+    croppedCanvas.width  = canvas.width;
+    croppedCanvas.height = contentH * SCALE;
+    var cCtx = croppedCanvas.getContext('2d');
+    cCtx.drawImage(canvas, 0, 0, canvas.width, contentH * SCALE, 0, 0, canvas.width, contentH * SCALE);
 
-    if (imgH <= pdfH) {
-      // Single page — fits perfectly
-      pdf.addImage(imgData, 'PNG', 0, 0, imgW, imgH);
+    var imgData = croppedCanvas.toDataURL('image/png');
+    var finalH  = (croppedCanvas.height * imgW) / croppedCanvas.width;
+
+    if (finalH <= pdfH) {
+      // Perfect single page
+      pdf.addImage(imgData, 'PNG', 0, 0, imgW, finalH);
     } else {
-      // Multi-page split
-      var pageHeightPx = Math.floor(canvas.width * pdfH / imgW); // canvas px per page
-      var totalPages   = Math.ceil(canvas.height / pageHeightPx);
+      // Multi-page (genuinely long bill)
+      var pageHpx    = Math.floor(croppedCanvas.width * pdfH / imgW);
+      var totalPages = Math.ceil(croppedCanvas.height / pageHpx);
       for (var pg = 0; pg < totalPages; pg++) {
         if (pg > 0) pdf.addPage();
-        var srcY     = pg * pageHeightPx;
-        var srcH     = Math.min(pageHeightPx, canvas.height - srcY);
-        var sliceH   = (srcH * imgW) / canvas.width; // mm height of this slice
-
-        // Create a slice canvas
-        var sliceCanvas  = document.createElement('canvas');
-        sliceCanvas.width  = canvas.width;
-        sliceCanvas.height = srcH;
-        var ctx = sliceCanvas.getContext('2d');
-        ctx.drawImage(canvas, 0, srcY, canvas.width, srcH, 0, 0, canvas.width, srcH);
-        pdf.addImage(sliceCanvas.toDataURL('image/png'), 'PNG', 0, 0, imgW, sliceH);
+        var sy   = pg * pageHpx;
+        var sh   = Math.min(pageHpx, croppedCanvas.height - sy);
+        var slCv = document.createElement('canvas');
+        slCv.width  = croppedCanvas.width;
+        slCv.height = sh;
+        var slCtx = slCv.getContext('2d');
+        slCtx.drawImage(croppedCanvas, 0, sy, croppedCanvas.width, sh, 0, 0, croppedCanvas.width, sh);
+        pdf.addImage(slCv.toDataURL('image/png'), 'PNG', 0, 0, imgW, (sh * imgW) / croppedCanvas.width);
       }
     }
 
@@ -2952,10 +2989,12 @@ async function downloadPDF() {
     pdf.save('Invoice_' + invNo + '_' + cn + '.pdf');
 
   } catch(e) {
-    var bill2 = document.getElementById('bill');
-    if (bill2) bill2.classList.remove('pdf-mode');
+    // Safety cleanup
+    var g2 = document.getElementById('bill-pdf-clone');
+    if (g2 && g2.parentNode) g2.parentNode.removeChild(g2.parentNode);
     alert('PDF generation failed: ' + e.message);
   }
+
   if (btn) { btn.textContent = orig; btn.disabled = false; }
 }
 
@@ -3113,6 +3152,17 @@ removeItem = function(i) { _origRemoveItem(i); if(isMobile()) renderMobileItems(
 // ===== LOGIN =====
 var LOGIN_USER = 'LogeshApps';
 var LOGIN_PWD  = '12345678';
+var SESSION_KEY = 'lbs_auth';
+
+// On load: if already authenticated in this browser session, skip login screen
+(function() {
+  try {
+    if (sessionStorage.getItem(SESSION_KEY) === '1') {
+      var overlay = document.getElementById('login-overlay');
+      if (overlay) overlay.classList.add('hidden');
+    }
+  } catch(e) {}
+})();
 
 function doLogin() {
   var u = document.getElementById('login-user').value.trim();
@@ -3121,6 +3171,7 @@ function doLogin() {
   var box = document.getElementById('login-box');
   if (u === LOGIN_USER && p === LOGIN_PWD) {
     errEl.classList.remove('show');
+    try { sessionStorage.setItem(SESSION_KEY, '1'); } catch(e) {}
     document.getElementById('login-overlay').classList.add('hidden');
     document.getElementById('login-user').value = '';
     document.getElementById('login-pwd').value = '';

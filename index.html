@@ -517,6 +517,297 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
 }
 @media print { #editor, #items-editor, #fab-actions { display: none; } }
 
+/* ===================================================
+   ✨ SHINE & SHIMMER EFFECTS
+   =================================================== */
+
+/* --- Keyframes --- */
+@keyframes shimmer-sweep {
+  0%   { background-position: -400% center; }
+  100% { background-position: 400% center; }
+}
+@keyframes shimmer-x {
+  0%   { transform: translateX(-100%) skewX(-15deg); }
+  100% { transform: translateX(300%) skewX(-15deg); }
+}
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(218,165,32,0.2), 0 0 0 1px rgba(218,165,32,0.08); }
+  50%       { box-shadow: 0 0 22px rgba(218,165,32,0.45), 0 0 0 1px rgba(218,165,32,0.2); }
+}
+@keyframes glow-pulse-copper {
+  0%, 100% { box-shadow: 0 0 8px rgba(210,120,30,0.2), 0 0 50px rgba(210,120,30,0.08); }
+  50%       { box-shadow: 0 0 28px rgba(210,120,30,0.55), 0 0 60px rgba(210,120,30,0.18); }
+}
+@keyframes border-glow {
+  0%, 100% { border-color: rgba(218,165,32,0.3); }
+  50%       { border-color: rgba(245,208,96,0.7); }
+}
+@keyframes text-shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+@keyframes float-glow {
+  0%, 100% { transform: translateY(0);    filter: drop-shadow(0 0 4px rgba(218,165,32,0.3)); }
+  50%       { transform: translateY(-3px); filter: drop-shadow(0 0 10px rgba(218,165,32,0.6)); }
+}
+@keyframes spin-slow {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes scan-line {
+  0%   { top: 0%; opacity: 0.7; }
+  90%  { opacity: 0.7; }
+  100% { top: 100%; opacity: 0; }
+}
+
+/* ── LOGIN PAGE ── */
+
+/* Card glow pulse */
+.login-box {
+  animation: glow-pulse-copper 3s ease-in-out infinite;
+}
+
+/* Shimmer sweep on the top shimmer line (::after) */
+.login-box::after {
+  background: linear-gradient(90deg, transparent 0%, #e8922a 30%, #ffd280 50%, #e8922a 70%, transparent 100%);
+  background-size: 200% auto;
+  animation: shimmer-sweep 3s linear infinite;
+}
+
+/* Logo box — shine sweep overlay */
+.login-logo-box {
+  position: relative;
+  overflow: hidden;
+}
+.login-logo-box::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%);
+  animation: shimmer-x 2.8s ease-in-out infinite;
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+/* Login title shimmer text */
+.login-title {
+  background: linear-gradient(90deg, #a06010 0%, #f0a830 25%, #ffd060 50%, #f0a830 75%, #a06010 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: text-shimmer 3s linear infinite;
+}
+
+/* Input fields — border glow on focus (enhanced) */
+.login-field input:focus {
+  animation: border-glow 1.5s ease-in-out infinite;
+  box-shadow: 0 0 0 3px rgba(212,130,15,0.22), 0 0 14px rgba(212,130,15,0.18);
+}
+
+/* Sign in button — shimmer sweep */
+.login-btn {
+  position: relative; overflow: hidden;
+}
+.login-btn::after {
+  content: '';
+  position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+  background: linear-gradient(105deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: shimmer-x 2.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ── EDITOR PANEL ── */
+
+/* Editor header title */
+#editor h2 {
+  background: linear-gradient(90deg, var(--g1) 0%, var(--g3) 30%, #fff8c0 50%, var(--g3) 70%, var(--g1) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: text-shimmer 4s linear infinite;
+}
+
+/* Section labels — shimmer underline */
+.editor-section-label {
+  position: relative; overflow: hidden;
+}
+.editor-section-label::after {
+  content: '';
+  position: absolute; bottom: 0; left: -100%; width: 60%; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--g3), transparent);
+  animation: shimmer-x 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Gold rate input — glow pulse */
+#gold-rate {
+  animation: glow-pulse 2.5s ease-in-out infinite;
+}
+
+/* GST toggle wrap — subtle border glow */
+.gst-toggle-wrap {
+  animation: border-glow 3s ease-in-out infinite;
+}
+
+/* Bill type buttons — active button shimmer */
+#btn-original, #btn-copy {
+  position: relative; overflow: hidden;
+}
+#btn-original::after, #btn-copy::after {
+  content: '';
+  position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+  background: linear-gradient(105deg, transparent, rgba(255,255,255,0.25), transparent);
+  animation: shimmer-x 2.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Gold download button — shimmer */
+.btn-gold {
+  position: relative; overflow: hidden;
+}
+.btn-gold::after {
+  content: '';
+  position: absolute; top: 0; left: -100%; width: 55%; height: 100%;
+  background: linear-gradient(105deg, transparent, rgba(255,255,255,0.28), transparent);
+  animation: shimmer-x 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Items editor header */
+#items-editor h3 {
+  background: linear-gradient(90deg, var(--g1) 0%, var(--g3) 40%, #fff8c0 55%, var(--g3) 70%, var(--g1) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: text-shimmer 4s linear infinite;
+}
+
+/* Rate badge — glow */
+.rate-badge {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+/* Preset buttons — shimmer on hover */
+.preset-btn {
+  position: relative; overflow: hidden;
+}
+.preset-btn::after {
+  content: '';
+  position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+  background: linear-gradient(105deg, transparent, rgba(255,255,255,0.2), transparent);
+  opacity: 0; transition: opacity 0.2s;
+  pointer-events: none;
+}
+.preset-btn:hover::after {
+  opacity: 1;
+  animation: shimmer-x 0.8s ease-in-out;
+}
+
+/* ── BILL PREVIEW ── */
+
+/* Bill container — soft shimmer border pulse */
+#bill {
+  animation: glow-pulse 4s ease-in-out infinite;
+}
+
+/* Bill header bottom border shimmer */
+.bill-header {
+  position: relative;
+}
+.bill-header::after {
+  content: '';
+  position: absolute; bottom: -1px; left: 5%; right: 5%; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--g2) 20%, var(--g3) 50%, var(--g2) 80%, transparent);
+  background-size: 200% auto;
+  animation: shimmer-sweep 3s linear infinite;
+  pointer-events: none;
+}
+
+/* Logo circle — float glow */
+.logo-circle {
+  animation: float-glow 3s ease-in-out infinite;
+}
+
+/* Brand name — shimmer text */
+.brand-name {
+  background: linear-gradient(90deg, var(--g1) 0%, var(--g2) 25%, var(--g3) 50%, var(--g2) 75%, var(--g1) 100%) !important;
+  background-size: 200% auto !important;
+  -webkit-background-clip: text !important; -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  animation: text-shimmer 4s linear infinite;
+}
+/* Keep pdf-mode override intact */
+.pdf-mode .brand-name {
+  animation: none !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: #b8860b !important;
+  background-clip: unset !important;
+  color: #b8860b !important;
+}
+
+/* BIS badge — shimmer sweep */
+.bis-badge {
+  position: relative; overflow: hidden;
+}
+.bis-badge::after {
+  content: '';
+  position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+  background: linear-gradient(105deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: shimmer-x 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Bill type tag — shimmer text + border glow */
+.bill-type-tag {
+  position: relative; overflow: hidden;
+  animation: border-glow 3s ease-in-out infinite;
+}
+.bill-type-tag::after {
+  content: '';
+  position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+  background: linear-gradient(105deg, transparent, rgba(218,165,32,0.15), transparent);
+  animation: shimmer-x 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Table header row — shimmer sweep */
+.bill-table th {
+  position: relative; overflow: hidden;
+}
+.bill-table th::after {
+  content: '';
+  position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+  background: linear-gradient(105deg, transparent, rgba(255,255,255,0.12), transparent);
+  animation: shimmer-x 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Grand total row — strong shimmer */
+.grand-total-row td {
+  position: relative; overflow: hidden;
+}
+.grand-total-row td::after {
+  content: '';
+  position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+  background: linear-gradient(105deg, transparent, rgba(255,255,255,0.18), transparent);
+  animation: shimmer-x 2.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Bill ornament — glow float */
+.bill-ornament {
+  filter: drop-shadow(0 0 4px rgba(184,134,11,0.35));
+  animation: float-glow 4s ease-in-out infinite;
+}
+
+/* ── FAB BUTTONS ── */
+#fab-actions .btn-gold {
+  animation: glow-pulse 2.5s ease-in-out infinite;
+}
+
+
+
 /* ===== LOGIN SCREEN ===== */
 #login-overlay {
   position: fixed; inset: 0; z-index: 9999;

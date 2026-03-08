@@ -1528,6 +1528,20 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
         </div>
       </div>
     </div>
+    <div class="field-group" style="justify-content:flex-end">
+      <label>🔖 Hallmark Charges</label>
+      <div class="gst-toggle-wrap" onclick="document.getElementById('hallmark-toggle').click()">
+        <label for="hallmark-toggle">Hallmark On / Off</label>
+        <div class="toggle-switch">
+          <input type="checkbox" id="hallmark-toggle" onchange="render()">
+          <span class="toggle-slider"></span>
+        </div>
+      </div>
+    </div>
+    <div class="field-group" id="hallmark-charge-field" style="display:none">
+      <label>Hallmark Charge (Rs.)</label>
+      <input id="hallmark-charge" type="number" value="45" step="0.01" oninput="render()" placeholder="e.g. 45">
+    </div>
   </div>
 
   <!-- SECTION 2: Customer -->
@@ -2595,6 +2609,15 @@ function render() {
   var bankOn = document.getElementById('bank-toggle') ? document.getElementById('bank-toggle').checked : true;
   var bankName=g('bank-name'), bankAcc=g('bank-acc'), bankIfsc=g('bank-ifsc');
 
+  // Hallmark
+  var hallmarkOn = document.getElementById('hallmark-toggle') ? document.getElementById('hallmark-toggle').checked : false;
+  var hallmarkCharge = hallmarkOn ? (parseFloat(g('hallmark-charge'))||0) : 0;
+  var hallmarkGstPct = 9; // fixed 9% GST on hallmark
+  var hallmarkGstAmt = hallmarkOn ? hallmarkCharge * hallmarkGstPct / 100 : 0;
+  // Show/hide hallmark charge input
+  var hcf = document.getElementById('hallmark-charge-field');
+  if (hcf) hcf.style.display = hallmarkOn ? '' : 'none';
+
   // Net total = sum of signed amounts
   var subtotal = items.reduce(function(s, it) { return s + signedAmt(it); }, 0);
   var totalAddWt = items.filter(function(it){ return it.type !== 'sub'; }).reduce(function(s,it){ return s+(parseFloat(it.gross)||0); }, 0);
@@ -2603,7 +2626,7 @@ function render() {
 
   var cgstAmt = gstOn ? subtotal * cgstPct / 100 : 0;
   var sgstAmt = gstOn ? subtotal * sgstPct / 100 : 0;
-  var netTotal = subtotal + cgstAmt + sgstAmt;
+  var netTotal = subtotal + cgstAmt + sgstAmt + hallmarkCharge + hallmarkGstAmt;
 
   var itemRows = items.map(function(it, i) {
     var amt = calcAmt(it);
@@ -2636,6 +2659,19 @@ function render() {
   var gstRows = gstOn
     ? '<tr class="gst-row"><td colspan="4"></td><td style="text-align:right">CGST ' + cgstPct + '%</td><td style="text-align:right">Rs.' + fmtINR(cgstAmt) + '</td></tr>'
       + '<tr class="gst-row"><td colspan="4"></td><td style="text-align:right">SGST ' + sgstPct + '%</td><td style="text-align:right">Rs.' + fmtINR(sgstAmt) + '</td></tr>'
+    : '';
+
+  var hallmarkRows = hallmarkOn
+    ? '<tr class="gst-row" style="background:rgba(184,134,11,0.06)">'
+        + '<td colspan="4"></td>'
+        + '<td style="text-align:right;color:#b8860b;font-weight:700">🔖 Hallmark Charges</td>'
+        + '<td style="text-align:right;color:#b8860b;font-weight:700">Rs.' + fmtINR(hallmarkCharge) + '</td>'
+      + '</tr>'
+      + '<tr class="gst-row" style="background:rgba(184,134,11,0.06)">'
+        + '<td colspan="4"></td>'
+        + '<td style="text-align:right;color:#b8860b">GST on Hallmark ' + hallmarkGstPct + '%</td>'
+        + '<td style="text-align:right;color:#b8860b">Rs.' + fmtINR(hallmarkGstAmt) + '</td>'
+      + '</tr>'
     : '';
 
   // Weight summary — only shown if there are subtracted rows
@@ -2698,6 +2734,7 @@ function render() {
           + '<td style="text-align:right"><strong>Rs.' + fmtINR(subtotal) + '</strong></td>'
         + '</tr>'
         + gstRows
+        + hallmarkRows
         + '<tr class="grand-total-row">'
           + '<td colspan="5" style="text-align:right"><strong>Net Total Rs.</strong></td>'
           + '<td><strong>Rs.' + fmtINR(netTotal) + '</strong></td>'

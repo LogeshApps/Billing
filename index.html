@@ -412,6 +412,43 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
   background-clip: unset !important;
   color: #b8860b !important;
 }
+/* pdf-mode: strip ALL animations and shimmer for clean capture */
+.pdf-mode, .pdf-mode * {
+  animation: none !important;
+  transition: none !important;
+  text-shadow: none !important;
+}
+.pdf-mode .logo-circle {
+  filter: none !important;
+  transform: none !important;
+}
+.pdf-mode .bill-ornament {
+  filter: none !important;
+  transform: none !important;
+}
+/* pdf-mode: ensure full-width table columns don't collapse */
+.pdf-mode .bill-table {
+  width: 100% !important;
+  font-size: 0.82rem !important;
+}
+.pdf-mode .bill-table th,
+.pdf-mode .bill-table td {
+  font-size: 0.8rem !important;
+  padding: 7px 10px !important;
+}
+.pdf-mode .bill-meta {
+  grid-template-columns: 1fr 1fr !important;
+  font-size: 0.8rem !important;
+}
+.pdf-mode .bill-footer {
+  grid-template-columns: 1fr 1fr !important;
+  font-size: 0.8rem !important;
+}
+.pdf-mode .bill-header {
+  flex-wrap: nowrap !important;
+}
+.pdf-mode .brand-name { font-size: 1.4rem !important; }
+.pdf-mode .grand-total-row td { font-size: 1rem !important; }
 .brand-subtitle {
   font-size: 0.68rem; letter-spacing: 4px;
   text-transform: uppercase; color: var(--muted);
@@ -2813,32 +2850,113 @@ function render() {
 }
 
 async function downloadPDF() {
-  var btn = event.target;
-  var orig = btn.textContent;
-  btn.textContent = 'Generating...';
-  btn.disabled = true;
+  var btn = event ? event.target : document.querySelector('[onclick="downloadPDF()"]');
+  var orig = btn ? btn.textContent : '';
+  if (btn) { btn.textContent = 'Generating...'; btn.disabled = true; }
   try {
     var bill = document.getElementById('bill');
-    // Add pdf-mode to neutralise CSS effects that html2canvas can't handle
+    var previewWrap = document.getElementById('preview-wrap');
+
+    // ── 1. Force bill to standard A4-equivalent desktop width for capture ──
+    var A4_PX = 794; // 210mm @ 96dpi
+
+    // Save original styles
+    var origBillStyle       = bill.getAttribute('style') || '';
+    var origWrapDisplay     = previewWrap ? previewWrap.style.display : '';
+    var origWrapVisibility  = previewWrap ? previewWrap.style.visibility : '';
+
+    // Make preview-wrap visible but off-screen so layout is correct
+    if (previewWrap) {
+      previewWrap.style.display     = 'block';
+      previewWrap.style.visibility  = 'visible';
+      previewWrap.style.position    = 'fixed';
+      previewWrap.style.left        = '-9999px';
+      previewWrap.style.top         = '0';
+      previewWrap.style.width       = (A4_PX + 48) + 'px';
+      previewWrap.style.zIndex      = '-1';
+    }
+
+    // Force bill to A4 width with proper padding
+    bill.style.width         = A4_PX + 'px';
+    bill.style.minWidth      = A4_PX + 'px';
+    bill.style.maxWidth      = A4_PX + 'px';
+    bill.style.boxSizing     = 'border-box';
+    bill.style.padding       = '32px 36px';
+    bill.style.fontSize      = '0.82rem';
+    bill.style.borderRadius  = '0';
+
+    // Add pdf-mode class to neutralise gradient text + shimmer effects
     bill.classList.add('pdf-mode');
-    await new Promise(function(r){ setTimeout(r, 50); }); // let styles apply
-    var canvas = await html2canvas(bill, { scale: 2, useCORS: true, backgroundColor: '#fffdf5' });
+
+    // Wait for layout reflow
+    await new Promise(function(r){ setTimeout(r, 120); });
+
+    // ── 2. Capture at 2× for crisp resolution ──
+    var canvas = await html2canvas(bill, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#fffdf5',
+      width: A4_PX,
+      windowWidth: A4_PX + 48,
+      logging: false
+    });
+
+    // ── 3. Restore all styles ──
     bill.classList.remove('pdf-mode');
+    bill.setAttribute('style', origBillStyle);
+    if (previewWrap) {
+      previewWrap.style.display     = origWrapDisplay;
+      previewWrap.style.visibility  = origWrapVisibility;
+      previewWrap.style.position    = '';
+      previewWrap.style.left        = '';
+      previewWrap.style.top         = '';
+      previewWrap.style.width       = '';
+      previewWrap.style.zIndex      = '';
+    }
+
+    // ── 4. Build PDF — multi-page if content is taller than A4 ──
     var jsPDF = window.jspdf.jsPDF;
-    var pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    var imgData = canvas.toDataURL('image/png');
-    var pdfW = pdf.internal.pageSize.getWidth();
-    var pdfH = (canvas.height * pdfW) / canvas.width;
-    pdf.addImage(imgData, 'PNG', 0, 0, pdfW, pdfH);
+    var pdf   = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    var pdfW  = pdf.internal.pageSize.getWidth();   // 210mm
+    var pdfH  = pdf.internal.pageSize.getHeight();  // 297mm
+
+    var imgData     = canvas.toDataURL('image/png');
+    var imgW        = pdfW;                                 // fill full page width
+    var imgH        = (canvas.height * imgW) / canvas.width; // proportional height in mm
+
+    if (imgH <= pdfH) {
+      // Single page — fits perfectly
+      pdf.addImage(imgData, 'PNG', 0, 0, imgW, imgH);
+    } else {
+      // Multi-page split
+      var pageHeightPx = Math.floor(canvas.width * pdfH / imgW); // canvas px per page
+      var totalPages   = Math.ceil(canvas.height / pageHeightPx);
+      for (var pg = 0; pg < totalPages; pg++) {
+        if (pg > 0) pdf.addPage();
+        var srcY     = pg * pageHeightPx;
+        var srcH     = Math.min(pageHeightPx, canvas.height - srcY);
+        var sliceH   = (srcH * imgW) / canvas.width; // mm height of this slice
+
+        // Create a slice canvas
+        var sliceCanvas  = document.createElement('canvas');
+        sliceCanvas.width  = canvas.width;
+        sliceCanvas.height = srcH;
+        var ctx = sliceCanvas.getContext('2d');
+        ctx.drawImage(canvas, 0, srcY, canvas.width, srcH, 0, 0, canvas.width, srcH);
+        pdf.addImage(sliceCanvas.toDataURL('image/png'), 'PNG', 0, 0, imgW, sliceH);
+      }
+    }
+
     var invNo = document.getElementById('inv-no').value || 'bill';
-    var cn = document.getElementById('cust-name').value.replace(/\s+/g,'_') || 'customer';
+    var cn    = (document.getElementById('cust-name').value || 'customer').replace(/\s+/g, '_');
     pdf.save('Invoice_' + invNo + '_' + cn + '.pdf');
+
   } catch(e) {
-    document.getElementById('bill').classList.remove('pdf-mode');
+    var bill2 = document.getElementById('bill');
+    if (bill2) bill2.classList.remove('pdf-mode');
     alert('PDF generation failed: ' + e.message);
   }
-  btn.textContent = orig;
-  btn.disabled = false;
+  if (btn) { btn.textContent = orig; btn.disabled = false; }
 }
 
 // Bill type: 'original' | 'copy'

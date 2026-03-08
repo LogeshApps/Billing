@@ -6,6 +6,7 @@
 <title>Logesh Bills</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Cormorant+Garamond:wght@400;500;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 :root {
@@ -405,66 +406,58 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
 }
-/* pdf-mode: disable gradient clip so html2canvas renders clean text */
+/* ── PDF MODE: clean flat rendering for jsPDF html() ── */
+.pdf-mode, .pdf-mode * {
+  animation: none !important;
+  transition: none !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+.pdf-mode {
+  width: 794px !important;
+  padding: 22px 32px !important;
+  border: 1.5px solid #c8960a !important;
+  border-radius: 0 !important;
+  background: #fffdf5 !important;
+}
 .pdf-mode .brand-name {
   background: none !important;
   -webkit-background-clip: unset !important;
   -webkit-text-fill-color: #b8860b !important;
   background-clip: unset !important;
   color: #b8860b !important;
+  font-size: 1.3rem !important;
 }
-/* pdf-mode: compact layout to fit single A4 page */
-.pdf-mode {
-  padding: 20px 28px !important;
+/* Strip gradient text from any shimmer elements */
+.pdf-mode h2, .pdf-mode h3,
+.pdf-mode .bill-type-tag,
+.pdf-mode .rate-badge {
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: inherit !important;
+  background-clip: unset !important;
 }
 .pdf-mode .bill-header {
   padding-bottom: 10px !important;
   margin-bottom: 8px !important;
 }
-.pdf-mode .bill-top-meta {
-  margin-bottom: 6px !important;
-}
-.pdf-mode .bill-type-tag {
-  padding: 4px 0 !important;
-  margin-bottom: 8px !important;
-}
-.pdf-mode .bill-meta {
-  margin-bottom: 8px !important;
-  gap: 3px 20px !important;
-  font-size: 0.78rem !important;
-}
-.pdf-mode .bill-table td {
-  padding: 5px 8px !important;
-}
-.pdf-mode .bill-table th {
-  padding: 6px 8px !important;
-}
-.pdf-mode .bill-footer {
-  margin-top: 12px !important;
-  padding-top: 10px !important;
-}
-.pdf-mode .signature-section {
-  margin-top: 18px !important;
-}
-.pdf-mode .sig-space {
-  height: 30px !important;
-}
-.pdf-mode .for-shop-label {
-  font-size: 0.78rem !important;
-}
-.pdf-mode .bill-address {
-  margin-top: 12px !important;
-  padding-top: 8px !important;
-}
-.pdf-mode .bill-ornament {
-  margin-top: 10px !important;
-}
-.pdf-mode .logo-circle {
-  width: 62px !important; height: 62px !important; font-size: 1.4rem !important;
-}
-.pdf-mode .brand-name {
-  font-size: 1.3rem !important;
-}
+.pdf-mode .bill-top-meta  { margin-bottom: 6px !important; }
+.pdf-mode .bill-type-tag  { padding: 4px 0 !important; margin-bottom: 8px !important; }
+.pdf-mode .bill-meta      { margin-bottom: 8px !important; gap: 3px 20px !important; font-size: 0.78rem !important; }
+.pdf-mode .bill-table td  { padding: 5px 8px !important; }
+.pdf-mode .bill-table th  { padding: 6px 8px !important; }
+.pdf-mode .bill-footer    { margin-top: 12px !important; padding-top: 10px !important; }
+.pdf-mode .signature-section { margin-top: 18px !important; }
+.pdf-mode .sig-space      { height: 30px !important; }
+.pdf-mode .for-shop-label { font-size: 0.78rem !important; }
+.pdf-mode .bill-address   { margin-top: 12px !important; padding-top: 8px !important; }
+.pdf-mode .bill-ornament  { margin-top: 10px !important; }
+.pdf-mode .logo-circle    { width: 62px !important; height: 62px !important; font-size: 1.4rem !important; }
+.pdf-mode .bis-badge      { background: #b8860b !important; }
+.pdf-mode .bill-table th  { background: #3d2a00 !important; }
+.pdf-mode .grand-total-row td { background: #3d2a00 !important; }
+.pdf-mode #bill::before   { display: none !important; }
 .brand-subtitle {
   font-size: 0.68rem; letter-spacing: 4px;
   text-transform: uppercase; color: var(--muted);
@@ -1388,11 +1381,11 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
     </div>
     <div class="field-group">
       <label>Shop Phone</label>
-      <input id="shop-phone" value="" oninput="render()" placeholder="Phone number">
+      <input id="shop-phone" value="9894058144" oninput="render()" placeholder="Phone number">
     </div>
     <div class="field-group" style="grid-column:span 2">
       <label>Shop Address</label>
-      <input id="shop-addr" value="" oninput="render()" placeholder="Shop address">
+      <input id="shop-addr" value="Selvapuram" oninput="render()" placeholder="Shop address">
     </div>
     <div class="field-group">
       <label>GSTIN (Seller)</label>
@@ -1400,7 +1393,7 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
     </div>
     <div class="field-group">
       <label>Email</label>
-      <input id="shop-email" value="" oninput="render()" placeholder="shop@email.com">
+      <input id="shop-email" value="logesh.appusamy@gmail.com" oninput="render()" placeholder="shop@email.com">
     </div>
     <div class="field-group" style="grid-column:span 2;margin-top:6px">
       <label>Bank Details on Bill</label>
@@ -2372,7 +2365,7 @@ function render() {
   var hallmarkAmt = hallmarkOn ? (parseFloat(g('hallmark-amt'))||0) : 0;
   var shopName=g('shop-name'), shopPhone=g('shop-phone'), shopAddr=g('shop-addr');
   var shopLogo=g('shop-logo')||'SG', shopTagline=g('shop-tagline')||'Jewellery Manufacturers';
-  var shopEmail=g('shop-email')||'anticjewels.cbe@gmail.com';
+  var shopEmail=g('shop-email');
   var bankOn = document.getElementById('bank-toggle') ? document.getElementById('bank-toggle').checked : true;
   var bankName=g('bank-name'), bankAcc=g('bank-acc'), bankIfsc=g('bank-ifsc');
 
@@ -2593,85 +2586,90 @@ async function downloadPDF() {
   btn.textContent = 'Generating...';
   btn.disabled = true;
 
+  // A4 at 96 dpi = 794 × 1123 px
+  var A4_W_PX = 794;
+  var A4_H_PX = 1123;
+  var SCALE   = 3; // render at 3× for sharp print quality
+
   try {
-    var bill = document.getElementById('bill');
-
-    // ── Step 1: Switch to pdf-mode & snapshot current styles ──
-    bill.classList.add('pdf-mode');
-    var prevCssText = bill.style.cssText;
-
-    // ── Step 2: Force the bill to exact A4 width (794px = 210mm @ 96dpi)
-    //           so html2canvas captures it at the correct proportions
-    bill.style.cssText = '';
-    bill.style.width        = '794px';
-    bill.style.minWidth     = '794px';
-    bill.style.maxWidth     = '794px';
-    bill.style.padding      = '28px 36px';
-    bill.style.boxSizing    = 'border-box';
-    bill.style.overflow     = 'visible';
-    bill.style.height       = 'auto';
-    bill.style.boxShadow    = 'none';
-    bill.style.border       = '1.5px solid #c8960a';
-    bill.style.borderRadius = '0';
-    bill.style.margin       = '0';
-
-    // Give the browser a moment to reflow
-    await new Promise(function(r){ setTimeout(r, 120); });
-
-    var billH = bill.scrollHeight;
-    var billW = bill.scrollWidth;
-
-    // ── Step 3: Capture at 2× for sharp output ──
-    var canvas = await html2canvas(bill, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: '#fffdf5',
-      width: billW,
-      height: billH,
-      windowWidth: billW,
-      windowHeight: billH + 200
-    });
-
-    // ── Step 4: Restore original styles ──
-    bill.style.cssText = prevCssText;
-    bill.classList.remove('pdf-mode');
-
-    // ── Step 5: Build PDF ──
-    var jsPDF = window.jspdf.jsPDF;
-    // A4 in mm: 210 × 297
-    var pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    var pdfW = pdf.internal.pageSize.getWidth();   // 210
-    var pdfH = pdf.internal.pageSize.getHeight();  // 297
-
-    // Convert canvas to JPEG (much smaller than PNG)
-    var imgData = canvas.toDataURL('image/jpeg', 0.92);
-
-    // Compute rendered height in mm at full A4 width
-    var imgH_mm = (canvas.height / canvas.width) * pdfW;
-
-    if (imgH_mm <= pdfH) {
-      // Fits in one page — fill full width, anchor to top
-      pdf.addImage(imgData, 'JPEG', 0, 0, pdfW, imgH_mm);
-    } else {
-      // Content taller than A4 — scale to fit height (keeps single page)
-      var ratio   = pdfH / imgH_mm;
-      var fitW    = pdfW * ratio;
-      var offsetX = (pdfW - fitW) / 2;
-      pdf.addImage(imgData, 'JPEG', offsetX, 0, fitW, pdfH);
-    }
-
-    // ── Step 6: Trigger direct browser download ──
+    var bill  = document.getElementById('bill');
     var invNo = document.getElementById('inv-no').value || 'bill';
     var cn    = document.getElementById('cust-name').value.replace(/\s+/g,'_') || 'customer';
+
+    // ── 1. Clone the bill into a hidden off-screen div at exact A4 width ──
+    var wrapper = document.createElement('div');
+    wrapper.style.cssText = [
+      'position:fixed', 'left:-9999px', 'top:0',
+      'width:'  + A4_W_PX + 'px',
+      'min-height:' + A4_H_PX + 'px',
+      'background:#fffdf5',
+      'z-index:-1', 'overflow:visible'
+    ].join(';');
+
+    var clone = bill.cloneNode(true);
+    // Apply pdf-mode + reset any inline widths so it fills the A4 container
+    clone.classList.add('pdf-mode');
+    clone.style.cssText = [
+      'width:100%', 'max-width:100%', 'min-width:0',
+      'padding:28px 36px',
+      'box-sizing:border-box',
+      'box-shadow:none',
+      'border:1.5px solid #c8960a',
+      'border-radius:0',
+      'margin:0',
+      'background:#fffdf5',
+      'animation:none',
+      'overflow:visible'
+    ].join(';');
+
+    wrapper.appendChild(clone);
+    document.body.appendChild(wrapper);
+
+    // Give browser time to paint fonts + layout
+    await new Promise(function(r){ setTimeout(r, 300); });
+
+    // ── 2. Capture the clone at high resolution ──
+    var canvas = await html2canvas(clone, {
+      scale           : SCALE,
+      useCORS         : true,
+      allowTaint      : true,
+      backgroundColor : '#fffdf5',
+      width           : A4_W_PX,
+      height          : clone.scrollHeight,
+      windowWidth     : A4_W_PX,
+      windowHeight    : clone.scrollHeight
+    });
+
+    document.body.removeChild(wrapper);
+
+    // ── 3. Build PDF ──
+    var jsPDF  = window.jspdf.jsPDF;
+    var pdf    = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4', compress:true });
+    var pdfW   = pdf.internal.pageSize.getWidth();   // 210 mm
+    var pdfH   = pdf.internal.pageSize.getHeight();  // 297 mm
+
+    var imgData  = canvas.toDataURL('image/jpeg', 0.93);
+    var imgH_mm  = (canvas.height / canvas.width) * pdfW;
+
+    if (imgH_mm <= pdfH) {
+      // Content fits on one page — fill full width from top
+      pdf.addImage(imgData, 'JPEG', 0, 0, pdfW, imgH_mm);
+    } else {
+      // Scale down proportionally so everything fits on one A4 page
+      var ratio  = pdfH / imgH_mm;
+      var fitW   = pdfW * ratio;
+      pdf.addImage(imgData, 'JPEG', (pdfW - fitW) / 2, 0, fitW, pdfH);
+    }
+
+    // ── 4. Direct download — no popup ──
     pdf.save('Invoice_' + invNo + '_' + cn + '.pdf');
 
   } catch(e) {
-    document.getElementById('bill').classList.remove('pdf-mode');
     alert('PDF generation failed: ' + e.message);
   }
 
   btn.textContent = orig;
-  btn.disabled = false;
+  btn.disabled    = false;
 }
 
 // Bill type: 'original' | 'copy'

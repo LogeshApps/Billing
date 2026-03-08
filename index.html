@@ -388,6 +388,12 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
   font-size: 1.8rem; font-weight: 700; color: white;
   border: 3px solid var(--g3);
   box-shadow: 0 0 16px rgba(218,165,32,0.4);
+  transition: all 0.2s;
+  flex-shrink: 0;
+  text-align: center;
+  line-height: 1.1;
+  padding: 4px;
+  word-break: break-word;
 }
 .brand-name {
   font-family: 'Playfair Display', serif;
@@ -647,8 +653,8 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
       <input id="shop-name" value="SG Antiques Jewellery" oninput="render()">
     </div>
     <div class="field-group">
-      <label>Logo Initials (2–3 letters)</label>
-      <input id="shop-logo" value="SG" maxlength="3" oninput="render()" placeholder="e.g. SG">
+      <label>Logo Text (auto-sizes)</label>
+      <input id="shop-logo" value="SG" oninput="render()" placeholder="e.g. SG or full name">
     </div>
     <div class="field-group">
       <label>Brand Tagline</label>
@@ -669,6 +675,16 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
     <div class="field-group">
       <label>Email</label>
       <input id="shop-email" value="anticjewels.cbe@gmail.com" oninput="render()">
+    </div>
+    <div class="field-group" style="grid-column:span 2;margin-top:6px">
+      <label>Bank Details on Bill</label>
+      <div class="gst-toggle-wrap" onclick="document.getElementById('bank-toggle').click()" style="margin-top:4px">
+        <label for="bank-toggle">Show / Hide Bank Details</label>
+        <div class="toggle-switch">
+          <input type="checkbox" id="bank-toggle" checked onchange="render()">
+          <span class="toggle-slider"></span>
+        </div>
+      </div>
     </div>
     <div class="field-group" style="grid-column:span 2">
       <label>Bank Name and Branch</label>
@@ -1612,6 +1628,7 @@ function render() {
   var shopName=g('shop-name'), shopPhone=g('shop-phone'), shopAddr=g('shop-addr');
   var shopLogo=g('shop-logo')||'SG', shopTagline=g('shop-tagline')||'Jewellery Manufacturers';
   var shopEmail=g('shop-email')||'anticjewels.cbe@gmail.com';
+  var bankOn = document.getElementById('bank-toggle') ? document.getElementById('bank-toggle').checked : true;
   var bankName=g('bank-name'), bankAcc=g('bank-acc'), bankIfsc=g('bank-ifsc');
 
   // Net total = sum of signed amounts
@@ -1671,7 +1688,13 @@ function render() {
   document.getElementById('bill').innerHTML =
     '<div class="bill-header">'
       + '<div style="font-size:0.7rem;color:var(--muted);letter-spacing:1px;line-height:2.2"><em>ANTIQUE &bull; GOLD &bull; SILVER</em><br><span style="font-size:0.6rem;letter-spacing:2px;color:#b8860b">' + (window.currentBillType === 'original' ? 'ORIGINAL BILL' : 'BILL COPY') + '</span></div>'
-      + '<div class="bill-logo"><div class="logo-circle">' + shopLogo + '</div><div class="brand-name" style="text-align:center">' + shopName + '</div><div class="brand-subtitle" style="text-align:center">' + shopTagline + '</div></div>'
+      + '<div class="bill-logo"><div class="logo-circle" style="' + (function(t){
+          var l=t.length;
+          if(l<=2) return 'width:76px;height:76px;font-size:1.8rem';
+          if(l<=4) return 'width:86px;height:86px;font-size:1.3rem';
+          if(l<=8) return 'width:100px;height:100px;font-size:0.95rem';
+          return 'width:110px;height:110px;font-size:0.75rem;border-radius:12px';
+        })(shopLogo) + '">' + shopLogo + '</div><div class="brand-name" style="text-align:center">' + shopName + '</div><div class="brand-subtitle" style="text-align:center">' + shopTagline + '</div></div>'
       + '<div class="bis-badge">BIS<br>100% Hall Marked<br>Jewellery</div>'
     + '</div>'
     + '<div class="bill-top-meta"><span>GSTIN: ' + gstin + '</span><span>State Code: 33</span><span>HSN Code: ' + hsn + '</span></div>'
@@ -1720,7 +1743,7 @@ function render() {
     + '<div class="bill-footer">'
       + '<div>'
         + '<div style="margin-bottom:12px;font-style:italic;font-size:0.82rem;color:var(--muted)"><strong style="color:var(--text)">Amount in words:</strong> Rupees ' + numToWords(netTotal) + '</div>'
-        + '<div class="bank-details"><strong>Account Details:</strong><br>Bank &amp; Branch: <strong>' + bankName + '</strong><br>Account No: <strong>' + bankAcc + '</strong><br>IFSC: <strong>' + bankIfsc + '</strong></div>'
+        + (bankOn ? '<div class="bank-details"><strong>Account Details:</strong><br>Bank &amp; Branch: <strong>' + bankName + '</strong><br>Account No: <strong>' + bankAcc + '</strong><br>IFSC: <strong>' + bankIfsc + '</strong></div>' : '')
       + '</div>'
       + '<div style="text-align:right;font-size:0.78rem;color:var(--muted);font-style:italic;align-self:flex-start">for ' + shopName + '</div>'
     + '</div>'

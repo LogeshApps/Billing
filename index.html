@@ -359,7 +359,7 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
   border-radius: 2px;
 }
 #bill::before {
-  content: 'BILL COPY';
+  content: attr(data-watermark);
   position: absolute; top: 50%; left: 50%;
   transform: translate(-50%, -50%) rotate(-35deg);
   font-family: 'Playfair Display', serif;
@@ -573,6 +573,13 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
     <div class="field-group">
       <label>HSN Code</label>
       <input id="hsn" value="7113" oninput="render()">
+    </div>
+    <div class="field-group">
+      <label>Bill Type</label>
+      <div style="display:flex;gap:8px;margin-top:2px">
+        <button id="btn-original" onclick="setBillType('original')" style="flex:1;padding:8px 10px;border-radius:4px;font-family:'Lato',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:1px;cursor:pointer;border:2px solid var(--g2);background:linear-gradient(135deg,var(--g2),var(--g1));color:#0d0800;transition:all 0.2s">ORIGINAL</button>
+        <button id="btn-copy" onclick="setBillType('copy')" style="flex:1;padding:8px 10px;border-radius:4px;font-family:'Lato',sans-serif;font-size:0.78rem;font-weight:700;letter-spacing:1px;cursor:pointer;border:2px solid rgba(218,165,32,0.35);background:transparent;color:var(--g2);transition:all 0.2s">BILL COPY</button>
+      </div>
     </div>
     <div class="field-group" style="justify-content:flex-end">
       <label>GST Applicable</label>
@@ -1591,6 +1598,10 @@ function numToWords(n) {
 }
 
 function render() {
+  // Update watermark
+  var billEl = document.getElementById('bill');
+  if (billEl) billEl.setAttribute('data-watermark', window.currentBillType === 'original' ? 'ORIGINAL' : 'BILL COPY');
+
   var invNo=g('inv-no'), invDate=fmtDate(g('inv-date')), goldRate=getGoldRate();
   var carat=g('carat'), custName=g('cust-name'), custAddr=g('cust-addr');
   var custPan=g('cust-pan'), custGstin=g('cust-gstin'), custPhone=g('cust-phone');
@@ -1659,12 +1670,12 @@ function render() {
 
   document.getElementById('bill').innerHTML =
     '<div class="bill-header">'
-      + '<div style="font-size:0.7rem;color:var(--muted);letter-spacing:1px;line-height:2.2"><em>ANTIQUE &bull; GOLD &bull; SILVER</em><br><span style="font-size:0.6rem;letter-spacing:2px;color:#b8860b">BILL COPY</span></div>'
+      + '<div style="font-size:0.7rem;color:var(--muted);letter-spacing:1px;line-height:2.2"><em>ANTIQUE &bull; GOLD &bull; SILVER</em><br><span style="font-size:0.6rem;letter-spacing:2px;color:#b8860b">' + (window.currentBillType === 'original' ? 'ORIGINAL BILL' : 'BILL COPY') + '</span></div>'
       + '<div class="bill-logo"><div class="logo-circle">' + shopLogo + '</div><div class="brand-name" style="text-align:center">' + shopName + '</div><div class="brand-subtitle" style="text-align:center">' + shopTagline + '</div></div>'
       + '<div class="bis-badge">BIS<br>100% Hall Marked<br>Jewellery</div>'
     + '</div>'
     + '<div class="bill-top-meta"><span>GSTIN: ' + gstin + '</span><span>State Code: 33</span><span>HSN Code: ' + hsn + '</span></div>'
-    + '<div class="bill-type-tag">Estimation Bill</div>'
+    + '<div class="bill-type-tag">' + (window.currentBillType === 'original' ? 'Original Bill' : 'Bill Copy') + '</div>'
     + '<div class="bill-meta">'
       + '<div class="meta-row"><span class="meta-label">Inv. No</span><span class="meta-value">: ' + invNo + '</span></div>'
       + '<div class="meta-row"><span class="meta-label">Gold Rate/' + carat + 'ct</span><span class="meta-value">: Rs.' + fmtMoney(goldRate) + ' /gram</span></div>'
@@ -1744,6 +1755,31 @@ async function downloadPDF() {
   }
   btn.textContent = orig;
   btn.disabled = false;
+}
+
+// Bill type: 'original' | 'copy'
+window.currentBillType = 'original';
+
+function setBillType(type) {
+  window.currentBillType = type;
+  var btnOriginal = document.getElementById('btn-original');
+  var btnCopy = document.getElementById('btn-copy');
+  if (type === 'original') {
+    btnOriginal.style.background = 'linear-gradient(135deg,var(--g2),var(--g1))';
+    btnOriginal.style.color = '#0d0800';
+    btnOriginal.style.borderColor = 'var(--g2)';
+    btnCopy.style.background = 'transparent';
+    btnCopy.style.color = 'var(--g2)';
+    btnCopy.style.borderColor = 'rgba(218,165,32,0.35)';
+  } else {
+    btnCopy.style.background = 'linear-gradient(135deg,var(--g2),var(--g1))';
+    btnCopy.style.color = '#0d0800';
+    btnCopy.style.borderColor = 'var(--g2)';
+    btnOriginal.style.background = 'transparent';
+    btnOriginal.style.color = 'var(--g2)';
+    btnOriginal.style.borderColor = 'rgba(218,165,32,0.35)';
+  }
+  render();
 }
 
 renderItemsEditor();

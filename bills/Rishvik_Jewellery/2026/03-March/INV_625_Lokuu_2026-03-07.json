@@ -1,0 +1,23 @@
+{
+  "invoiceNo": "625",
+  "date": "2026-03-07",
+  "shopName": "Rishvik Jewellery",
+  "customer": "Lokuu",
+  "address": "",
+  "phone": "",
+  "pan": "",
+  "goldRate": "16000.00",
+  "billType": "original",
+  "gst": true,
+  "items": [
+    {
+      "desc": "COIN",
+      "gross": "500.000",
+      "type": "add",
+      "rate": 16000,
+      "amount": 8000000
+    }
+  ],
+  "grandTotal": 8240000,
+  "savedAt": "2026-03-09T11:50:23.583Z"
+}

@@ -1689,45 +1689,6 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
 
     <!-- Existing customers list -->
     <div style="font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--gmuted);font-weight:700;margin-bottom:12px">📋 Saved Customers (<span id="cust-count">0</span>)</div>
-
-    <!-- GitHub Settings collapsible -->
-    <div id="gh-settings-panel" style="background:rgba(218,165,32,0.05);border:1px solid rgba(218,165,32,0.2);border-radius:8px;margin-bottom:12px;overflow:hidden">
-      <div onclick="toggleGhSettings()" style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;cursor:pointer;user-select:none">
-        <span style="font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--gmuted);font-weight:700">⚙ GitHub Settings</span>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span id="gh-token-status-dot" style="font-size:0.65rem;letter-spacing:1px"></span>
-          <span id="gh-settings-arrow" style="color:var(--g2);font-size:0.8rem;transition:transform 0.2s">▾</span>
-        </div>
-      </div>
-      <div id="gh-settings-body" style="display:none;padding:0 14px 14px">
-        <div style="font-size:0.7rem;color:var(--gmuted);margin-bottom:10px;line-height:1.6">
-          Paste a GitHub <strong style="color:var(--g3)">Fine-grained token</strong> with <em>Contents: Read & Write</em> permission on your repo. 
-          The token is stored in your browser only — never hardcoded.
-          <a href="https://github.com/settings/tokens?type=beta" target="_blank" style="color:var(--g2);text-decoration:underline">Generate token ↗</a>
-        </div>
-        <div class="field-group" style="margin-bottom:10px">
-          <label style="font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--gmuted);font-weight:700">Personal Access Token</label>
-          <div style="position:relative">
-            <input type="password" id="gh-token-input" placeholder="ghp_xxxx or github_pat_xxxx"
-              style="width:100%;padding:9px 40px 9px 12px;background:rgba(0,0,0,0.3);border:1px solid rgba(218,165,32,0.25);border-radius:6px;color:var(--g3);font-size:0.82rem;font-family:'Lato',sans-serif;outline:none"
-              oninput="document.getElementById('gh-token-saved').style.display='none'">
-            <button onclick="toggleGhTokenVisibility()" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--gmuted);cursor:pointer;font-size:0.9rem">👁</button>
-          </div>
-        </div>
-        <div class="field-group" style="margin-bottom:12px">
-          <label style="font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--gmuted);font-weight:700">Repository (owner/repo)</label>
-          <input type="text" id="gh-repo-input" placeholder="LogeshApps/Billing"
-            style="width:100%;padding:9px 12px;background:rgba(0,0,0,0.3);border:1px solid rgba(218,165,32,0.25);border-radius:6px;color:var(--g3);font-size:0.82rem;font-family:'Lato',sans-serif;outline:none"
-            oninput="document.getElementById('gh-token-saved').style.display='none'">
-        </div>
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <button onclick="saveGhSettings()" class="btn btn-gold" style="padding:8px 18px;font-size:0.75rem">💾 Save & Connect</button>
-          <button onclick="clearGhSettings()" style="padding:8px 14px;font-size:0.72rem;background:rgba(200,60,60,0.15);border:1px solid rgba(200,60,60,0.3);color:#f88;border-radius:5px;cursor:pointer;font-family:'Lato',sans-serif">🗑 Clear Token</button>
-          <span id="gh-token-saved" style="display:none;font-size:0.72rem;color:#6f6;letter-spacing:1px">✓ Saved</span>
-        </div>
-      </div>
-    </div>
-
     <div id="gh-status-bar" style="background:rgba(218,165,32,0.06);border:1px solid rgba(218,165,32,0.15);border-radius:5px;padding:9px 14px;margin-bottom:14px;font-size:0.72rem;color:var(--gmuted);line-height:1.6">
       🔄 Connecting to GitHub...
     </div>
@@ -2015,19 +1976,11 @@ function amtBlur(i, val) {
 }
 
 // ===== CUSTOMER DIRECTORY — GitHub Storage =====
-// Token stored in parts — assembled at runtime to avoid GitHub secret scanning
-function _gt() {
-  var p = ['v8xwxg9oH7HG9N4D2Zof', 'ghp_XWLJCS7Y2q7gmO1u'];
-  return p.reverse().join('');
-}
 var GH = {
-  get token() {
-    // Priority: 1) localStorage (user-set)  2) built-in default
-    return localStorage.getItem('gh_token') || _gt() || '';
-  },
-  get repo()  { return localStorage.getItem('gh_repo')  || 'LogeshApps/Billing'; },
-  file:    'customers.json',
-  sha:     null,
+  token: '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',
+  repo:  'LogeshApps/Billing',
+  file:  'customers.json',
+  sha:   null,
   shopSha: null
 };
 
@@ -2041,11 +1994,6 @@ function ghSetStatus(msg, color) {
 }
 
 async function ghFetchCustomers() {
-  if (!GH.token) {
-    ghSetStatus('⚙️ <strong style="color:#f5d060">GitHub token not set.</strong> Click <strong style="color:#f5d060">⚙ GitHub Settings</strong> above to add your token.', '');
-    try { customersList = JSON.parse(localStorage.getItem('sg_customers') || '[]'); } catch(e) { customersList = []; }
-    return;
-  }
   ghSetStatus('🔄 Syncing from GitHub...', '#c8a840');
   try {
     var resp = await fetch('https://api.github.com/repos/' + GH.repo + '/contents/' + GH.file, {
@@ -2075,11 +2023,6 @@ async function ghFetchCustomers() {
 }
 
 async function ghSaveCustomers() {
-  if (!GH.token) {
-    localStorage.setItem('sg_customers', JSON.stringify(customersList));
-    ghSetStatus('💾 Saved locally (no GitHub token). Add token in ⚙ GitHub Settings to sync.', '');
-    return;
-  }
   var content = btoa(unescape(encodeURIComponent(JSON.stringify(customersList, null, 2))));
   var body = {
     message: 'Update customers.json — ' + new Date().toLocaleString('en-IN'),
@@ -2108,64 +2051,7 @@ async function ghSaveCustomers() {
   }
 }
 
-function updateGhTokenDot() {
-  var dot = document.getElementById('gh-token-status-dot');
-  if (!dot) return;
-  if (localStorage.getItem('gh_token')) {
-    dot.textContent = '● Token saved';
-    dot.style.color = '#6f6';
-  } else {
-    dot.textContent = '● No token';
-    dot.style.color = '#f88';
-  }
-}
-
-function toggleGhSettings() {
-  var body  = document.getElementById('gh-settings-body');
-  var arrow = document.getElementById('gh-settings-arrow');
-  var open  = body.style.display === 'none';
-  body.style.display  = open ? '' : 'none';
-  arrow.style.transform = open ? 'rotate(180deg)' : '';
-  if (open) {
-    var tokenInput = document.getElementById('gh-token-input');
-    var repoInput  = document.getElementById('gh-repo-input');
-    if (tokenInput) tokenInput.value = localStorage.getItem('gh_token') || '';
-    if (repoInput)  repoInput.value  = localStorage.getItem('gh_repo')  || 'LogeshApps/Billing';
-  }
-}
-
-function toggleGhTokenVisibility() {
-  var inp = document.getElementById('gh-token-input');
-  if (inp) inp.type = inp.type === 'password' ? 'text' : 'password';
-}
-
-function saveGhSettings() {
-  var token = (document.getElementById('gh-token-input').value || '').trim();
-  var repo  = (document.getElementById('gh-repo-input').value  || '').trim() || 'LogeshApps/Billing';
-  if (!token) { ghSetStatus('⚠️ Please enter a token first.', ''); return; }
-  localStorage.setItem('gh_token', token);
-  localStorage.setItem('gh_repo',  repo);
-  GH.sha = null; GH.shopSha = null;
-  updateGhTokenDot();
-  document.getElementById('gh-token-saved').style.display = '';
-  document.getElementById('gh-settings-body').style.display = 'none';
-  document.getElementById('gh-settings-arrow').style.transform = '';
-  // Re-sync with new token
-  ghSetStatus('🔄 Connecting with new token...', '');
-  ghFetchCustomers().then(function() { refreshCustomerDropdown(); });
-  ghFetchShops().then(function() { refreshShopDropdown(); });
-}
-
-function clearGhSettings() {
-  localStorage.removeItem('gh_token');
-  localStorage.removeItem('gh_repo');
-  document.getElementById('gh-token-input').value = '';
-  document.getElementById('gh-repo-input').value  = '';
-  document.getElementById('gh-token-saved').style.display = 'none';
-  ghSetStatus('🗑 Token cleared. Data saved locally only.', '');
-}
-
-
+// Legacy wrappers (sync, for non-async callers)
 function loadCustomers() { return customersList; }
 function saveCustomers(list) {
   customersList = list;
@@ -2381,12 +2267,6 @@ function loadShops() { return shopsList; }
 function saveShopsLocal() { localStorage.setItem('sg_shops', JSON.stringify(shopsList)); }
 
 async function ghFetchShops() {
-  if (!GH.token) {
-    try { shopsList = JSON.parse(localStorage.getItem('sg_shops') || '[]'); } catch(ex) { shopsList = []; }
-    var hasSG = shopsList.some(function(s){ return s.name === SG_ANTIQUES_SHOP.name; });
-    if (!hasSG) shopsList.unshift(SG_ANTIQUES_SHOP);
-    return;
-  }
   try {
     var resp = await fetch('https://api.github.com/repos/' + GH.repo + '/contents/shops.json', {
       headers: { 'Authorization': 'token ' + GH.token, 'Accept': 'application/vnd.github.v3+json' }
@@ -2407,7 +2287,6 @@ async function ghFetchShops() {
 }
 
 async function ghSaveShops() {
-  if (!GH.token) { saveShopsLocal(); return; }
   var content = btoa(unescape(encodeURIComponent(JSON.stringify(shopsList, null, 2))));
   var body = { message: 'Update shops.json — ' + new Date().toLocaleString('en-IN'), content: content };
   if (GH.shopSha) body.sha = GH.shopSha;
@@ -3059,7 +2938,6 @@ ghFetchShops().then(function() { refreshShopDropdown(); });
 // ===== LOGIN =====
 var LOGIN_USER = 'LogeshApps';
 var LOGIN_PWD  = '12345678';
-var SESSION_KEY = 'lbs_auth_v1';
 
 function doLogin() {
   var u = document.getElementById('login-user').value.trim();
@@ -3068,7 +2946,6 @@ function doLogin() {
   var box = document.getElementById('login-box');
   if (u === LOGIN_USER && p === LOGIN_PWD) {
     errEl.classList.remove('visible');
-    sessionStorage.setItem(SESSION_KEY, '1');
     document.getElementById('login-overlay').classList.add('hidden');
     document.getElementById('login-user').value = '';
     document.getElementById('login-pwd').value = '';
@@ -3095,22 +2972,6 @@ function togglePwd() {
 }
 
 window.addEventListener('load', function() {
-  // Skip login if already authenticated this session
-  if (sessionStorage.getItem(SESSION_KEY) === '1') {
-    document.getElementById('login-overlay').classList.add('hidden');
-  } else {
-    document.getElementById('login-user').focus();
-  }
-  // Auto-open GitHub settings panel if no token saved yet
-  if (!localStorage.getItem('gh_token')) {
-    var body  = document.getElementById('gh-settings-body');
-    var arrow = document.getElementById('gh-settings-arrow');
-    if (body)  body.style.display  = '';
-    if (arrow) arrow.style.transform = 'rotate(180deg)';
-    var tokenInput = document.getElementById('gh-token-input');
-    var repoInput  = document.getElementById('gh-repo-input');
-    if (tokenInput) tokenInput.value = '';
-    if (repoInput)  repoInput.value  = localStorage.getItem('gh_repo') || 'LogeshApps/Billing';
-  }
+  document.getElementById('login-user').focus();
 });
 </script>

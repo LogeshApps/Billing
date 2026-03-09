@@ -1,0 +1,44 @@
+{
+  "invoiceNo": "3",
+  "date": "2026-03-07",
+  "shopName": "Rishvik Jewellery",
+  "customer": "Logesh",
+  "address": "Selvapuram",
+  "phone": "564546",
+  "pan": "ANHPL6079N",
+  "goldRate": "16500.00",
+  "billType": "original",
+  "gst": true,
+  "items": [
+    {
+      "desc": "COIN",
+      "gross": "500.000",
+      "type": "add",
+      "rate": 16500,
+      "amount": 8250000
+    },
+    {
+      "desc": "Old Jewels",
+      "gross": "76",
+      "type": "sub",
+      "rate": 16500,
+      "amount": 1254000
+    },
+    {
+      "desc": "Stone Weight",
+      "gross": "65",
+      "type": "add",
+      "rate": 500,
+      "amount": 32500
+    },
+    {
+      "desc": "Gold Jewels",
+      "gross": "100",
+      "type": "add",
+      "rate": 16500,
+      "amount": 1650000
+    }
+  ],
+  "grandTotal": 8938855,
+  "savedAt": "2026-03-09T12:49:04.418Z"
+}

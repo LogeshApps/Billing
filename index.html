@@ -518,7 +518,10 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
 .grand-total-row td {
   background: linear-gradient(135deg, var(--g5), var(--g6));
   color: var(--g3);
-  font-family: 'Playfair Display', serif; font-size: 1rem; padding: 11px 10px;
+  font-family: Arial, sans-serif; font-size: 1rem; padding: 11px 10px;
+}
+.grand-total-row td strong, .grand-total-row td * {
+  font-family: Arial, sans-serif !important;
 }
 .gst-row td:first-child { padding-left: 30px; font-size: 0.78rem; color: var(--muted); }
 .bill-footer {
@@ -1107,7 +1110,8 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
   .bill-table { font-size: 0.72rem; }
   .bill-table th { padding: 7px 6px; font-size: 0.6rem; }
   .bill-table td { padding: 5px 6px; }
-  .grand-total-row td { font-size: 0.88rem; padding: 9px 6px; }
+  .grand-total-row td { font-family: Arial, sans-serif; font-size: 0.88rem; padding: 9px 6px; }
+  .grand-total-row td strong, .grand-total-row td * { font-family: Arial, sans-serif !important; }
   .bill-footer { grid-template-columns: 1fr; gap: 10px; font-size: 0.72rem; }
   .signature-row { margin-top: 30px; }
   .sig-line { min-width: 100px; font-size: 0.65rem; }
@@ -1315,6 +1319,16 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
     <div class="field-group" id="hallmark-amt-field" style="display:none">
       <label>Hallmark Amount (Rs.)</label>
       <input id="hallmark-amt" type="number" value="100" step="1" min="0" oninput="render()" placeholder="e.g. 100">
+    </div>
+    <div class="field-group" id="hallmark-gst-field" style="display:none;justify-content:flex-end">
+      <label>GST on Hallmark (9%)</label>
+      <div class="gst-toggle-wrap" onclick="document.getElementById('hallmark-gst-toggle').click()">
+        <label for="hallmark-gst-toggle">GST On / Off</label>
+        <div class="toggle-switch">
+          <input type="checkbox" id="hallmark-gst-toggle" checked onchange="render()">
+          <span class="toggle-slider"></span>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -2378,8 +2392,9 @@ function render() {
   var cgstAmt = gstOn ? subtotal * cgstPct / 100 : 0;
   var sgstAmt = gstOn ? subtotal * sgstPct / 100 : 0;
   // Hallmark attracts 9% GST (CGST 4.5% + SGST 4.5%) separately
-  var hallmarkCgst = hallmarkOn ? hallmarkAmt * 4.5 / 100 : 0;
-  var hallmarkSgst = hallmarkOn ? hallmarkAmt * 4.5 / 100 : 0;
+  var hallmarkGstOn = hallmarkOn && document.getElementById('hallmark-gst-toggle') && document.getElementById('hallmark-gst-toggle').checked;
+  var hallmarkCgst = hallmarkGstOn ? hallmarkAmt * 4.5 / 100 : 0;
+  var hallmarkSgst = hallmarkGstOn ? hallmarkAmt * 4.5 / 100 : 0;
   var netTotal = subtotal + cgstAmt + sgstAmt + hallmarkAmt + hallmarkCgst + hallmarkSgst;
 
   var itemRows = items.map(function(it, i) {
@@ -2421,12 +2436,14 @@ function render() {
         + '</td>'
         + '<td style="text-align:right"><span class="hallmark-amt-val">Rs.' + fmtINR(hallmarkAmt) + '</span></td>'
       + '</tr>'
-      + '<tr class="hallmark-gst-row"><td colspan="4"></td>'
-        + '<td style="text-align:right">'
-          + '<span class="hallmark-gst-label">GST @ 9% <em>(on Hallmark)</em></span>'
-        + '</td>'
-        + '<td style="text-align:right"><span class="hallmark-gst-val">Rs.' + fmtINR(hallmarkCgst + hallmarkSgst) + '</span></td>'
-      + '</tr>'
+      + (hallmarkGstOn
+        ? '<tr class="hallmark-gst-row"><td colspan="4"></td>'
+            + '<td style="text-align:right">'
+              + '<span class="hallmark-gst-label">GST @ 9% <em>(on Hallmark)</em></span>'
+            + '</td>'
+            + '<td style="text-align:right"><span class="hallmark-gst-val">Rs.' + fmtINR(hallmarkCgst + hallmarkSgst) + '</span></td>'
+          + '</tr>'
+        : '')
     : '';
 
   // Weight summary — only shown if there are subtracted rows
@@ -2700,6 +2717,7 @@ function setBillType(type) {
 function toggleHallmarkField() {
   var on = document.getElementById('hallmark-toggle').checked;
   document.getElementById('hallmark-amt-field').style.display = on ? '' : 'none';
+  document.getElementById('hallmark-gst-field').style.display = on ? '' : 'none';
 }
 
 renderItemsEditor();

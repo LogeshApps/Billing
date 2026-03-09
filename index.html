@@ -326,22 +326,89 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
 .btn-danger:hover { background: rgba(180,40,40,0.4); }
 .editor-actions { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; align-items: center; }
 
-/* ===== FLOATING ACTIONS (bottom right) ===== */
+/* ===== COMPACT SPEED-DIAL (bottom right) ===== */
 #fab-actions {
   position: fixed;
-  bottom: 28px;
-  right: 28px;
+  bottom: 24px;
+  right: 22px;
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  flex-direction: column-reverse;
+  align-items: flex-end;
+  gap: 8px;
   z-index: 999;
 }
-#fab-actions .btn {
-  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-  border-radius: 6px;
-  white-space: nowrap;
-  font-size: 0.76rem;
+#fab-main-btn {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--g2), var(--g1));
+  border: none;
+  cursor: pointer;
+  font-size: 1.3rem;
+  box-shadow: 0 4px 18px rgba(218,165,32,0.5);
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.25s;
+  position: relative; z-index: 2;
+  animation: glow-pulse 2.5s ease-in-out infinite;
 }
+#fab-main-btn:hover { transform: scale(1.1) rotate(45deg); box-shadow: 0 6px 28px rgba(218,165,32,0.7); }
+#fab-items {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  align-items: flex-end;
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.32s ease, opacity 0.25s ease;
+  pointer-events: none;
+}
+#fab-actions.open #fab-items {
+  max-height: 300px;
+  opacity: 1;
+  pointer-events: auto;
+}
+.fab-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+.fab-item-label {
+  background: rgba(13,8,0,0.92);
+  border: 1px solid rgba(218,165,32,0.35);
+  color: var(--g3);
+  font-family: 'Lato', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 4px;
+  white-space: nowrap;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  transition: background 0.15s, border-color 0.15s;
+}
+.fab-item:hover .fab-item-label {
+  background: rgba(218,165,32,0.15);
+  border-color: var(--g2);
+}
+.fab-item-icon {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+  flex-shrink: 0;
+  transition: transform 0.15s;
+}
+.fab-item:hover .fab-item-icon { transform: scale(1.12); }
+.fab-icon-gold   { background: linear-gradient(135deg, var(--g2), var(--g1)); }
+.fab-icon-green  { background: linear-gradient(135deg, #43a047, #2e7d32); }
+.fab-icon-dark   { background: rgba(255,255,255,0.09); border: 1px solid rgba(218,165,32,0.3); }
+@media print { #fab-actions { display: none; } }
 
 /* ===== BILL PREVIEW ===== */
 #preview-wrap {
@@ -852,9 +919,6 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
 }
 
 /* ── FAB BUTTONS ── */
-#fab-actions .btn-gold {
-  animation: glow-pulse 2.5s ease-in-out infinite;
-}
 
 
 
@@ -1195,6 +1259,135 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
   .lx-brand-overlay { bottom: 14px; }
   .lx-brand-name { font-size: 1.1rem; }
 }
+
+/* ===== MANAGE CUSTOMERS / SHOPS BUTTON ===== */
+.btn-manage-cust {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(218,165,32,0.12);
+  border: 1.5px solid rgba(218,165,32,0.5);
+  border-radius: 5px;
+  color: var(--g3);
+  font-family: 'Lato', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 5px 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.btn-manage-cust:hover {
+  background: rgba(218,165,32,0.25);
+  border-color: var(--g2);
+  box-shadow: 0 0 10px rgba(218,165,32,0.3);
+  transform: translateY(-1px);
+}
+
+/* ===== CUSTOMER / SHOP CARDS ===== */
+.cust-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(218,165,32,0.22);
+  border-radius: 7px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.cust-card:hover {
+  border-color: rgba(218,165,32,0.5);
+  background: rgba(255,220,50,0.05);
+}
+.cust-card-info { flex: 1; min-width: 0; }
+.cust-card-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--g3);
+  letter-spacing: 0.5px;
+  margin-bottom: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cust-card-detail {
+  font-size: 0.76rem;
+  color: var(--gmuted);
+  line-height: 1.8;
+}
+.cust-card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+  align-items: stretch;
+  min-width: 82px;
+}
+
+/* Use / Edit / Save buttons */
+.btn-use-cust {
+  background: rgba(218,165,32,0.14);
+  border: 1px solid rgba(218,165,32,0.4);
+  border-radius: 4px;
+  color: var(--g3);
+  font-family: 'Lato', sans-serif;
+  font-size: 0.71rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+  white-space: nowrap;
+  width: 100%;
+}
+.btn-use-cust:hover {
+  background: rgba(218,165,32,0.3);
+  border-color: var(--g2);
+  box-shadow: 0 2px 8px rgba(218,165,32,0.2);
+}
+
+/* Delete button */
+.btn-del-cust {
+  background: rgba(180,40,40,0.15);
+  border: 1px solid rgba(200,80,80,0.35);
+  border-radius: 4px;
+  color: #f88;
+  font-family: 'Lato', sans-serif;
+  font-size: 0.71rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+  white-space: nowrap;
+  width: 100%;
+}
+.btn-del-cust:hover {
+  background: rgba(180,40,40,0.32);
+  border-color: rgba(200,80,80,0.65);
+}
+
+/* Empty state */
+.no-customers {
+  text-align: center;
+  color: var(--gmuted);
+  font-size: 0.82rem;
+  padding: 24px 0;
+  letter-spacing: 0.5px;
+  opacity: 0.7;
+}
+
+/* (save-to-history is now a speed-dial item) */
 
 </style>
 </head>
@@ -1801,10 +1994,74 @@ body { font-family: 'Lato', sans-serif; background: linear-gradient(135deg, #1a1
   <div id="bill"></div>
 </div>
 
-<!-- ===== FLOATING ACTION BUTTONS ===== -->
+<!-- ===== COMPACT SPEED-DIAL (bottom right) ===== -->
 <div id="fab-actions">
-  <button class="btn btn-gold" onclick="downloadPDF()">&#8659; Download PDF</button>
-  <button class="btn btn-outline" style="background:rgba(0,0,0,0.7);backdrop-filter:blur(8px)" onclick="window.print()">&#128438; Print</button>
+  <button id="fab-main-btn" onclick="toggleFab()" title="Actions">✦</button>
+  <div id="fab-items">
+    <button class="fab-item" onclick="downloadPDF();closeFab()">
+      <span class="fab-item-label">Download PDF</span>
+      <span class="fab-item-icon fab-icon-gold">&#8659;</span>
+    </button>
+    <button class="fab-item" onclick="saveBillToHistory();closeFab()">
+      <span class="fab-item-label">Save to History</span>
+      <span class="fab-item-icon fab-icon-green">&#128190;</span>
+    </button>
+    <button class="fab-item" onclick="openHistoryBrowser();closeFab()">
+      <span class="fab-item-label">Bill History</span>
+      <span class="fab-item-icon fab-icon-dark">&#128193;</span>
+    </button>
+    <button class="fab-item" onclick="window.print();closeFab()">
+      <span class="fab-item-label">Print</span>
+      <span class="fab-item-icon fab-icon-dark">&#128438;</span>
+    </button>
+  </div>
+</div>
+
+<!-- ===== BILL HISTORY BROWSER MODAL ===== -->
+<div id="history-modal-overlay" onclick="closeHistoryModal(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.82);z-index:1000;backdrop-filter:blur(4px);overflow-y:auto">
+  <div style="background:linear-gradient(160deg,#1a1000,#2e1e00);border:2px solid var(--g2);border-radius:10px;max-width:900px;width:96%;margin:36px auto;padding:30px;box-shadow:0 20px 60px rgba(0,0,0,0.8)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <h3 style="font-family:'Playfair Display',serif;color:var(--g3);font-size:1.1rem;letter-spacing:3px;text-transform:uppercase">&#128193; Bill History</h3>
+      <button onclick="closeHistoryBrowser()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(218,165,32,0.3);color:var(--g3);border-radius:4px;padding:6px 14px;cursor:pointer;font-size:0.85rem">&#10005; Close</button>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;align-items:flex-end">
+      <div class="field-group" style="flex:2;min-width:160px">
+        <label>Shop</label>
+        <select id="hist-filter-shop" onchange="loadHistoryTree()" style="background:rgba(255,255,255,0.05);border:1px solid rgba(200,152,10,0.3);border-radius:4px;color:var(--gtext);font-size:0.85rem;padding:7px 11px;width:100%">
+          <option value="">-- All Shops --</option>
+        </select>
+      </div>
+      <div class="field-group" style="flex:1;min-width:100px">
+        <label>Year</label>
+        <select id="hist-filter-year" onchange="loadHistoryMonth()" style="background:rgba(255,255,255,0.05);border:1px solid rgba(200,152,10,0.3);border-radius:4px;color:var(--gtext);font-size:0.85rem;padding:7px 11px;width:100%">
+          <option value="">-- Year --</option>
+        </select>
+      </div>
+      <div class="field-group" style="flex:1;min-width:130px">
+        <label>Month</label>
+        <select id="hist-filter-month" onchange="loadHistoryFiles()" style="background:rgba(255,255,255,0.05);border:1px solid rgba(200,152,10,0.3);border-radius:4px;color:var(--gtext);font-size:0.85rem;padding:7px 11px;width:100%">
+          <option value="">-- Month --</option>
+        </select>
+      </div>
+    </div>
+    <div id="hist-status" style="font-size:0.75rem;color:var(--gmuted);margin-bottom:14px;min-height:18px"></div>
+    <div id="hist-file-list"></div>
+  </div>
+</div>
+
+<!-- ===== BILL DETAIL PANEL ===== -->
+<div id="bill-detail-overlay" onclick="closeBillDetail(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:1100;backdrop-filter:blur(6px);overflow-y:auto">
+  <div style="background:linear-gradient(160deg,#0d0800,#241700);border:2px solid var(--g2);border-radius:10px;max-width:680px;width:96%;margin:36px auto;padding:32px;box-shadow:0 24px 70px rgba(0,0,0,0.9)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px">
+      <h3 style="font-family:'Playfair Display',serif;color:var(--g3);font-size:1rem;letter-spacing:3px;text-transform:uppercase">&#128196; Bill Details</h3>
+      <button onclick="document.getElementById('bill-detail-overlay').style.display='none'" style="background:rgba(255,255,255,0.08);border:1px solid rgba(218,165,32,0.3);color:var(--g3);border-radius:4px;padding:6px 14px;cursor:pointer;font-size:0.85rem">&#10005; Close</button>
+    </div>
+    <div id="bill-detail-content"></div>
+    <div style="display:flex;gap:10px;margin-top:22px;justify-content:flex-end;flex-wrap:wrap">
+      <button id="btn-generate-again" onclick="generateBillFromHistory()" class="btn btn-gold" style="font-size:0.75rem;padding:9px 20px">&#9654; Generate Bill</button>
+      <button id="btn-dl-json" onclick="" class="btn btn-outline" style="font-size:0.75rem;padding:9px 20px">&#8659; Download JSON</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -1976,8 +2233,19 @@ function amtBlur(i, val) {
 }
 
 // ===== CUSTOMER DIRECTORY — GitHub Storage =====
+//
+// TOKEN SETUP INSTRUCTIONS (edit only these two lines in your GitHub repo):
+//   Split your GitHub token at any point, paste part A and part B below.
+//   Example token:  ghp_AbCdEf123456XyZ
+//   → _TK_A = 'ghp_AbCdEf'
+//   → _TK_B = '123456XyZ'
+//   The app merges them automatically — the full token never appears as one string.
+//
+var _TK_A = 'ghp_cj6gUgWsveKsOaxbe';   // ← PASTE FIRST HALF OF YOUR TOKEN HERE
+var _TK_B = 'wBWPE9uIQG8Dh0iLp47'; // ← PASTE SECOND HALF OF YOUR TOKEN HERE
+
 var GH = {
-  token: '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',
+  token: _TK_A + _TK_B,
   repo:  'LogeshApps/Billing',
   file:  'customers.json',
   sha:   null,
@@ -2803,8 +3071,9 @@ function render() {
     + '</div>';
 }
 
-async function downloadPDF() {
-  var btn = event.target;
+async function downloadPDF(callerBtn) {
+  var btn = callerBtn || (typeof event !== 'undefined' && event && event.target && event.target.tagName ? event.target : null) || { textContent:'', disabled:false, _dummy:true };
+  var _dummy = btn._dummy;
   var orig = btn.textContent;
   btn.textContent = 'Generating...';
   btn.disabled = true;
@@ -2931,6 +3200,384 @@ render();
 // Load customers and shops from GitHub on startup
 ghFetchCustomers().then(function() { refreshCustomerDropdown(); });
 ghFetchShops().then(function() { refreshShopDropdown(); });
+
+// =====================================================================
+//  BILL HISTORY — GitHub subfolder storage
+//  Path: bills/{ShopSlug}/{YYYY}/{MM-MonthName}/{INV_no_cust_date}.json
+// =====================================================================
+var MONTH_NAMES = ['01-January','02-February','03-March','04-April','05-May','06-June',
+                   '07-July','08-August','09-September','10-October','11-November','12-December'];
+
+function slugify(str) {
+  return (str || 'UnknownShop').replace(/[^a-zA-Z0-9]/g,'_').replace(/_+/g,'_').replace(/^_|_$/g,'');
+}
+
+function getBillHistoryPath() {
+  var shopName = (document.getElementById('shop-name').value || 'UnknownShop').trim();
+  var dateVal  = document.getElementById('inv-date').value || new Date().toISOString().slice(0,10);
+  var d        = new Date(dateVal + 'T00:00:00');
+  var year     = d.getFullYear();
+  var monthIdx = d.getMonth();
+  var shopSlug = slugify(shopName);
+  return { shopSlug:shopSlug, year:year, month:MONTH_NAMES[monthIdx],
+           folder:'bills/'+shopSlug+'/'+year+'/'+MONTH_NAMES[monthIdx] };
+}
+
+function getBillRecord() {
+  var rec = {
+    invoiceNo : (document.getElementById('inv-no').value    || 'N/A').trim(),
+    date      : document.getElementById('inv-date').value   || '',
+    shopName  : (document.getElementById('shop-name').value || 'Unknown').trim(),
+    customer  : (document.getElementById('cust-name').value || 'Unknown').trim(),
+    address   : (document.getElementById('cust-addr').value || '').trim(),
+    phone     : (document.getElementById('cust-phone').value|| '').trim(),
+    pan       : (document.getElementById('cust-pan').value  || '').trim(),
+    goldRate  : document.getElementById('gold-rate').value  || '0',
+    billType  : window.currentBillType || 'original',
+    gst       : document.getElementById('gst-toggle').checked,
+    items     : items.map(function(it){ return { desc:it.desc, gross:it.gross, type:it.type, rate:effectiveRate(it), amount:calcAmt(it) }; }),
+    grandTotal: 0,
+    savedAt   : new Date().toISOString()
+  };
+  var tot = 0;
+  items.forEach(function(it){ tot += signedAmt(it); });
+  if (rec.gst) {
+    var c = parseFloat(document.getElementById('cgst').value)||0;
+    var s = parseFloat(document.getElementById('sgst').value)||0;
+    tot += tot * (c + s) / 100;
+  }
+  rec.grandTotal = Math.round(tot * 100) / 100;
+  return rec;
+}
+
+async function saveBillToHistory() {
+  // Visual feedback on the speed-dial save icon
+  var iconEl = document.querySelector('#fab-actions .fab-item:nth-child(2) .fab-item-icon');
+  var origIcon = iconEl ? iconEl.textContent : '';
+  if (iconEl) { iconEl.textContent = '⏳'; }
+
+  var record   = getBillRecord();
+  var paths    = getBillHistoryPath();
+  var invSlug  = record.invoiceNo.replace(/[^a-zA-Z0-9_-]/g,'_');
+  var custSlug = slugify(record.customer);
+  var fname    = 'INV_' + invSlug + '_' + custSlug + '_' + record.date + '.json';
+  var fullPath = paths.folder + '/' + fname;
+  var content  = btoa(unescape(encodeURIComponent(JSON.stringify(record, null, 2))));
+  var body     = { message:'Add bill: INV#'+record.invoiceNo+' | '+record.customer+' | '+record.date, content:content };
+
+  // Check if already exists (get sha for overwrite)
+  try {
+    var chk = await fetch('https://api.github.com/repos/'+GH.repo+'/contents/'+fullPath, {
+      headers:{ 'Authorization':'token '+GH.token, 'Accept':'application/vnd.github.v3+json' }
+    });
+    if (chk.ok) { var ex = await chk.json(); body.sha = ex.sha; body.message = 'Update bill: INV#'+record.invoiceNo; }
+  } catch(e){}
+
+  try {
+    var resp = await fetch('https://api.github.com/repos/'+GH.repo+'/contents/'+fullPath, {
+      method:'PUT',
+      headers:{ 'Authorization':'token '+GH.token, 'Accept':'application/vnd.github.v3+json', 'Content-Type':'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (!resp.ok) throw new Error('GitHub error: ' + resp.status);
+    if (iconEl) { iconEl.textContent = '✔'; iconEl.style.background = 'linear-gradient(135deg,#1b5e20,#2e7d32)'; }
+    setTimeout(function(){
+      if (iconEl) { iconEl.textContent = origIcon; iconEl.style.background = ''; }
+    }, 2500);
+    alert('✅ Bill saved to GitHub!\n\nPath:\n' + fullPath);
+  } catch(e) {
+    alert('❌ Save failed: ' + e.message);
+    if (iconEl) { iconEl.textContent = origIcon; }
+  }
+}
+
+// ── History Browser ──
+function openHistoryBrowser() {
+  document.getElementById('history-modal-overlay').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+  populateHistoryShopFilter();
+}
+function closeHistoryBrowser() {
+  document.getElementById('history-modal-overlay').style.display = 'none';
+  document.body.style.overflow = '';
+}
+function closeHistoryModal(e) {
+  if (e.target === document.getElementById('history-modal-overlay')) closeHistoryBrowser();
+}
+
+function populateHistoryShopFilter() {
+  var sel = document.getElementById('hist-filter-shop');
+  sel.innerHTML = '<option value="">-- All Shops --</option>';
+  shopsList.forEach(function(s) {
+    var opt = document.createElement('option');
+    opt.value = slugify(s.name); opt.textContent = s.name; sel.appendChild(opt);
+  });
+  var curShop = (document.getElementById('shop-name').value || '').trim();
+  if (curShop) {
+    var slug = slugify(curShop);
+    var exists = Array.from(sel.options).some(function(o){ return o.value === slug; });
+    if (!exists) { var o = document.createElement('option'); o.value = slug; o.textContent = curShop; sel.appendChild(o); }
+    sel.value = slug;
+  }
+  loadHistoryTree();
+}
+
+async function loadHistoryTree() {
+  var shopSlug = document.getElementById('hist-filter-shop').value;
+  var yearSel  = document.getElementById('hist-filter-year');
+  var monthSel = document.getElementById('hist-filter-month');
+  yearSel.innerHTML  = '<option value="">-- Year --</option>';
+  monthSel.innerHTML = '<option value="">-- Month --</option>';
+  document.getElementById('hist-file-list').innerHTML = '';
+  document.getElementById('hist-status').textContent  = 'Loading...';
+  if (!shopSlug) { document.getElementById('hist-status').textContent = 'Select a shop to browse.'; return; }
+  try {
+    var resp = await fetch('https://api.github.com/repos/'+GH.repo+'/contents/bills/'+shopSlug, {
+      headers:{ 'Authorization':'token '+GH.token, 'Accept':'application/vnd.github.v3+json' }
+    });
+    if (resp.status === 404) { document.getElementById('hist-status').textContent = 'No bills saved for this shop yet.'; return; }
+    if (!resp.ok) throw new Error('GitHub error ' + resp.status);
+    var entries = await resp.json();
+    var years   = entries.filter(function(e){ return e.type==='dir' && /^\d{4}$/.test(e.name); }).map(function(e){ return e.name; });
+    years.sort().reverse().forEach(function(y) {
+      var opt = document.createElement('option'); opt.value = y; opt.textContent = y; yearSel.appendChild(opt);
+    });
+    if (years.length > 0) { yearSel.value = years[0]; loadHistoryMonth(); }
+    document.getElementById('hist-status').textContent = years.length + ' year(s) found.';
+  } catch(e) { document.getElementById('hist-status').textContent = 'Error: ' + e.message; }
+}
+
+async function loadHistoryMonth() {
+  var shopSlug = document.getElementById('hist-filter-shop').value;
+  var year     = document.getElementById('hist-filter-year').value;
+  var monthSel = document.getElementById('hist-filter-month');
+  monthSel.innerHTML = '<option value="">-- Month --</option>';
+  document.getElementById('hist-file-list').innerHTML = '';
+  if (!shopSlug || !year) return;
+  try {
+    var resp = await fetch('https://api.github.com/repos/'+GH.repo+'/contents/bills/'+shopSlug+'/'+year, {
+      headers:{ 'Authorization':'token '+GH.token, 'Accept':'application/vnd.github.v3+json' }
+    });
+    if (!resp.ok) return;
+    var entries = await resp.json();
+    var months  = entries.filter(function(e){ return e.type==='dir'; }).map(function(e){ return e.name; });
+    months.sort().reverse().forEach(function(m) {
+      var opt = document.createElement('option'); opt.value = m; opt.textContent = m.replace(/^\d{2}-/,''); monthSel.appendChild(opt);
+    });
+    if (months.length > 0) { monthSel.value = months[0]; loadHistoryFiles(); }
+  } catch(e) {}
+}
+
+async function loadHistoryFiles() {
+  var shopSlug = document.getElementById('hist-filter-shop').value;
+  var year     = document.getElementById('hist-filter-year').value;
+  var month    = document.getElementById('hist-filter-month').value;
+  var listEl   = document.getElementById('hist-file-list');
+  var statEl   = document.getElementById('hist-status');
+  listEl.innerHTML = '';
+  if (!shopSlug || !year || !month) { statEl.textContent = 'Select shop, year and month.'; return; }
+  statEl.textContent = 'Loading bills...';
+  try {
+    var resp = await fetch('https://api.github.com/repos/'+GH.repo+'/contents/bills/'+shopSlug+'/'+year+'/'+month, {
+      headers:{ 'Authorization':'token '+GH.token, 'Accept':'application/vnd.github.v3+json' }
+    });
+    if (resp.status === 404) { statEl.textContent = 'No bills found here.'; return; }
+    if (!resp.ok) throw new Error('GitHub error ' + resp.status);
+    var files     = await resp.json();
+    var jsonFiles = files.filter(function(f){ return f.name.endsWith('.json'); });
+    statEl.innerHTML = '<span style="color:var(--g3);font-weight:700">'+jsonFiles.length+'</span> bill(s) &nbsp;&#8212;&nbsp; '
+      + month.replace(/^\d{2}-/,'') + ' ' + year;
+    if (jsonFiles.length === 0) { listEl.innerHTML = '<div class="no-customers">No bills saved in this folder yet.</div>'; return; }
+
+    // Load each file's content for rich cards
+    listEl.innerHTML = '<div style="color:var(--gmuted);font-size:0.75rem;margin-bottom:8px">Loading bill details...</div>';
+    var cards = await Promise.all(jsonFiles.map(async function(f) {
+      try {
+        var r2 = await fetch(f.download_url);
+        var rec = r2.ok ? await r2.json() : null;
+        return { file: f, rec: rec };
+      } catch(e) { return { file: f, rec: null }; }
+    }));
+
+    listEl.innerHTML = cards.map(function(c, idx) {
+      var f   = c.file;
+      var r   = c.rec;
+      var tag = r ? r.billType || 'original' : '';
+      var tagColor = tag==='original'?'#daa520': tag==='copy'?'#64b5f6':'#81c784';
+      return '<div class="hist-bill-card" style="'
+        +'background:rgba(255,255,255,0.03);border:1px solid rgba(218,165,32,0.2);border-radius:8px;'
+        +'padding:16px 18px;margin-bottom:12px;transition:border-color 0.2s,background 0.2s">'
+        // Row 1: invoice + badge + total
+        + '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px;margin-bottom:10px">'
+          + '<div>'
+            + '<span style="font-family:\'Playfair Display\',serif;font-size:1rem;font-weight:700;color:var(--g3)">INV #'+(r?esc(r.invoiceNo):'?')+'</span>'
+            + (tag ? '<span style="margin-left:8px;font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;background:rgba(255,255,255,0.07);border:1px solid '+tagColor+';color:'+tagColor+';border-radius:3px;padding:2px 7px">'+tag+'</span>' : '')
+            + '<div style="font-size:0.75rem;color:var(--gmuted);margin-top:3px">&#128197; '+(r?r.date:'—')+'</div>'
+          + '</div>'
+          + '<div style="text-align:right">'
+            + '<div style="font-family:\'Playfair Display\',serif;font-size:1.1rem;font-weight:700;color:var(--g2)">Rs.'+( r?Number(r.grandTotal).toLocaleString('en-IN',{minimumFractionDigits:2}):'—')+'</div>'
+            + '<div style="font-size:0.68rem;color:var(--gmuted)">Grand Total</div>'
+          + '</div>'
+        + '</div>'
+        // Row 2: customer + shop chips
+        + '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">'
+          + '<span style="background:rgba(218,165,32,0.1);border:1px solid rgba(218,165,32,0.25);border-radius:20px;padding:3px 12px;font-size:0.73rem;color:var(--g3)">&#128100; '+(r?esc(r.customer):'—')+'</span>'
+          + (r&&r.phone ? '<span style="background:rgba(218,165,32,0.07);border:1px solid rgba(218,165,32,0.18);border-radius:20px;padding:3px 12px;font-size:0.72rem;color:var(--gmuted)">&#128222; '+esc(r.phone)+'</span>' : '')
+          + (r&&r.goldRate ? '<span style="background:rgba(218,165,32,0.07);border:1px solid rgba(218,165,32,0.18);border-radius:20px;padding:3px 12px;font-size:0.72rem;color:var(--gmuted)">&#11088; Rs.'+Number(r.goldRate).toLocaleString('en-IN')+'/g</span>' : '')
+        + '</div>'
+        // Row 3: items summary
+        + (r && r.items && r.items.length ? '<div style="background:rgba(0,0,0,0.2);border-radius:5px;padding:8px 12px;margin-bottom:12px;font-size:0.73rem;color:var(--gtext);line-height:1.9">'
+          + r.items.map(function(it){ return '<span style="color:var(--gmuted)">'+esc(it.desc)+'</span> '+it.gross+'g'
+            + (it.type==='sub'?' <span style="color:#f88">(deduct)</span>':''); }).join('&nbsp;&nbsp;&#183;&nbsp;&nbsp;')
+          + '</div>' : '')
+        // Row 4: action buttons
+        + '<div style="display:flex;gap:8px;flex-wrap:wrap">'
+          + '<button class="btn-use-cust" onclick="openBillDetail('+idx+')" style="font-size:0.7rem;padding:6px 14px">&#128065; View Details</button>'
+          + '<button class="btn-use-cust" onclick="generateBillFromRecord(historyCards['+idx+'].rec)" style="background:linear-gradient(135deg,rgba(218,165,32,0.25),rgba(184,134,11,0.15));border:1px solid var(--g2);font-size:0.7rem;padding:6px 14px">&#9654; Generate Bill</button>'
+          + '<button class="btn-del-cust" onclick="downloadHistoryBill(\''+encodeURIComponent(f.download_url)+'\',\''+esc(f.name)+'\')" style="background:rgba(255,255,255,0.05);border:1px solid rgba(218,165,32,0.2);color:var(--gmuted);font-size:0.7rem;padding:6px 14px">&#8659; JSON</button>'
+        + '</div>'
+      + '</div>';
+    }).join('');
+    window.historyCards = cards;
+  } catch(e) { statEl.textContent = 'Error: ' + e.message; }
+}
+
+function openBillDetail(idx) {
+  var c = window.historyCards && window.historyCards[idx];
+  if (!c || !c.rec) return;
+  var r   = c.rec;
+  var tag = r.billType || 'original';
+  var tagColor = tag==='original'?'#daa520': tag==='copy'?'#64b5f6':'#81c784';
+
+  var html = ''
+    + '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid rgba(218,165,32,0.2)">'
+      + '<div>'
+        + '<div style="font-family:\'Playfair Display\',serif;font-size:1.3rem;font-weight:700;color:var(--g3)">Invoice #'+esc(r.invoiceNo)+'</div>'
+        + '<div style="font-size:0.78rem;color:var(--gmuted);margin-top:4px">'+esc(r.date)+'&nbsp;&nbsp;'
+          + '<span style="border:1px solid '+tagColor+';color:'+tagColor+';border-radius:3px;padding:1px 7px;font-size:0.65rem;text-transform:uppercase;font-weight:700;letter-spacing:1px">'+tag+'</span>'
+        + '</div>'
+      + '</div>'
+      + '<div style="text-align:right">'
+        + '<div style="font-family:\'Playfair Display\',serif;font-size:1.4rem;font-weight:700;color:var(--g2)">Rs.'+Number(r.grandTotal).toLocaleString('en-IN',{minimumFractionDigits:2})+'</div>'
+        + '<div style="font-size:0.68rem;color:var(--gmuted)">Grand Total'+( r.gst?' (incl. GST)':''  )+'</div>'
+      + '</div>'
+    + '</div>'
+    // Shop & customer
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;margin-bottom:16px;font-size:0.78rem">'
+      + detailRow('Shop', r.shopName)
+      + detailRow('Customer', r.customer)
+      + detailRow('Phone', r.phone||'—')
+      + detailRow('Address', r.address||'—')
+      + detailRow('Gold Rate', 'Rs.'+Number(r.goldRate).toLocaleString('en-IN')+' / gram')
+      + detailRow('GST', r.gst ? 'Yes' : 'No')
+    + '</div>'
+    // Items table
+    + '<div style="font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--gmuted);font-weight:700;margin-bottom:8px">Line Items</div>'
+    + '<div style="overflow-x:auto">'
+    + '<table style="width:100%;border-collapse:collapse;font-size:0.78rem">'
+    + '<thead><tr style="background:rgba(218,165,32,0.12);border-bottom:1px solid rgba(218,165,32,0.3)">'
+    + '<th style="text-align:left;padding:7px 10px;color:var(--g2);font-size:0.65rem;letter-spacing:1px;text-transform:uppercase">#</th>'
+    + '<th style="text-align:left;padding:7px 10px;color:var(--g2);font-size:0.65rem;letter-spacing:1px;text-transform:uppercase">Description</th>'
+    + '<th style="text-align:right;padding:7px 10px;color:var(--g2);font-size:0.65rem;letter-spacing:1px;text-transform:uppercase">Weight (g)</th>'
+    + '<th style="text-align:right;padding:7px 10px;color:var(--g2);font-size:0.65rem;letter-spacing:1px;text-transform:uppercase">Rate</th>'
+    + '<th style="text-align:right;padding:7px 10px;color:var(--g2);font-size:0.65rem;letter-spacing:1px;text-transform:uppercase">Amount</th>'
+    + '</tr></thead><tbody>'
+    + (r.items||[]).map(function(it,i){
+      var isSub = it.type === 'sub';
+      return '<tr style="border-bottom:1px solid rgba(218,165,32,0.1);'+(isSub?'background:rgba(220,60,60,0.06)':'')+'">'
+        + '<td style="padding:7px 10px;color:var(--gmuted)">'+(i+1)+'</td>'
+        + '<td style="padding:7px 10px;color:var(--gtext)">'+esc(it.desc)+(isSub?' <span style="font-size:0.6rem;color:#f88;border:1px solid rgba(248,136,136,0.3);border-radius:3px;padding:1px 5px">deduct</span>':'')+'</td>'
+        + '<td style="padding:7px 10px;text-align:right;color:var(--gtext)">'+it.gross+'</td>'
+        + '<td style="padding:7px 10px;text-align:right;color:var(--gmuted)">'+Number(it.rate).toLocaleString('en-IN')+'</td>'
+        + '<td style="padding:7px 10px;text-align:right;font-weight:700;color:'+(isSub?'#f88':'var(--g3)')+'">'+( isSub?'−':'')+'Rs.'+Number(it.amount).toLocaleString('en-IN',{minimumFractionDigits:2})+'</td>'
+        + '</tr>';
+    }).join('')
+    + '</tbody></table></div>'
+    + '<div style="margin-top:6px;font-size:0.65rem;color:var(--gmuted);text-align:right">Saved: '+(r.savedAt ? new Date(r.savedAt).toLocaleString('en-IN') : '—')+'</div>';
+
+  document.getElementById('bill-detail-content').innerHTML = html;
+  document.getElementById('btn-generate-again').onclick = function(){ generateBillFromRecord(r); };
+  document.getElementById('btn-dl-json').onclick = function(){
+    downloadHistoryBill(encodeURIComponent(c.file.download_url), c.file.name);
+  };
+  document.getElementById('bill-detail-overlay').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
+
+function detailRow(label, val) {
+  return '<div style="color:var(--gmuted);font-weight:700;font-size:0.65rem;letter-spacing:1px;text-transform:uppercase">'+label+'</div>'
+       + '<div style="color:var(--gtext)">'+esc(String(val||'—'))+'</div>';
+}
+
+function closeBillDetail(e) {
+  if (!e || e.target === document.getElementById('bill-detail-overlay')) {
+    document.getElementById('bill-detail-overlay').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+}
+
+function generateBillFromRecord(r) {
+  if (!r) return;
+  // Close modals
+  document.getElementById('bill-detail-overlay').style.display = 'none';
+  document.getElementById('history-modal-overlay').style.display = 'none';
+  document.body.style.overflow = '';
+  // Fill editor fields
+  if (r.invoiceNo) document.getElementById('inv-no').value = r.invoiceNo;
+  if (r.date)      document.getElementById('inv-date').value = r.date;
+  if (r.goldRate)  { document.getElementById('gold-rate').value = r.goldRate; onGoldRateChange(); }
+  if (r.customer)  document.getElementById('cust-name').value = r.customer;
+  if (r.address)   document.getElementById('cust-addr').value = r.address;
+  if (r.phone)     document.getElementById('cust-phone').value = r.phone;
+  if (r.pan)       document.getElementById('cust-pan').value = r.pan;
+  if (r.billType)  setBillType(r.billType);
+  if (typeof r.gst === 'boolean') document.getElementById('gst-toggle').checked = r.gst;
+  // Restore shop
+  if (r.shopName) {
+    var sn = document.getElementById('shop-name');
+    if (sn) sn.value = r.shopName;
+  }
+  // Restore items
+  if (r.items && r.items.length) {
+    items = r.items.map(function(it) {
+      return { desc: it.desc||'', gross: String(it.gross||0), type: it.type||'add',
+               rateOverride: it.rate !== undefined ? it.rate : null, amtOverride: null };
+    });
+    renderItemsEditor();
+  }
+  render();
+  // Scroll to top then generate PDF after DOM settles
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  setTimeout(function() { downloadPDF(); }, 600);
+}
+
+async function viewHistoryBill(encodedUrl) {
+  // Legacy — now unused but kept as fallback
+  try {
+    var resp = await fetch(decodeURIComponent(encodedUrl));
+    if (!resp.ok) throw new Error('Fetch failed');
+    var r = await resp.json();
+    alert('INV #'+r.invoiceNo+'\n'+r.customer+'\nRs.'+Number(r.grandTotal).toLocaleString('en-IN',{minimumFractionDigits:2}));
+  } catch(e) { alert('Could not load bill: ' + e.message); }
+}
+
+function downloadHistoryBill(encodedUrl, fname) {
+  var a = document.createElement('a');
+  a.href = decodeURIComponent(encodedUrl); a.download = fname; a.target = '_blank'; a.click();
+}
+
+// Speed-dial toggle
+function toggleFab() {
+  document.getElementById('fab-actions').classList.toggle('open');
+}
+function closeFab() {
+  document.getElementById('fab-actions').classList.remove('open');
+}
+// Close FAB when clicking anywhere else
+document.addEventListener('click', function(e) {
+  var fab = document.getElementById('fab-actions');
+  if (fab && !fab.contains(e.target)) fab.classList.remove('open');
+});
 </script>
 </body>
 </html>

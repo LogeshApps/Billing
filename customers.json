@@ -12,5 +12,12 @@
     "pan": "",
     "gstin": "",
     "phone": ""
+  },
+  {
+    "name": "Lokesh",
+    "addr": "Dubai",
+    "pan": "12345678",
+    "gstin": "654321",
+    "phone": "9894058144"
   }
 ]

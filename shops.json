@@ -22,5 +22,17 @@
     "bank": "",
     "acc": "",
     "ifsc": ""
+  },
+  {
+    "name": "new",
+    "logo": "",
+    "tagline": "",
+    "phone": "",
+    "email": "",
+    "addr": "",
+    "gstin": "",
+    "bank": "",
+    "acc": "",
+    "ifsc": ""
   }
 ]

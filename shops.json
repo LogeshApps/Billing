@@ -1,10 +1,34 @@
 [
   {
+    "name": "SG Antiques Jewellery",
+    "logo": "SG",
+    "tagline": "Jewellery Manufacturers",
+    "phone": "9865031824, 0422-2341991",
+    "email": "anticjewels.cbe@gmail.com",
+    "addr": "22B, Raj Nagar, Selvapuram, Coimbatore - 641026",
+    "gstin": "33DUSPS7454F1Z0",
+    "bank": "Axis Bank, Town Hall",
+    "acc": "918020021078772",
+    "ifsc": "UTIB0001919"
+  },
+  {
     "name": "Loki",
     "logo": "LG",
     "tagline": "",
     "phone": "r454r54545",
     "email": "454554545",
+    "addr": "",
+    "gstin": "",
+    "bank": "",
+    "acc": "",
+    "ifsc": ""
+  },
+  {
+    "name": "Lokii",
+    "logo": "LG",
+    "tagline": "LGGG",
+    "phone": "",
+    "email": "",
     "addr": "",
     "gstin": "",
     "bank": "",

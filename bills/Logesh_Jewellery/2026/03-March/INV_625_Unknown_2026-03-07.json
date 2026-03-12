@@ -1,0 +1,30 @@
+{
+  "invoiceNo": "625",
+  "date": "2026-03-07",
+  "shopName": "Logesh Jewellery",
+  "customer": "Unknown",
+  "address": "",
+  "phone": "",
+  "pan": "",
+  "goldRate": "16000.00",
+  "billType": "original",
+  "gst": true,
+  "items": [
+    {
+      "desc": "COIN",
+      "gross": "500.000",
+      "type": "add",
+      "rate": 16000,
+      "amount": 8000000
+    },
+    {
+      "desc": "Gold Jewels",
+      "gross": "100",
+      "type": "add",
+      "rate": 16000,
+      "amount": 1600000
+    }
+  ],
+  "grandTotal": 9888000,
+  "savedAt": "2026-03-12T05:06:38.422Z"
+}

@@ -58,5 +58,17 @@
     "bank": "",
     "acc": "",
     "ifsc": ""
+  },
+  {
+    "name": "dummy",
+    "logo": "",
+    "tagline": "",
+    "phone": "",
+    "email": "",
+    "addr": "",
+    "gstin": "",
+    "bank": "",
+    "acc": "",
+    "ifsc": ""
   }
 ]

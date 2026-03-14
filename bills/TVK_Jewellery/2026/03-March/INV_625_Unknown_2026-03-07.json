@@ -1,0 +1,51 @@
+{
+  "invoiceNo": "625",
+  "date": "2026-03-07",
+  "shopName": "TVK Jewellery",
+  "customer": "Unknown",
+  "address": "",
+  "phone": "",
+  "pan": "",
+  "goldRate": "16000.00",
+  "billType": "original",
+  "gst": true,
+  "items": [
+    {
+      "desc": "COIN",
+      "gross": "500.000",
+      "type": "add",
+      "rate": 16000,
+      "amount": 8000000
+    },
+    {
+      "desc": "",
+      "gross": "",
+      "type": "add",
+      "rate": 16000,
+      "amount": 0
+    },
+    {
+      "desc": "",
+      "gross": "56",
+      "type": "add",
+      "rate": 16000,
+      "amount": 896000
+    },
+    {
+      "desc": "Gold Jewels",
+      "gross": "",
+      "type": "add",
+      "rate": 16000,
+      "amount": 0
+    },
+    {
+      "desc": "Jimikki",
+      "gross": "7",
+      "type": "add",
+      "rate": 16000,
+      "amount": 112000
+    }
+  ],
+  "grandTotal": 9278240,
+  "savedAt": "2026-03-14T04:37:47.171Z"
+}

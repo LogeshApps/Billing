@@ -7,7 +7,7 @@
   "phone": "",
   "pan": "",
   "goldRate": "16000.00",
-  "billType": "copy",
+  "billType": "original",
   "gst": true,
   "items": [
     {
@@ -18,41 +18,13 @@
       "amount": 8000000
     },
     {
-      "desc": "Silver Jewels",
-      "gross": "",
-      "type": "add",
-      "rate": 16000,
-      "amount": 0
-    },
-    {
-      "desc": "Gold Jewels",
-      "gross": "",
-      "type": "add",
-      "rate": 16000,
-      "amount": 0
-    },
-    {
-      "desc": "Necklace",
+      "desc": "",
       "gross": "25",
       "type": "add",
-      "rate": 16000,
-      "amount": 400000
-    },
-    {
-      "desc": "Stone Weight",
-      "gross": "25",
-      "type": "add",
-      "rate": 560,
-      "amount": 14000
-    },
-    {
-      "desc": "Old Jewels",
-      "gross": "150",
-      "type": "sub",
-      "rate": 16000,
-      "amount": 2400000
+      "rate": 15000,
+      "amount": 375000
     }
   ],
-  "grandTotal": 6194420,
-  "savedAt": "2026-03-10T08:07:47.911Z"
+  "grandTotal": 8626250,
+  "savedAt": "2026-03-20T04:16:38.436Z"
 }

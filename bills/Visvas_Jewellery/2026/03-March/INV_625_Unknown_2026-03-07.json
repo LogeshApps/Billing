@@ -1,0 +1,30 @@
+{
+  "invoiceNo": "625",
+  "date": "2026-03-07",
+  "shopName": "Visvas Jewellery",
+  "customer": "Unknown",
+  "address": "",
+  "phone": "",
+  "pan": "",
+  "goldRate": "16000.00",
+  "billType": "original",
+  "gst": true,
+  "items": [
+    {
+      "desc": "COIN",
+      "gross": "500.000",
+      "type": "add",
+      "rate": 16000,
+      "amount": 8000000
+    },
+    {
+      "desc": "Jewels",
+      "gross": "600",
+      "type": "add",
+      "rate": 16000,
+      "amount": 9600000
+    }
+  ],
+  "grandTotal": 18128000,
+  "savedAt": "2026-03-22T14:20:52.783Z"
+}
